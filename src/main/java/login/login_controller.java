@@ -1,6 +1,7 @@
 package login;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -8,42 +9,50 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import java.io.InputStream;
-
 
 public class login_controller {
 
     @FXML
-    private Pane login_pane; // or whatever type you're using
+    private Pane login_pane;
+
+    @FXML
+    private PasswordField password;
+
+    @FXML
+    private TextField visiblePassword;
+
+    @FXML
+    private ImageView eyeimage;
+
+    @FXML
+    private Button eyebutton;
+
+    private boolean isPasswordVisible = false;
 
     private double xOffset = 0;
     private double yOffset = 0;
 
     @FXML
     public void initialize() {
+        // Enable dragging of undecorated window
         login_pane.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
 
         login_pane.setOnMouseDragged(event -> {
-            login_pane.getScene().getWindow().setX(event.getScreenX() - xOffset);
-            login_pane.getScene().getWindow().setY(event.getScreenY() - yOffset);
+            Stage stage = (Stage) login_pane.getScene().getWindow();
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
         });
+
+        // Hide visible password field initially
+        visiblePassword.setVisible(false);
     }
 
-/*
-    @FXML
-    private ImageView eyeimage;  // ImageView for the eye icon
-    @FXML
-    private PasswordField password;  // Password field to show/hide text
-    @FXML
-    private javafx.scene.control.Button eyebutton;  // Button to toggle the image and password visibility
-
-    private boolean isPasswordVisible = false;  // Boolean to track the visibility of the password
-
-    // Method to toggle eye image and password visibility
     @FXML
     private void togglePasswordVisibility(MouseEvent event) {
         InputStream eyeStream = getClass().getResourceAsStream("/images/eye.png");
@@ -51,84 +60,35 @@ public class login_controller {
 
         if (eyeStream == null || eyeCloseStream == null) {
             System.out.println("Error: Image files not found.");
-            return;  // Return early if images are not found
+            return;
         }
 
         if (isPasswordVisible) {
-            // Change image to eye.png (password hidden)
+            // Hide password (switch to PasswordField)
             eyeimage.setImage(new Image(eyeStream));
-
-            // Hide the password as dots (set password field text back to masked version)
-            password.setText(password.getText());  // Ensure it's masked
-            password.setPromptText("");  // Clear prompt text
-        } else {
-            // Change image to eyeclose.png (password visible)
-            eyeimage.setImage(new Image(eyeCloseStream));
-
-            // Show password as plain text
-            password.setText(password.getText());  // Show password text
-            password.setPromptText("");  // Clear prompt text
-        }
-
-        // Toggle the state (visibility of password)
-        isPasswordVisible = !isPasswordVisible;
-    }
-
-
-*/
-
-    @FXML
-    private ImageView eyeimage;  // ImageView for the eye icon
-    @FXML
-    private PasswordField password;  // PasswordField for masked text
-    @FXML
-    private TextField visiblePassword;  // TextField for visible text
-    @FXML
-    private javafx.scene.control.Button eyebutton;  // Button to toggle the image and password visibility
-
-    private boolean isPasswordVisible = false;  // Boolean to track the visibility of the password
-
-    // Method to toggle eye image and password visibility
-    @FXML
-    private void togglePasswordVisibility(MouseEvent event) {
-        InputStream eyeStream = getClass().getResourceAsStream("/images/eye.png");
-        InputStream eyeCloseStream = getClass().getResourceAsStream("/images/eyeclose.png");
-
-        if (eyeStream == null || eyeCloseStream == null) {
-            System.out.println("Error: Image files not found.");
-            return;  // Return early if images are not found
-        }
-
-        if (isPasswordVisible) {
-            // Change image to eye.png (password hidden)
-            eyeimage.setImage(new Image(eyeStream));
-
-            // Hide the visible password and show the masked password field
             visiblePassword.setVisible(false);
             password.setVisible(true);
-
-            // Set the visible password field's text to the password
             password.setText(visiblePassword.getText());
         } else {
-            // Change image to eyeclose.png (password visible)
+            // Show password (switch to TextField)
             eyeimage.setImage(new Image(eyeCloseStream));
-
-            // Hide the masked password field and show the visible password field
-            password.setVisible(false);
-            visiblePassword.setVisible(true);
-
-            // Set the visible password field's text to the password
             visiblePassword.setText(password.getText());
+            visiblePassword.setVisible(true);
+            password.setVisible(false);
         }
 
-        // Toggle the state (visibility of password)
         isPasswordVisible = !isPasswordVisible;
     }
 
+    @FXML
+    private void handleExit(MouseEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
 
-
-
-
-
+    @FXML
+    private void handleMinimize(MouseEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setIconified(true);
+    }
 }
-
