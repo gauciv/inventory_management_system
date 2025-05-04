@@ -1,7 +1,11 @@
 package login;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -11,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class login_controller {
@@ -64,13 +69,11 @@ public class login_controller {
         }
 
         if (isPasswordVisible) {
-            // Hide password (switch to PasswordField)
             eyeimage.setImage(new Image(eyeStream));
             visiblePassword.setVisible(false);
             password.setVisible(true);
             password.setText(visiblePassword.getText());
         } else {
-            // Show password (switch to TextField)
             eyeimage.setImage(new Image(eyeCloseStream));
             visiblePassword.setText(password.getText());
             visiblePassword.setVisible(true);
@@ -91,4 +94,5 @@ public class login_controller {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setIconified(true);
     }
+
 }

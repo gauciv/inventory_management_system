@@ -10,5 +10,6 @@ module inventory.example.inventory_ms {
     opens login to javafx.fxml;
     exports login;
 
-
+    opens dashboard to javafx.fxml;
+    exports dashboard;
 }

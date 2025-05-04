@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dashboard.dashboardController"
+            prefWidth="900" prefHeight="450"
+            style="-fx-background-color: white;">
+
+    <children>
+        <!-- Left Sidebar (Wider) -->
+        <VBox prefWidth="300.0"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              style="-fx-background-color: #cccccc;" />
+
+        <!-- Custom Top Bar (White) -->
+        <HBox fx:id="topBar"
+              spacing="5"
+              alignment="CENTER_RIGHT"
+              prefHeight="30"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.leftAnchor="300.0"
+              AnchorPane.rightAnchor="0.0"
+              style="-fx-background-color: white; -fx-padding: 5 10 5 10;">
+            <children>
+                <Button fx:id="minimizeButton" text="-" style="-fx-text-fill: black;" onAction="#handleMinimize"/>
+                <Button fx:id="resizeButton" text="[]" style="-fx-text-fill: black;" onAction="#handleResize"/>
+                <Button fx:id="exitButton" text="X" style="-fx-text-fill: black;" onAction="#handleExit"/>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>
