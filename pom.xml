@@ -16,6 +16,9 @@
     </properties>
 
     <dependencies>
+
+
+
         <!-- JavaFX dependencies updated to 23.0.1 -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -83,16 +86,29 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>inventory.example.inventory_ms.login.login_app</mainClass> <!-- Ensure correct main class path -->
+
+                            <mainClass>inventory.example.inventory_ms.login.login_app</mainClass>
+                            <!-- Ensure correct main class path -->
+                            <!-- include your lib/mysql-connector on the module-path -->
+                            <modulePathElements>
+                                <modulePathElement>${project.basedir}/lib/mysql-connector-j-9.2.0.jar</modulePathElement>
+                                <!-- and your JavaFX SDK if needed -->
+                                <modulePathElement>C:/Program Files/Java/javafx-sdk-24.0.1/lib</modulePathElement>
+                            </modulePathElements>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+
+
                         </configuration>
                     </execution>
                 </executions>
+
+
+
             </plugin>
         </plugins>
     </build>
