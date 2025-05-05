@@ -1,11 +1,9 @@
 package login;
 
+import database.database_utility;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,7 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
+import java.sql.ResultSet;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,11 +27,9 @@ public class login_controller {
     @FXML
     private TextField visiblePassword;
 
-    @FXML
-    private ImageView eyeimage;
+    @FXML private ImageView eyeimage;
 
-    @FXML
-    private Button eyebutton;
+    @FXML private Button eyebutton;
 
     private boolean isPasswordVisible = false;
 
@@ -95,4 +91,32 @@ public class login_controller {
         stage.setIconified(true);
     }
 
+
+
+
+    @FXML private TextField username_field;
+
+    @FXML
+    private void login_button_clicked(){
+        try {
+            String username = username_field.getText(); // initialize the value inputed by the user in the username textfield
+            String password_string = visiblePassword.getText(); // initialize the value inputed by the user in the password textfield
+
+            Object[] result_from_query = database_utility.query("SELECT * FROM accounts WHERE username = ? AND password = ?", username, password_string);
+            ResultSet result = (ResultSet) result_from_query[1]; // 'database_utility.query' returns two array object [0]Connection and [1]ResultSet(the database table)
+            if (result.next()) {
+                //This is only temporary while no next frame
+                System.out.println(result.getString("first_name")+" "+result.getString("middle_initial")+" "+result.getString("last_name"));
+            }
+            else{
+                //This is only temporary while no next frame
+                System.out.println("Invalid username or password");
+            }
+        }catch(Exception e){
+            //This is only temporary while no next frame
+            System.out.println("SQL error");
+            e.printStackTrace();
+        }
+
+    }
 }
