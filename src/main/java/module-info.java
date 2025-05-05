@@ -9,6 +9,9 @@ module inventory.example.inventory_ms {
     requires javafx.graphics;
     requires java.sql;
 
+
+
+
     opens login to javafx.fxml;
     exports login;
 
