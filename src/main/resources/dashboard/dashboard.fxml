@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 
-<AnchorPane prefHeight="450" prefWidth="900" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<AnchorPane prefHeight="450" prefWidth="900" style="-fx-background-color: #081028;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
     <children>
-        <!-- Left Sidebar (Wider) -->
-        <VBox prefWidth="300.0" style="-fx-background-color: #cccccc;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
         <!-- Custom Top Bar (White) -->
-        <HBox fx:id="topBar" alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="600.0" spacing="5" style="-fx-background-color: white; -fx-padding: 5 10 5 10;" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox fx:id="topBar" alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="600.0" spacing="5" style="-fx-background-color: #081028; -fx-padding: 5 10 5 10;" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <Button fx:id="minimizeButton" onAction="#handleMinimize" style="-fx-text-fill: black;" text="-" />
                 <Button fx:id="resizeButton" onAction="#handleResize" style="-fx-text-fill: black;" text="[]" />
                 <Button fx:id="exitButton" onAction="#handleExit" style="-fx-text-fill: black;" text="X" />
             </children>
         </HBox>
+        <!-- Left Sidebar (Wider) -->
+        <VBox prefWidth="300.0" style="-fx-background-color: #081028;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <effect>
+            <DropShadow blurType="GAUSSIAN" spread="0.59">
+               <color>
+                  <Color opacity="0.9351145029067993" />
+               </color>
+            </DropShadow>
+         </effect></VBox>
     </children>
 </AnchorPane>
