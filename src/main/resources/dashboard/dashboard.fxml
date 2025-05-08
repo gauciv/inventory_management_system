@@ -45,7 +45,7 @@
 
    <!-- Main Content Area -->
    <center>
-      <VBox minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+      <VBox minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
          <children>
             <Label text=" Welcome back, Admin!">
                <font>
@@ -62,17 +62,17 @@
             <!-- Graphs (Horizontal Box) -->
             <HBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
                         <DropShadow offsetX="3.0" offsetY="3.0" />
                      </effect>
                   </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
                         <DropShadow offsetX="3.0" offsetY="3.0" />
                      </effect>
                   </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
                         <DropShadow offsetX="3.0" offsetY="3.0" />
                      </effect>
@@ -89,8 +89,8 @@
                   <!-- Left Side (Graphs) -->
                   <VBox prefHeight="326.0" prefWidth="453.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
                      <children>
-                        <VBox prefHeight="122.0" style="-fx-background-color: white; -fx-background-radius: 15 0 0 0; -fx-border-color: black; -fx-border-radius: 15 0 0 0;" VBox.vgrow="ALWAYS" />
-                        <VBox prefHeight="134.0" prefWidth="330.0" style="-fx-border-color: black; -fx-background-radius: 0 0 0 15; -fx-background-color: white; -fx-border-radius: 0 0 0 15;" VBox.vgrow="ALWAYS" />
+                        <VBox prefHeight="122.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15 0 0 0; -fx-border-color: black; -fx-border-radius: 15 0 0 0;" VBox.vgrow="ALWAYS" />
+                        <VBox prefHeight="134.0" prefWidth="330.0" style="-fx-border-color: black; -fx-background-radius: 0 0 0 15; -fx-background-color: #0B1739; -fx-border-radius: 0 0 0 15;" VBox.vgrow="ALWAYS" />
                      </children>
                      <padding>
                         <Insets left="10.0" />
@@ -98,7 +98,7 @@
                   </VBox>
 
                   <!-- Right Side (Recent Activities) -->
-                  <VBox prefHeight="326.0" prefWidth="161.0" style="-fx-border-color: black; -fx-background-radius: 0 15 15 0; -fx-background-color: white; -fx-border-radius: 0 15 15 0;" HBox.hgrow="ALWAYS">
+                  <VBox prefHeight="326.0" prefWidth="161.0" style="-fx-border-color: black; -fx-background-radius: 0 15 15 0; -fx-background-color: #0B1739; -fx-border-radius: 0 15 15 0;" HBox.hgrow="ALWAYS">
                      <padding>
                         <Insets left="10.0" />
                      </padding>
