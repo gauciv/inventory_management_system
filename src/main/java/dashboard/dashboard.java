@@ -13,11 +13,11 @@ public class dashboard extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard/dashboard.fxml"));
         Scene scene = new Scene(loader.load());
 
-        primaryStage.initStyle(StageStyle.UNDECORATED); // 🔴 This removes the default title bar
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");
         primaryStage.setWidth(900);
-        primaryStage.setHeight(450);
+        primaryStage.setHeight(600);
         primaryStage.show();
     }
 
