@@ -5,14 +5,6 @@ title: "[Type] [Category] - Brief Description"
 labels: ""
 ---
 
-## 📝 Issue Summary
-
-_Describe the issue or request in 2–4 sentences._
-
-> Your input here:
-
----
-
 ## 📌 Title Naming Convention
 
 Use this format for the issue title:
@@ -27,19 +19,21 @@ Use this format for the issue title:
 **Accepted Types:** Bug, Feature, Task, Improvement, Refactor, Docs  
 **Accepted Categories:** UI, API, UX, Docs, Build, Security
 
+**Note**: Types and Categories are not limited to the examples listed above. Use what's appropriate for the issue.
+
 ---
 
-## ✅ Expected Output
+## 🐞 Problem
 
-_Describe what the correct or intended result should be._
+_Describe what is currently happening or what problem you're seeing._
 
 > Your input here:
 
 ---
 
-## 🐞 Current Behavior / Problem
+## ✅ Expected Output
 
-_Describe what is currently happening or what problem you're seeing._
+_Describe what the correct or intended result should be._
 
 > Your input here:
 
