@@ -1,3 +1,10 @@
+---
+name: "General Issue Template"
+about: "Report or request anything related to the project"
+title: "[Type] [Category] - Brief Description"
+labels: ""
+---
+
 ## 📝 Issue Summary
 
 _Describe the issue or request in 2–4 sentences._
