@@ -19,7 +19,20 @@
    <top>
       <HBox fx:id="topBar" alignment="BASELINE_RIGHT" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="26.0" prefWidth="31.0" text=" -" />
+            <Button fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/minimize_white.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Button>
             <Button fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -33,8 +46,27 @@
                </graphic>
             </Button>
 
-            <Button fx:id="exitButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#handleExit" prefHeight="26.0" prefWidth="31.0" text="  X" />
+            <Button fx:id="exitButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#handleExit" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="18.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/x_white.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Button>
          </children>
+         <padding>
+            <Insets right="9.0" top="5.0" />
+         </padding>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
       </HBox>
    </top>
 
