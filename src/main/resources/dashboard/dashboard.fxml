@@ -32,6 +32,7 @@
                   </ImageView>
                </graphic>
             </Button>
+
             <Button fx:id="exitButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#handleExit" prefHeight="26.0" prefWidth="31.0" text="  X" />
          </children>
       </HBox>
