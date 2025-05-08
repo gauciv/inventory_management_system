@@ -4,8 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class dashboardController {
 
@@ -59,15 +59,20 @@ public class dashboardController {
             stage.setY(0);
             stage.setWidth(Screen.getPrimary().getVisualBounds().getWidth());
             stage.setHeight(Screen.getPrimary().getVisualBounds().getHeight());
+            stage.getScene().getRoot().requestLayout();
+
             isFullscreen = true;
         } else {
             stage.setX(prevX);
             stage.setY(prevY);
             stage.setWidth(prevWidth);
             stage.setHeight(prevHeight);
+            stage.getScene().getRoot().requestLayout();
+
             isFullscreen = false;
         }
     }
+
 
     @FXML
     private void handleExit() {
