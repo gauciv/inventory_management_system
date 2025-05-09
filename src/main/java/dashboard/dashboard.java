@@ -12,12 +12,13 @@ public class dashboard extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard/dashboard.fxml"));
         Scene scene = new Scene(loader.load());
+        primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
 
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");
-        primaryStage.setWidth(900);
-        primaryStage.setHeight(600);
+        primaryStage.setWidth(1000);
+        primaryStage.setHeight(650);
         primaryStage.show();
     }
 
