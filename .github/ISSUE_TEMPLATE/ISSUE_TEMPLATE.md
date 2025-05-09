@@ -27,7 +27,9 @@ Use this format for the issue title:
 
 _Describe what is currently happening or what problem you're seeing._
 
-> Your input here:
+> Input:
+
+<!-- Erase this and start from here. Also intentionally leave a blank line below -->
 
 ---
 
@@ -35,7 +37,9 @@ _Describe what is currently happening or what problem you're seeing._
 
 _Describe what the correct or intended result should be._
 
-> Your input here:
+> Input:
+
+<!-- Erase this and start from here. Also intentionally leave a blank line below -->
 
 ---
 
@@ -43,4 +47,6 @@ _Describe what the correct or intended result should be._
 
 _Include any screenshots, logs, file references, or links that might help._
 
-> Your input here:
+> Input:
+
+<!-- Erase this and start from here. Also intentionally leave a blank line below -->
