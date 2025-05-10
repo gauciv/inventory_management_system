@@ -11,15 +11,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" onDragDetected="#initialize" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
    <!-- Top Bar with Minimize, Fullscreen, and Exit buttons -->
    <top>
-      <HBox fx:id="topBar" alignment="BASELINE_RIGHT" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
+      <HBox fx:id="topBar" accessibleRole="BUTTON" alignment="TOP_RIGHT" fillHeight="false" style="-fx-background-color: #081028;" BorderPane.alignment="TOP_RIGHT">
          <children>
-            <Button fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+            <Button fx:id="minimizeButton" blendMode="ADD" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;" textOverrun="CLIP" wrapText="true">
                <graphic>
                   <ImageView fitHeight="25.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -32,21 +33,25 @@
                </graphic>
                <cursor>
                   <Cursor fx:constant="HAND" />
-               </cursor></Button>
-            <Button fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+               </cursor>
+            </Button>
+            <Button fx:id="resizeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleResize" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;" textOverrun="CLIP" wrapText="true">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
                <graphic>
-                  <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/maximize.png" />
                      </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </ImageView>
                </graphic>
             </Button>
 
-            <Button fx:id="exitButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#handleExit" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+                                          <Button fx:id="exitButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#handleExit" prefHeight="26.0" prefWidth="31.0" style="-fx-background-color: transparent;" textOverrun="CLIP" wrapText="true" HBox.hgrow="NEVER">
                <graphic>
                   <ImageView fitHeight="22.0" fitWidth="18.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -59,38 +64,39 @@
                </graphic>
                <cursor>
                   <Cursor fx:constant="HAND" />
-               </cursor></Button>
+               </cursor>
+            </Button>
          </children>
          <padding>
             <Insets right="9.0" top="5.0" />
          </padding>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor>
       </HBox>
    </top>
 
    <!-- Left Panel (Sidebar) -->
    <left>
-      <VBox prefHeight="573.0" prefWidth="258.0" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
+      <VBox prefHeight="641.0" prefWidth="263.0" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
          <effect>
-            <DropShadow />
+            <DropShadow blurType="GAUSSIAN" height="1.0" radius="0.0" width="0.0" />
          </effect>
          <children>
-            <HBox prefHeight="33.0" prefWidth="171.0" VBox.vgrow="NEVER">
+            <HBox fillHeight="false" prefHeight="30.0" prefWidth="170.0">
                <VBox.margin>
                   <Insets left="30.0" right="15.0" top="100.0" />
                </VBox.margin>
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="4.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/dashboard_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="162.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -108,17 +114,17 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox layoutX="40.0" layoutY="110.0" prefHeight="33.0" prefWidth="171.0">
+            <HBox layoutX="40.0" layoutY="110.0" prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="20.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="4.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/inventory_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -131,7 +137,7 @@
                         <Image url="@../images/arrow_right_gray.png" />
                      </image>
                      <HBox.margin>
-                        <Insets top="10.0" />
+                        <Insets left="2.0" top="10.0" />
                      </HBox.margin>
                   </ImageView>
                </children>
@@ -139,9 +145,9 @@
                   <Insets left="30.0" right="15.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox layoutX="40.0" layoutY="165.0" prefHeight="33.0" prefWidth="171.0">
+            <HBox layoutX="40.0" layoutY="165.0" prefHeight="36.0" prefWidth="208.0">
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -149,9 +155,9 @@
                         <Image url="@../images/sales_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Sales" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="148.0" style="-fx-background-color: transparent;" text="Sales" textFill="#aeb9e1">
                      <HBox.margin>
-                        <Insets left="10.0" />
+                        <Insets left="10.0" right="1.0" />
                      </HBox.margin>
                      <font>
                         <Font size="16.0" />
@@ -162,7 +168,7 @@
                         <Image url="@../images/arrow_right_gray.png" />
                      </image>
                      <HBox.margin>
-                        <Insets top="10.0" />
+                        <Insets right="2.0" top="10.0" />
                      </HBox.margin>
                   </ImageView>
                </children>
@@ -170,17 +176,17 @@
                   <Insets left="30.0" right="15.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox layoutX="40.0" layoutY="220.0" prefHeight="33.0" prefWidth="171.0">
+            <HBox layoutX="40.0" layoutY="220.0" prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="20.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="6.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/forecasting_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Forecasting" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="157.0" style="-fx-background-color: transparent;" text="Forecasting " textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -201,17 +207,17 @@
                   <Insets left="30.0" right="15.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox layoutX="40.0" layoutY="275.0" prefHeight="33.0" prefWidth="171.0">
+            <HBox layoutX="40.0" layoutY="275.0" prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="6.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/procurement_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Procurement" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="148.0" style="-fx-background-color: transparent;" text="Procurement" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -229,25 +235,25 @@
                   </ImageView>
                </children>
                <VBox.margin>
-                  <Insets left="30.0" right="20.0" top="15.0" />
+                  <Insets left="30.0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
-            <Line endX="155.0" startX="-100.0" stroke="#4c5574">
+            <Line endX="150.0" startX="-100.0" stroke="#4c5574">
                <VBox.margin>
                   <Insets top="60.0" />
                </VBox.margin>
             </Line>
-            <HBox prefHeight="33.0" prefWidth="171.0">
+            <HBox prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="5.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/settings_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Settings" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Settings" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -265,20 +271,20 @@
                   </ImageView>
                </children>
                <VBox.margin>
-                  <Insets left="30.0" right="20.0" top="20.0" />
+                  <Insets left="30.0" right="15.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox layoutX="40.0" layoutY="440.0" prefHeight="33.0" prefWidth="171.0">
+            <HBox layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="31.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="5.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/help__gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="154.0" style="-fx-background-color: transparent;" text="Help and Support" textFill="#aeb9e1">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Help and Support" textFill="#aeb9e1">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -296,7 +302,7 @@
                   </ImageView>
                </children>
                <VBox.margin>
-                  <Insets left="30.0" right="20.0" top="15.0" />
+                  <Insets left="30.0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
          </children>
@@ -305,73 +311,131 @@
 
    <!-- Main Content Area -->
    <center>
-      <VBox minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #081028;" BorderPane.alignment="CENTER">
+      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="605.0" prefWidth="739.0" style="-fx-background-color: #081028; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 45.1, 0.75, 0, 4);;" BorderPane.alignment="CENTER">
          <children>
-            <Label text=" Welcome back, Admin!">
+            <Label text=" Welcome back, Admin!" textFill="#f5f5f5">
                <font>
                   <Font name="Bookman Old Style" size="24.0" />
                </font>
             </Label>
-            <Label text="   ENTER TEXT HERE" />
-            <Label text="   DATE">
+            <Label text="   ENTER TEXT HERE" textFill="#e1e1e1" />
+            <Label text="   DATE" textFill="#a6a6a6">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-
-            <!-- Graphs (Horizontal Box) -->
-            <HBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" VBox.vgrow="ALWAYS">
+      
+                  <!-- Graphs (Horizontal Box) -->
+            <HBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="661.0" spacing="30.0" VBox.vgrow="ALWAYS">
                <children>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="130.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
-                        <DropShadow offsetX="3.0" offsetY="3.0" />
+                        <DropShadow blurType="ONE_PASS_BOX" offsetX="3.0" offsetY="3.0">
+                           <color>
+                              <Color opacity="0.5" />
+                           </color>
+                        </DropShadow>
                      </effect>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
                   </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="130.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
-                        <DropShadow offsetX="3.0" offsetY="3.0" />
+                        <DropShadow blurType="ONE_PASS_BOX" offsetX="3.0" offsetY="3.0">
+                           <color>
+                              <Color opacity="0.5" />
+                           </color>
+                        </DropShadow>
                      </effect>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
                   </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                  <StackPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="130.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                      <effect>
-                        <DropShadow offsetX="3.0" offsetY="3.0" />
+                        <DropShadow blurType="ONE_PASS_BOX" offsetX="3.0" offsetY="3.0">
+                           <color>
+                              <Color opacity="0.5" />
+                           </color>
+                        </DropShadow>
                      </effect>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
                   </StackPane>
                </children>
                <padding>
-                  <Insets left="10.0" right="10.0" top="5.0" />
+                  <Insets bottom="10.0" right="10.0" top="10.0" />
                </padding>
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
             </HBox>
-
-            <!-- Main Content (Graphs and Recent Activities) -->
-            <HBox minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-radius: 15;" VBox.vgrow="ALWAYS">
+            <HBox VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
                <children>
-                  <!-- Left Side (Graphs) -->
-                  <VBox prefHeight="326.0" prefWidth="453.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
+      
+                              <!-- Main Content (Graphs and Recent Activities) -->
+                  <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="334.0" prefWidth="704.0" style="-fx-background-radius: 15;">
                      <children>
-                        <VBox prefHeight="122.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15 0 0 0; -fx-border-color: black; -fx-border-radius: 15 0 0 0;" VBox.vgrow="ALWAYS" />
-                        <VBox prefHeight="134.0" prefWidth="330.0" style="-fx-border-color: black; -fx-background-radius: 0 0 0 15; -fx-background-color: #0B1739; -fx-border-radius: 0 0 0 15;" VBox.vgrow="ALWAYS" />
+                        <!-- Left Side (Graphs) -->
+                        <VBox prefHeight="336.0" prefWidth="466.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
+                           <children>
+                              <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" style="-fx-background-color: #0B1739; -fx-background-radius: 15 0 0 0; -fx-border-radius: 15 0 0 0; -fx-border-color: transparent transparent rgba(255,255,255,0.1) transparent;" VBox.vgrow="ALWAYS">
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                              </VBox>
+                              <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="330.0" style="-fx-background-radius: 0 0 0 15; -fx-background-color: #0B1739; -fx-border-radius: 0 0 0 15;" VBox.vgrow="ALWAYS">
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                           <cursor>
+                              <Cursor fx:constant="NONE" />
+                           </cursor>
+                        </VBox>
+      
+                                    <!-- Right Side (Recent Activities) -->
+                        <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="357.0" prefWidth="228.0" style="-fx-background-radius: 0 15 15 0; -fx-background-color: #0B1739; -fx-border-color: transparent transparent transparent rgba(255,255,255,0.1);" HBox.hgrow="ALWAYS">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </VBox>
                      </children>
                      <padding>
-                        <Insets left="10.0" />
+                        <Insets bottom="10.0" right="10.0" />
                      </padding>
-                  </VBox>
-
-                  <!-- Right Side (Recent Activities) -->
-                  <VBox prefHeight="326.0" prefWidth="161.0" style="-fx-border-color: black; -fx-background-radius: 0 15 15 0; -fx-background-color: #0B1739; -fx-border-radius: 0 15 15 0;" HBox.hgrow="ALWAYS">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </VBox>
+                     <effect>
+                        <DropShadow>
+                           <color>
+                              <Color opacity="0.5" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                  </HBox>
                </children>
-               <padding>
-                  <Insets bottom="10.0" right="10.0" top="15.0" />
-               </padding>
-               <effect>
-                  <DropShadow />
-               </effect>
             </HBox>
          </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
       </VBox>
    </center>
+   <cursor>
+      <Cursor fx:constant="DEFAULT" />
+   </cursor>
 </BorderPane>
