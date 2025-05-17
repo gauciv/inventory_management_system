@@ -87,13 +87,10 @@
                         <id>default-cli</id>
                         <configuration>
 
-                            <mainClass>inventory.example.inventory_ms.login.login_app</mainClass>
-                            <!-- Ensure correct main class path -->
+                            <mainClass>login.login_app</mainClass>
                             <!-- include your lib/mysql-connector on the module-path -->
                             <modulePathElements>
                                 <modulePathElement>${project.basedir}/lib/mysql-connector-j-9.2.0.jar</modulePathElement>
-                                <!-- and your JavaFX SDK if needed -->
-                                <modulePathElement>C:/Program Files/Java/javafx-sdk-24.0.1/lib</modulePathElement>
                             </modulePathElements>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
