@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.util.Scanner;
 
 public class database_utility {
-    private static final String database_url = "jdbc:mysql://127.0.0.1:3306/inventory_management_system_database";
-    private static final String database_username = "root";
-    private static final String database_password = "computerengineering";
+    private static final String database_url = System.getenv().getOrDefault("DB_URL", "jdbc:mysql://127.0.0.1:3306/inventory_management_system_database");
+    private static final String database_username = System.getenv().getOrDefault("DB_USER", "root");
+    private static final String database_password = System.getenv().getOrDefault("DB_PASS", "computerengineering");
 
     public static Connection connect() {
         try {
