@@ -4,61 +4,101 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Scanner;
 
 public class database_utility {
     private static final String database_url = System.getenv().getOrDefault("DB_URL", "jdbc:mysql://127.0.0.1:3306/inventory_management_system_database");
     private static final String database_username = System.getenv().getOrDefault("DB_USER", "root");
     private static final String database_password = System.getenv().getOrDefault("DB_PASS", "computerengineering");
 
+    static {
+        try {
+            // Register the MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL JDBC Driver not found.");
+            e.printStackTrace();
+        }
+    }
+
     public static Connection connect() {
         try {
-            return DriverManager.getConnection(database_url, database_username, database_password);
+            Connection connection = DriverManager.getConnection(database_url, database_username, database_password);
+            if (connection == null) {
+                System.err.println("Database connection failed");
+            }
+            return connection;
         } catch (Exception e) {
+            System.err.println("Database connection error: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
-
 
     public static Object[] query(String sql_query, Object... params) {
+        Connection connect = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        
         try {
-            Connection connect = connect();
-            PreparedStatement statement = connect.prepareStatement(sql_query);
-
-            for (int i = 0; i < params.length; i++) {
-                statement.setObject(i + 1, params[i]); // the '?' in our sqlQuery syntax is being replace by the value of params[i]
+            connect = connect();
+            if (connect == null) {
+                throw new Exception("Could not establish database connection");
             }
 
-            ResultSet result = statement.executeQuery(); // this executes our query and returns rows of data stored in the ResultSet
+            statement = connect.prepareStatement(sql_query);
+            for (int i = 0; i < params.length; i++) {
+                statement.setObject(i + 1, params[i]);
+            }
+
+            result = statement.executeQuery();
             return new Object[]{connect, result};
 
         } catch (Exception e) {
+            System.err.println("Database query error: " + e.getMessage());
             e.printStackTrace();
+            if (connect != null) {
+                close(connect);
+            }
             return null;
         }
     }
 
-    public static Object[] update(String slq_update, Object[]... params) {
+    public static Object[] update(String sql_update, Object... params) {
+        Connection connect = null;
+        PreparedStatement statement = null;
+        
         try {
-            Connection connect = connect();
-            PreparedStatement statement = connect.prepareStatement(slq_update);
-            int result = (int) statement.executeUpdate();
+            connect = connect();
+            if (connect == null) {
+                throw new Exception("Could not establish database connection");
+            }
+
+            statement = connect.prepareStatement(sql_update);
+            for (int i = 0; i < params.length; i++) {
+                statement.setObject(i + 1, params[i]);
+            }
+
+            int result = statement.executeUpdate();
             return new Object[]{connect, result};
 
         } catch (Exception e) {
+            System.err.println("Database update error: " + e.getMessage());
             e.printStackTrace();
+            if (connect != null) {
+                close(connect);
+            }
             return null;
         }
     }
-
 
     public static void close(Connection connect) {
         try {
-            connect.close();
+            if (connect != null && !connect.isClosed()) {
+                connect.close();
+            }
         } catch (Exception e) {
+            System.err.println("Error closing database connection: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 }
