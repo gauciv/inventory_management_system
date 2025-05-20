@@ -1,0 +1,20 @@
+# Handle line endings automatically for files detected as text
+* text=auto
+
+# These files should always use LF line endings
+*.sh text eol=lf
+mvnw text eol=lf
+
+# These files should always use CRLF line endings
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# These are binary files
+*.jar binary
+*.war binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.png binary
+*.jpg binary
+*.gif binary

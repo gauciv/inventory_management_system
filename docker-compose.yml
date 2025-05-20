@@ -1,14 +1,13 @@
-version: '3.8'
 services:
   db:
     image: mysql:8.0
     container_name: ims-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: computerengineering
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-computerengineering}
       MYSQL_DATABASE: inventory_management_system_database
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./src/main/resources/database/inventory_management_system_database.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -24,11 +23,6 @@ services:
       DB_USER: root
       DB_PASS: computerengineering
       DB_NAME: inventory_management_system_database
-    # If you want to run with a GUI, extra setup is needed (X11 forwarding, VNC, etc.)
-    # For now, this runs the app headlessly (for server-side or CLI JavaFX usage)
-    # If you want to run the GUI, see README for instructions
-    # ports:
-    #   - "8080:8080"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
