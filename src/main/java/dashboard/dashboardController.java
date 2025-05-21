@@ -29,6 +29,8 @@ public class dashboardController {
     @FXML private AnchorPane forecastingpane;
     @FXML private Button salesbutton;
     @FXML private AnchorPane salespane;
+    @FXML private Button settingsbutton;
+    @FXML private AnchorPane settingspane;
 
 
     private double xOffset = 0;
@@ -63,6 +65,7 @@ public class dashboardController {
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
         TabSwitch(salesbutton, salespane);
+        TabSwitch(settingsbutton, settingspane);
 
 
 
