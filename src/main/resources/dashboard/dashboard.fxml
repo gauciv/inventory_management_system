@@ -147,14 +147,6 @@
                         <Font size="16.0" />
                      </font>
                   </Button>
-                  <ImageView fitHeight="14.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/arrow_right_gray.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets top="10.0" />
-                     </HBox.margin>
-                  </ImageView>
                </children>
                <VBox.margin>
                   <Insets left="30.0" right="15.0" top="20.0" />
@@ -178,17 +170,9 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Button>
-                  <ImageView fitHeight="14.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/arrow_right_gray.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets top="10.0" />
-                     </HBox.margin>
-                  </ImageView>
                </children>
                <VBox.margin>
-                  <Insets bottom="30.0" left="30.0" right="15.0" top="15.0" />
+                  <Insets bottom="33.0" left="30.0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
          </children>
