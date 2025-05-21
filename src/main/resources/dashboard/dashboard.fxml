@@ -247,32 +247,32 @@
                <children>
                   <TabPane fx:id="tabpane" nodeOrientation="LEFT_TO_RIGHT" prefHeight="1000.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                      <Tab text="dashboard">
+                      <Tab text="Dashboard">
                         <content>
                           <AnchorPane fx:id="dashboardpane" prefHeight="571.0" prefWidth="721.0" style="-fx-background-color: #081028; -fx-border-color: white;" />
                         </content>
                       </Tab>
-                      <Tab text="manage inventory">
+                      <Tab text="Manage Inventory">
                         <content>
                           <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028k;" />
                         </content>
                       </Tab>
-                        <Tab text="sales">
+                        <Tab text="Sales">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                           </content>
                         </Tab>
-                        <Tab text="forecasting">
+                        <Tab text="Forecasting">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                           </content>
                         </Tab>
-                        <Tab text="settings">
+                        <Tab text="Settings">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                           </content>
                         </Tab>
-                        <Tab text="help and support">
+                        <Tab text="Help and Support">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                           </content>
