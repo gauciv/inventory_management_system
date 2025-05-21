@@ -2,9 +2,13 @@ package dashboard;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
@@ -17,6 +21,9 @@ public class dashboardController {
     @FXML private Button exitButton;
     @FXML private BorderPane borderpane;
     @FXML private TabPane tabpane;
+    @FXML private Button dashboardbutton;
+    @FXML private AnchorPane dashboardpane;
+
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -44,6 +51,9 @@ public class dashboardController {
                 stage.setY(event.getScreenY() - yOffset);
             }
         });
+
+
+        TabSwitch(dashboardbutton, dashboardpane);
 
 
 
@@ -102,6 +112,43 @@ public class dashboardController {
             });
         });
     }
+
+    public void TabSwitch(Button button, AnchorPane pane) {
+        hideTabHeaders(); // optional if you're hiding headers
+
+        button.setOnAction(event -> {
+            for (Tab tab : tabpane.getTabs()) {
+                Node content = tab.getContent();
+
+                // Check if the tab's content is the AnchorPane itself
+                if (content == pane) {
+                    tabpane.getSelectionModel().select(tab);
+                    return;
+                }
+
+                // Optional: recursively check if the pane is nested inside the tab
+                if (isDescendant(content, pane)) {
+                    tabpane.getSelectionModel().select(tab);
+                    return;
+                }
+            }
+
+            System.out.println("No tab contains the given AnchorPane.");
+        });
+    }
+
+    private boolean isDescendant(Node parent, Node child) {
+        if (parent instanceof Parent) {
+            for (Node node : ((Parent) parent).getChildrenUnmodifiable()) {
+                if (node == child || isDescendant(node, child)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
 
 
