@@ -1,7 +1,9 @@
 package dashboard;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +16,7 @@ public class dashboardController {
     @FXML private Button resizeButton;
     @FXML private Button exitButton;
     @FXML private BorderPane borderpane;
+    @FXML private TabPane tabpane;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -87,6 +90,16 @@ public class dashboardController {
         Stage stage = (Stage) exitButton.getScene().getWindow();
         stage.close();
     }
+
+    public void hideTabHeaders() {
+        Platform.runLater(() -> {
+            tabpane.lookupAll(".tab-header-area").forEach(node -> {
+                node.setVisible(false);
+                node.setManaged(false);
+            });
+        });
+    }
+
 
 
 }

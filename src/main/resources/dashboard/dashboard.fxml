@@ -38,7 +38,7 @@
                         <Image url="@../images/dashboard_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
+                  <Button fx:id="dashboardbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="8.0" top="-2.0" />
                      </HBox.margin>
@@ -58,7 +58,7 @@
                         <Image url="@../images/inventory_gray.png" />
                      </image>
                   </ImageView>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
+                  <Button fx:id="inventorybutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="9.0" top="-7.0" />
                      </HBox.margin>
@@ -245,16 +245,16 @@
             </StackPane>
             <VBox>
                <children>
-                  <TabPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="1000.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane fx:id="tabpane" nodeOrientation="LEFT_TO_RIGHT" prefHeight="1000.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Untitled Tab 1">
                         <content>
-                          <AnchorPane prefHeight="571.0" prefWidth="721.0" style="-fx-background-color: pink;" />
+                          <AnchorPane fx:id="dashboardpane" prefHeight="571.0" prefWidth="721.0" style="-fx-background-color: pink;" />
                         </content>
                       </Tab>
                       <Tab text="Untitled Tab 2">
                         <content>
-                          <AnchorPane prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028k;" />
+                          <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028k;" />
                         </content>
                       </Tab>
                     </tabs>
