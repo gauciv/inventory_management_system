@@ -274,7 +274,7 @@
                         </Tab>
                         <Tab text="Help and Support">
                           <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: beige;" />
+                            <AnchorPane fx:id="helppane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: beige;" />
                           </content>
                         </Tab>
                     </tabs>
