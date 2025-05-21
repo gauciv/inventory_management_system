@@ -239,7 +239,7 @@
                     <tabs>
                       <Tab text="Dashboard">
                         <content>
-                          <AnchorPane fx:id="dashboardpane" prefHeight="738.0" prefWidth="717.0" style="-fx-background-color: pink;" />
+                          <AnchorPane fx:id="dashboardpane" prefHeight="738.0" prefWidth="717.0" style="-fx-background-color: #081028;" />
                         </content>
                       </Tab>
                       <Tab text="Manage Inventory">
