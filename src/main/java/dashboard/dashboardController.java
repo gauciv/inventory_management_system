@@ -48,7 +48,10 @@ public class dashboardController {
 
 
 
+
     }
+
+
 
     @FXML
     private void handleMinimize() {
@@ -99,6 +102,12 @@ public class dashboardController {
             });
         });
     }
+
+
+
+
+
+
 
 
 
