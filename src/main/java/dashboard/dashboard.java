@@ -20,6 +20,10 @@ public class dashboard extends Application {
         primaryStage.setWidth(1000);
         primaryStage.setHeight(650);
         primaryStage.show();
+        dashboardController controller = loader.getController();
+
+        // Call the method to hide tab headers
+        controller.hideTabHeaders();
     }
 
     public static void main(String[] args) {
