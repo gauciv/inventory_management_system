@@ -123,7 +123,10 @@
                   <Insets left="30.0" right="15.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox prefHeight="165.0" prefWidth="263.0" VBox.vgrow="ALWAYS" />
+            <HBox prefHeight="166.0" prefWidth="263.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></HBox>
             <Line endX="150.0" startX="-100.0" stroke="#4c5574">
                <VBox.margin>
                   <Insets top="60.0" />
@@ -192,6 +195,9 @@
                </VBox.margin>
             </HBox>
          </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
       </VBox>
    </left>
 

@@ -14,6 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class dashboardController {
 
     @FXML private Button minimizeButton;
@@ -33,6 +35,7 @@ public class dashboardController {
     @FXML private AnchorPane settingspane;
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
+    @FXML private Button activeButton;
 
 
     private double xOffset = 0;
@@ -44,6 +47,11 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
+        // Set default styled button
+        styleActiveButton(dashboardbutton);
+
+
+
 
         borderpane.setOnMousePressed((MouseEvent event) -> {
             borderpane.setPickOnBounds(true);
@@ -74,6 +82,37 @@ public class dashboardController {
 
 
 
+    }
+
+
+    private void styleActiveButton(Button selectedButton) {
+        // Define valid buttons
+        List<Button> validButtons = List.of(
+                dashboardbutton, inventorybutton, salesbutton,
+                forecastingbutton, settingsbutton, helpbutton
+        );
+
+        if (!validButtons.contains(selectedButton)) {
+            // If the clicked button is not in the allowed list, do nothing
+            return;
+        }
+
+        // Style the matched button, reset others
+        for (Button btn : validButtons) {
+            if (btn == selectedButton) {
+                btn.setStyle(
+                        "-fx-background-color: #2D3C7233;" +
+                                "-fx-border-color: transparent transparent transparent #060D84;" +
+                                "-fx-border-width: 0 0 0 2px;"
+                );
+                activeButton = btn;
+            } else {
+                btn.setStyle(
+                        "-fx-background-color: transparent;" +
+                                "-fx-border-width: 0;"
+                );
+            }
+        }
     }
 
 
@@ -131,7 +170,13 @@ public class dashboardController {
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders(); // optional if you're hiding headers
 
+
+
+
+
         button.setOnAction(event -> {
+            styleActiveButton(button);
+
             for (Tab tab : tabpane.getTabs()) {
                 Node content = tab.getContent();
 
