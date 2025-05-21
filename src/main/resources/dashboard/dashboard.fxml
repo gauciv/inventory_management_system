@@ -188,7 +188,7 @@
                   </ImageView>
                </children>
                <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="15.0" />
+                  <Insets bottom="30.0" left="30.0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
          </children>
