@@ -26,109 +26,102 @@
             <DropShadow blurType="GAUSSIAN" height="1.0" radius="0.0" width="0.0" />
          </effect>
          <children>
-            <HBox fillHeight="false" prefHeight="30.0" prefWidth="170.0">
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="100.0" />
-               </VBox.margin>
+            <StackPane prefHeight="140.0" prefWidth="265.0">
                <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="4.0" />
-                     </HBox.margin>
+                  <ImageView fitHeight="66.0" fitWidth="270.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/dashboard_gray.png" />
+                        <Image url="@../images/intervein_logo.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="dashboardbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="8.0" top="-2.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
                </children>
-            </HBox>
-            <HBox layoutX="40.0" layoutY="110.0" prefHeight="30.0" prefWidth="170.0">
+            </StackPane>
+            <VBox prefHeight="315.0" prefWidth="265.0">
                <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="-7.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/inventory_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="inventorybutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="9.0" top="-7.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="7.0" left="9.0" />
-                     </padding>
-                  </Button>
+                  <HBox fillHeight="false" prefHeight="43.0">
+                     <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets top="12.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../images/dashboard_gray.png" />
+                           </image>
+                        </ImageView>
+                        <Button fx:id="dashboardbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="205.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="43.0">
+                     <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets top="12.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../images/inventory_gray.png" />
+                           </image>
+                        </ImageView>
+                        <Button fx:id="inventorybutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="205.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="43.0">
+                     <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../images/sales_gray.png" />
+                           </image>
+                        </ImageView>
+                        <Button fx:id="salesbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="205.0" style="-fx-background-color: transparent;" text="Sales" textFill="#aeb9e1">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="43.0">
+                     <children>
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets top="12.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../images/forecasting_gray.png" />
+                           </image>
+                        </ImageView>
+                        <Button fx:id="forecastingbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="34.0" prefWidth="205.0" style="-fx-background-color: transparent;" text="Forecasting " textFill="#aeb9e1">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
-            <HBox layoutX="40.0" layoutY="165.0" prefHeight="36.0" prefWidth="208.0">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="-17.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/sales_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="salesbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="148.0" style="-fx-background-color: transparent;" text="Sales" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="10.0" right="1.0" top="-14.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="4.0" left="9.0" />
-                     </padding>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
-            <HBox layoutX="40.0" layoutY="220.0" prefHeight="30.0" prefWidth="170.0">
-               <children>
-                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="-29.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/forecasting_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="forecastingbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="30.0" prefWidth="157.0" style="-fx-background-color: transparent;" text="Forecasting " textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="10.0" top="-35.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
-            <HBox prefHeight="166.0" prefWidth="263.0" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
+               <padding>
+                  <Insets left="26.0" />
+               </padding>
+            </VBox>
             <Line endX="150.0" startX="-100.0" stroke="#4c5574">
                <VBox.margin>
                   <Insets top="60.0" />
