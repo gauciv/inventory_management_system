@@ -189,7 +189,7 @@
 
    <!-- Main Content Area -->
    <center>
-      <VBox minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #081028; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 45.1, 0.75, 0, 4);;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
+      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="652.0" prefWidth="747.0" style="-fx-background-color: #081028; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 45.1, 0.75, 0, 4);;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
          <children>
             <StackPane alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0">
                <children>
@@ -329,7 +329,7 @@
                         </Tab>
                         <Tab text="Manage Inventory">
                            <content>
-                              <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #581028;" />
+                              <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028;" />
                            </content>
                         </Tab>
                         <Tab text="Sales">
