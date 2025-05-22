@@ -402,7 +402,7 @@
                         </Tab>
                         <Tab text="Forecasting">
                            <content>
-                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: brown;" />
+                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
                            </content>
                         </Tab>
                         <Tab text="Settings">
