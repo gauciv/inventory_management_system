@@ -389,7 +389,15 @@
                         </Tab>
                         <Tab text="Sales">
                            <content>
-                              <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
+                              <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
+                                 <children>
+                                    <VBox fx:id="contentVBox" layoutX="26.4" layoutY="69.0" prefHeight="487.0" prefWidth="671.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="26.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="69.0">
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
                            </content>
                         </Tab>
                         <Tab text="Forecasting">
