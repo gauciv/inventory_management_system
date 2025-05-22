@@ -7,10 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -37,6 +37,8 @@ public class dashboardController {
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
 
+    // Added: reference to your TextField in inventorypane
+    @FXML private TextField searchField;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -49,9 +51,6 @@ public class dashboardController {
     public void initialize() {
         // Set default styled button
         styleActiveButton(dashboardbutton);
-
-
-
 
         borderpane.setOnMousePressed((MouseEvent event) -> {
             borderpane.setPickOnBounds(true);
@@ -70,7 +69,6 @@ public class dashboardController {
             }
         });
 
-
         TabSwitch(dashboardbutton, dashboardpane);
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
@@ -78,26 +76,20 @@ public class dashboardController {
         TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
 
-
-
-
-
+        // *** RESPONSIVE TEXTFIELD WIDTH BINDING ***
+        searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
     }
 
-
     private void styleActiveButton(Button selectedButton) {
-        // Define valid buttons
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
                 forecastingbutton, settingsbutton, helpbutton
         );
 
         if (!validButtons.contains(selectedButton)) {
-            // If the clicked button is not in the allowed list, do nothing
             return;
         }
 
-        // Style the matched button, reset others
         for (Button btn : validButtons) {
             if (btn == selectedButton) {
                 btn.setStyle(
@@ -114,8 +106,6 @@ public class dashboardController {
             }
         }
     }
-
-
 
     @FXML
     private void handleMinimize() {
@@ -150,7 +140,6 @@ public class dashboardController {
         }
     }
 
-
     @FXML
     private void handleExit() {
         System.out.println("Exit clicked");
@@ -168,11 +157,7 @@ public class dashboardController {
     }
 
     public void TabSwitch(Button button, AnchorPane pane) {
-        hideTabHeaders(); // optional if you're hiding headers
-
-
-
-
+        hideTabHeaders();
 
         button.setOnAction(event -> {
             styleActiveButton(button);
@@ -180,13 +165,11 @@ public class dashboardController {
             for (Tab tab : tabpane.getTabs()) {
                 Node content = tab.getContent();
 
-                // Check if the tab's content is the AnchorPane itself
                 if (content == pane) {
                     tabpane.getSelectionModel().select(tab);
                     return;
                 }
 
-                // Optional: recursively check if the pane is nested inside the tab
                 if (isDescendant(content, pane)) {
                     tabpane.getSelectionModel().select(tab);
                     return;
@@ -207,15 +190,4 @@ public class dashboardController {
         }
         return false;
     }
-
-
-
-
-
-
-
-
-
-
-
 }
