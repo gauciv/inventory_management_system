@@ -51,6 +51,25 @@ public class login_controller {
 
         // Hide visible password field initially
         visiblePassword.setVisible(false);
+
+        // Add Enter key handler for both password fields and the username field
+        username_field.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER -> login_button_clicked();
+            }
+        });
+
+        password.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER -> login_button_clicked();
+            }
+        });
+
+        visiblePassword.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER -> login_button_clicked();
+            }
+        });
     }
 
     @FXML
