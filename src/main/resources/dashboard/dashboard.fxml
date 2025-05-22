@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.effect.DropShadow?>
@@ -238,9 +239,90 @@
                   <TabPane fx:id="tabpane" nodeOrientation="LEFT_TO_RIGHT" prefHeight="1000.0" style="-fx-background-color: #081028;" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Dashboard">
-                        <content>
-                          <AnchorPane fx:id="dashboardpane" prefHeight="738.0" prefWidth="717.0" style="-fx-background-color: #081028;" />
-                        </content>
+                         <content>
+                            <StackPane prefHeight="150.0" prefWidth="200.0">
+                               <children>
+                                  <Label text="Welcome back, Admin" textFill="WHITE" StackPane.alignment="TOP_LEFT">
+                                     <font>
+                                        <Font name="Baskerville Old Face" size="24.0" />
+                                     </font>
+                                     <StackPane.margin>
+                                        <Insets left="20.0" />
+                                     </StackPane.margin>
+                                  </Label>
+                                  <Label layoutX="354.0" layoutY="287.0" text="Monitor inventory levels and company performance at a glance" textFill="WHITE" StackPane.alignment="TOP_LEFT">
+                                     <StackPane.margin>
+                                        <Insets left="20.0" top="27.0" />
+                                     </StackPane.margin>
+                                     <font>
+                                        <Font size="10.0" />
+                                     </font>
+                                  </Label>
+                                  <Label layoutX="354.0" layoutY="287.0" text="DATE:" textFill="WHITE" StackPane.alignment="TOP_LEFT">
+                                     <StackPane.margin>
+                                        <Insets left="20.0" top="55.0" />
+                                     </StackPane.margin>
+                                     <font>
+                                        <Font size="16.0" />
+                                     </font>
+                                  </Label>
+                                  <HBox prefHeight="100.0" prefWidth="200.0">
+                                     <children>
+                                        <StackPane maxHeight="130.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="130.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                                           <HBox.margin>
+                                              <Insets bottom="20.0" left="20.0" right="20.0" top="90.0" />
+                                           </HBox.margin>
+                                           <effect>
+                                              <DropShadow />
+                                           </effect>
+                                        </StackPane>
+                                        <StackPane layoutX="10.0" layoutY="10.0" maxHeight="130.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="130.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                                           <effect>
+                                              <DropShadow />
+                                           </effect>
+                                           <HBox.margin>
+                                              <Insets bottom="20.0" left="10.0" right="20.0" top="90.0" />
+                                           </HBox.margin>
+                                        </StackPane>
+                                     </children>
+                                  </HBox>
+                                  <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
+                                     <children>
+                                        <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="274.0" prefWidth="690.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
+                                           <HBox.margin>
+                                              <Insets top="240.0" />
+                                           </HBox.margin>
+                                           <children>
+                                              <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="677.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" VBox.vgrow="ALWAYS">
+                                                 <VBox.margin>
+                                                    <Insets left="10.0" right="25.0" />
+                                                 </VBox.margin>
+                                                 <effect>
+                                                    <DropShadow radius="10.0" offsetX="0.0" offsetY="-4.0" spread="0.5" color="#00000040"/>
+                                                 </effect>
+                                              </VBox>
+
+                                              <VBox layoutX="20.0" layoutY="10.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;" VBox.vgrow="ALWAYS">
+                                                 <VBox.margin>
+                                                    <Insets bottom="20.0" left="10.0" right="25.0" />
+                                                 </VBox.margin>
+                                                 <effect>
+                                                    <DropShadow radius="10.0" offsetX="0.0" offsetY="4.0" spread="0.5" color="#00000040"/>
+                                                 </effect>
+                                                 <padding>
+                                                    <Insets bottom="10.0" />
+                                                 </padding>
+                                              </VBox>
+                                           </children>
+                                           <padding>
+                                              <Insets left="10.0" />
+                                           </padding>
+                                        </VBox>
+                                     </children>
+                                  </HBox>
+                               </children>
+                            </StackPane>
+                         </content>
                       </Tab>
                       <Tab text="Manage Inventory">
                         <content>
