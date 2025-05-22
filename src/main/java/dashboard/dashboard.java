@@ -13,15 +13,13 @@ public class dashboard extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard/dashboard.fxml"));
         Scene scene = new Scene(loader.load());
         primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
-
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");
-        primaryStage.setWidth(1000);
+        primaryStage.setWidth(1050);
         primaryStage.setHeight(650);
         primaryStage.show();
         dashboardController controller = loader.getController();
-
         // Call the method to hide tab headers
         controller.hideTabHeaders();
     }
