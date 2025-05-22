@@ -391,6 +391,14 @@
                            <content>
                               <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
+                                    <Label text="DATE:" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="27.0" top="25.0" />
+                                       </padding>
+                                    </Label>
                                     <VBox fx:id="contentVBox" layoutX="26.4" layoutY="69.0" prefHeight="487.0" prefWidth="671.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="26.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="69.0">
                                        <effect>
                                           <DropShadow />
@@ -402,7 +410,17 @@
                         </Tab>
                         <Tab text="Forecasting">
                            <content>
-                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
+                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
+                                 <children>
+                                    <Label text="DATE:" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="27.0" top="25.0" />
+                                       </padding>
+                                    </Label>
+                                 </children></AnchorPane>
                            </content>
                         </Tab>
                         <Tab text="Settings">
