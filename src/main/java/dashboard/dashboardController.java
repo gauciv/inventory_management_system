@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -39,6 +36,7 @@ public class dashboardController {
 
     // Added: reference to your TextField in inventorypane
     @FXML private TextField searchField;
+    @FXML private TableView myTable;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -78,6 +76,7 @@ public class dashboardController {
 
         // *** RESPONSIVE TEXTFIELD WIDTH BINDING ***
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
+        myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void styleActiveButton(Button selectedButton) {

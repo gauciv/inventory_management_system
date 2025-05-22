@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
@@ -18,7 +20,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" onDragDetected="#initialize" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" onDragDetected="#initialize" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
    <!-- Left Panel (Sidebar) -->
    <left>
@@ -383,6 +385,20 @@
                                           </effect>
                                        </Button>
                                     </HBox>
+                                    <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">
+                                       <TableView fx:id="myTable" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <columns>
+                                             <TableColumn text="C1" />
+                                             <TableColumn text="C2" />
+                                          </columns>
+                                          <padding>
+                                             <Insets bottom="30.0" />
+                                          </padding>
+                                       </TableView>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </AnchorPane>
                                  </children>
                               </AnchorPane>
                            </content>
