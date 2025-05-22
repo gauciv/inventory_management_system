@@ -349,16 +349,8 @@
                            <content>
                               <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <HBox fx:id="topBar" spacing="10" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
-                                       <TextField fx:id="searchField"
-                                                  promptText="     Search..."
-                                                  style="-fx-background-color: #081739;
-                              -fx-background-radius: 30;
-                              -fx-background-insets: 0;
-                              -fx-border-radius: 30;
-                              -fx-border-color: transparent;
-                              -fx-prompt-text-fill: rgba(170,170,170,0.5);"
-                                                  prefHeight="52.0" HBox.hgrow="ALWAYS">
+                                    <HBox fx:id="topBar" spacing="10" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                       <TextField fx:id="searchField" prefHeight="52.0" promptText="     Search..." style="-fx-background-color: #081739;                               -fx-background-radius: 30;                               -fx-background-insets: 0;                               -fx-border-radius: 30;                               -fx-border-color: transparent;                               -fx-prompt-text-fill: rgba(170,170,170,0.5);" HBox.hgrow="ALWAYS">
                                           <font>
                                              <Font name="Arial" size="15.0" />
                                           </font>
@@ -366,11 +358,7 @@
                                              <DropShadow />
                                           </effect>
                                        </TextField>
-                                       <Button fx:id="addButton"
-                                               text="Add"
-                                               prefHeight="52.0" prefWidth="152.0"
-                                               style="-fx-background-color: #0A1196; -fx-background-radius: 30;"
-                                               textFill="WHITE">
+                                       <Button fx:id="addButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Add" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -378,11 +366,7 @@
                                              <DropShadow />
                                           </effect>
                                        </Button>
-                                       <Button fx:id="soldButton"
-                                               text="Sold"
-                                               prefHeight="52.0" prefWidth="152.0"
-                                               style="-fx-background-color: #0A1196; -fx-background-radius: 30;"
-                                               textFill="WHITE">
+                                       <Button fx:id="soldButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -390,11 +374,7 @@
                                              <DropShadow />
                                           </effect>
                                        </Button>
-                                       <Button fx:id="deleteButton"
-                                               text="Delete"
-                                               prefHeight="52.0" prefWidth="152.0"
-                                               style="-fx-background-color: #0A1196; -fx-background-radius: 30;"
-                                               textFill="WHITE">
+                                       <Button fx:id="deleteButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Delete" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -409,7 +389,7 @@
                         </Tab>
                         <Tab text="Sales">
                            <content>
-                              <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #022058;" />
+                              <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
                            </content>
                         </Tab>
                         <Tab text="Forecasting">
