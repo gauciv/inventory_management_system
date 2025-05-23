@@ -55,7 +55,7 @@
 
       <Button fx:id="eyebutton" layoutX="281.0" layoutY="292.0" mnemonicParsing="false" onMouseClicked="#togglePasswordVisibility" prefHeight="25.0" prefWidth="34.0" style="-fx-background-color: transparent;" />
 
-      <Button layoutX="140.0" layoutY="344.0" mnemonicParsing="false" onAction="#login_button_clicked" prefHeight="25.0" prefWidth="119.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 30px;" text="Log In" textFill="WHITE">
+      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="138.0" layoutY="343.0" mnemonicParsing="false" onAction="#login_button_clicked" prefHeight="36.0" prefWidth="130.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 30px;" text="Log In" textFill="WHITE">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
