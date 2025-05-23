@@ -1,5 +1,6 @@
 package add_stocks;
 
+import add_edit_product.addeditproduct;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,6 +25,7 @@ public class addstock extends Application {
         stage.show();
         System.out.println("Java version: " + System.getProperty("java.version"));
         System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
+        new addeditproduct().showPopup();
     }
 
     public static void main(String[] args) {
