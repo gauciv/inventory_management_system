@@ -461,7 +461,6 @@
                                              </effect>
                                           </HBox>
                                        </HBox>
-
                                     </VBox>
                                  </children>
                               </AnchorPane>
@@ -474,7 +473,17 @@
                         </Tab>
                         <Tab text="Contact Us">
                            <content>
-                              <AnchorPane fx:id="helppane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
+                              <AnchorPane fx:id="helppane" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
+                                 <children>
+                                    <HBox alignment="CENTER" AnchorPane.topAnchor="23.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <ImageView fitHeight="270.0" fitWidth="246.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                             <Image url="@../images/devilias_logo.png" />
+                                          </image>
+                                       </ImageView>
+                                    </HBox>
+                                 </children>
+                              </AnchorPane>
                            </content>
                         </Tab>
                      </tabs>

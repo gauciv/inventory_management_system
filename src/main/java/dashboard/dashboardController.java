@@ -33,8 +33,6 @@ public class dashboardController {
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
-
-    // Added: reference to your TextField in inventorypane
     @FXML private TextField searchField;
     @FXML private TableView myTable;
 
