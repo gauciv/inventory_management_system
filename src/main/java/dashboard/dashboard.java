@@ -20,6 +20,7 @@ public class dashboard extends Application {
         primaryStage.setHeight(650);
         primaryStage.show();
 
+
     }
 
     public static void main(String[] args) {

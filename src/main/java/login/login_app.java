@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.jetbrains.annotations.NotNull;
 
+
 import java.io.IOException;
 
 public class login_app extends Application {
@@ -24,6 +25,10 @@ public class login_app extends Application {
         stage.show();
         System.out.println("Java version: " + System.getProperty("java.version"));
         System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
+
+
+
+
     }
 
     public static void main(String[] args) {

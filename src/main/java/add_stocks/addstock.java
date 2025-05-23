@@ -1,34 +1,29 @@
 package add_stocks;
 
-import add_edit_product.addeditproduct;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class addstock extends Application {
-    @Override
-    public void start(@NotNull Stage stage) throws IOException {
-        // Set icon (taskbar, window bar)
-        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
-        FXMLLoader fxmlLoader = new FXMLLoader(addstock.class.getResource("/addStocks/addstocks_form.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 377, 413);
-        scene.setFill(Color.TRANSPARENT); // removes white background
-        stage.setTitle("add stocks");
-        stage.setScene(scene);
-        stage.initStyle(StageStyle.TRANSPARENT); // <--- this removes the top bar
-        stage.show();
-        System.out.println("Java version: " + System.getProperty("java.version"));
-        System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
-        new addeditproduct().showPopup();
-    }
 
-    public static void main(String[] args) {
-        launch();
+public class addstock {
+
+    public void showPopup() throws IOException {
+        Stage stage = new Stage();
+
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addstocks_form.fxml"));
+        Scene scene = new Scene(loader.load(), 377, 432);
+        scene.setFill(Color.TRANSPARENT);
+        stage.setScene(scene);
+        stage.setTitle("Add or Edit Product");
+        stage.initStyle(StageStyle.TRANSPARENT); // or UNDECORATED if preferred
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.showAndWait();
     }
 }
