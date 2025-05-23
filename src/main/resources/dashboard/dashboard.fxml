@@ -187,7 +187,7 @@
                         <Image url="@../images/help__gray.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="helpbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Help and Support" textFill="#aeb9e1">
+                  <Button fx:id="helpbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Contact Us" textFill="#aeb9e1">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -472,7 +472,7 @@
                               <AnchorPane fx:id="settingspane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: teal;" />
                            </content>
                         </Tab>
-                        <Tab text="Help and Support">
+                        <Tab text="Contact Us">
                            <content>
                               <AnchorPane fx:id="helppane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
                            </content>
