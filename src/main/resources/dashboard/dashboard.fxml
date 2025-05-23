@@ -426,12 +426,10 @@
                         </Tab>
                         <Tab text="Forecasting">
                            <content>
-                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0"
-                                          prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
+                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
                                     <!-- Main container VBox -->
-                                    <VBox spacing="20" AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="15.0"
-                                          AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="28.0">
+                                    <VBox spacing="20" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="15.0">
 
                                        <!-- DATE label -->
                                        <Label text="DATE:" textFill="WHITE">
@@ -444,8 +442,7 @@
                                        </Label>
 
                                        <!-- Main content box -->
-                                       <VBox fx:id="forecastingContentVBox" style="-fx-background-color: #081739; -fx-background-radius: 15;"
-                                             VBox.vgrow="ALWAYS">
+                                       <VBox fx:id="forecastingContentVBox" style="-fx-background-color: #081739; -fx-background-radius: 15;" VBox.vgrow="ALWAYS">
                                           <effect>
                                              <DropShadow />
                                           </effect>
@@ -453,12 +450,12 @@
 
                                        <!-- Two bottom boxes side by side -->
                                        <HBox spacing="20">
-                                          <HBox style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS" minHeight="100">
+                                          <HBox minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                                              <effect>
                                                 <DropShadow />
                                              </effect>
                                           </HBox>
-                                          <HBox style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS" minHeight="100">
+                                          <HBox minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                                              <effect>
                                                 <DropShadow />
                                              </effect>
@@ -477,7 +474,7 @@
                         </Tab>
                         <Tab text="Help and Support">
                            <content>
-                              <AnchorPane fx:id="helppane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: beige;" />
+                              <AnchorPane fx:id="helppane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;" />
                            </content>
                         </Tab>
                      </tabs>
