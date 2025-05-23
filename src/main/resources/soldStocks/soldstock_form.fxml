@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="add_stocks.addstocksController">
+    <children>
+        <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="20.0" prefHeight="76.0" prefWidth="328.0">
+            <children>
+                <Text fill="#a9adff" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks Sold">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Text>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="IV Solution 500 mL" textAlignment="CENTER" wrappingWidth="177.234375">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Text>
+            </children>
+        </VBox>
+        <VBox layoutY="82.0" prefHeight="268.0" prefWidth="375.0" spacing="7.0">
+            <children>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume" wrappingWidth="93.63671875" />
+                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </TextField>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="93.63671875" />
+                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </TextField>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sales Offtake" wrappingWidth="93.63671875" />
+                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </TextField>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
+                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </TextField>
+            </children>
+            <padding>
+                <Insets left="40.0" right="40.0" />
+            </padding>
+        </VBox>
+        <HBox layoutX="-1.0" layoutY="338.0" prefHeight="17.0" prefWidth="375.0">
+            <children>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks Sold Added To December :" wrappingWidth="205.13671875" />
+            </children>
+            <padding>
+                <Insets left="40.0" right="40.0" />
+            </padding>
+        </HBox>
+        <TextField layoutX="45.0" layoutY="362.0" prefHeight="29.0" prefWidth="168.0" style="-fx-background-radius: 30; -fx-border-color: #0A1196; -fx-border-radius: 30; -fx-background-color: rgba(217, 217, 217, 1);">
+            <effect>
+                <DropShadow spread="0.26">
+                    <color>
+                        <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                    </color>
+                </DropShadow>
+            </effect>
+        </TextField>
+        <Button layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
+            <effect>
+                <DropShadow>
+                    <color>
+                        <Color opacity="0.23003803193569183" />
+                    </color>
+                </DropShadow>
+            </effect>
+        </Button>
+    </children>
+</Pane>
