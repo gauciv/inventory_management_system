@@ -1,34 +1,32 @@
 package add_stocks;
 
-import dashboard.dashboardController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.jetbrains.annotations.NotNull;
 
-import static javafx.application.Application.launch;
+import java.io.IOException;
 
 public class addstock extends Application {
-
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/add-stocks/add_stocks.fxml"));
-        Scene scene = new Scene(loader.load());
-        primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
-        primaryStage.initStyle(StageStyle.UNDECORATED);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Add Stocks");
-        primaryStage.setWidth(417);
-        primaryStage.setHeight(480);
-        primaryStage.show();
-        addstocksController controller = loader.getController();
-
+    public void start(@NotNull Stage stage) throws IOException {
+        // Set icon (taskbar, window bar)
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        FXMLLoader fxmlLoader = new FXMLLoader(addstock.class.getResource("/addStocks/addstocks_form.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 377, 413);
+        scene.setFill(Color.TRANSPARENT); // removes white background
+        stage.setTitle("add stocks");
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT); // <--- this removes the top bar
+        stage.show();
+        System.out.println("Java version: " + System.getProperty("java.version"));
+        System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 }
-
-
