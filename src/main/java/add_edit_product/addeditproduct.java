@@ -1,0 +1,28 @@
+package add_edit_product;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.IOException;
+
+public class addeditproduct {
+
+    public void showPopup() throws IOException {
+        Stage stage = new Stage();
+
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/addEditProduct/add-edit-product_form.fxml"));
+        Scene scene = new Scene(loader.load(), 377, 432);
+        scene.setFill(Color.TRANSPARENT);
+        stage.setScene(scene);
+        stage.setTitle("Add or Edit Product");
+        stage.initStyle(StageStyle.TRANSPARENT); // or UNDECORATED if preferred
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.showAndWait();
+    }
+}
