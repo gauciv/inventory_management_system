@@ -426,17 +426,48 @@
                         </Tab>
                         <Tab text="Forecasting">
                            <content>
-                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
+                              <AnchorPane fx:id="forecastingpane" minHeight="0.0" minWidth="0.0"
+                                          prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <Label text="DATE:" textFill="WHITE">
-                                       <font>
-                                          <Font name="Arial" size="16.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="27.0" top="25.0" />
-                                       </padding>
-                                    </Label>
-                                 </children></AnchorPane>
+                                    <!-- Main container VBox -->
+                                    <VBox spacing="20" AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="15.0"
+                                          AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="28.0">
+
+                                       <!-- DATE label -->
+                                       <Label text="DATE:" textFill="WHITE">
+                                          <font>
+                                             <Font name="Arial" size="16.0" />
+                                          </font>
+                                          <padding>
+                                             <Insets left="0.0" top="10.0" />
+                                          </padding>
+                                       </Label>
+
+                                       <!-- Main content box -->
+                                       <VBox fx:id="forecastingContentVBox" style="-fx-background-color: #081739; -fx-background-radius: 15;"
+                                             VBox.vgrow="ALWAYS">
+                                          <effect>
+                                             <DropShadow />
+                                          </effect>
+                                       </VBox>
+
+                                       <!-- Two bottom boxes side by side -->
+                                       <HBox spacing="20">
+                                          <HBox style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS" minHeight="100">
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
+                                          </HBox>
+                                          <HBox style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS" minHeight="100">
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
+                                          </HBox>
+                                       </HBox>
+
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
                            </content>
                         </Tab>
                         <Tab text="Settings">
