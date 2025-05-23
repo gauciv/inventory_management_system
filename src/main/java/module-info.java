@@ -17,6 +17,9 @@ module inventory.example.inventory_ms {
 
     exports add_stocks;
     opens add_stocks to javafx.fxml;
+
+    exports sold_stocks;
+    opens sold_stocks to javafx.fxml;
     
     opens database;
 }
