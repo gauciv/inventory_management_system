@@ -355,7 +355,7 @@
                               <AnchorPane fx:id="inventorypane" prefHeight="588.0" prefWidth="726.0" style="-fx-background-color: #081028;">
                                  <children>
                                     <HBox fx:id="topBar" spacing="10" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                                       <TextField fx:id="searchField" prefHeight="52.0" promptText="     Search..." style="-fx-background-color: #081739;                               -fx-background-radius: 30;                               -fx-background-insets: 0;                               -fx-border-radius: 30;                               -fx-border-color: transparent;                               -fx-prompt-text-fill: rgba(170,170,170,0.5);" HBox.hgrow="ALWAYS">
+                                       <TextField fx:id="searchField" prefHeight="52.0" promptText="     Search..." style="-fx-background-color: #081739; -fx-background-radius: 30; -fx-background-insets: 0; -fx-border-radius: 30; -fx-border-color: transparent; -fx-prompt-text-fill: rgba(170,170,170,0.5);" HBox.hgrow="ALWAYS">
                                           <font>
                                              <Font name="Arial" size="15.0" />
                                           </font>
@@ -363,7 +363,7 @@
                                              <DropShadow />
                                           </effect>
                                        </TextField>
-                                       <Button fx:id="addButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Add" textFill="WHITE">
+                                       <Button fx:id="addButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Add" textFill="WHITE" onAction="#handleAddButton">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -371,7 +371,7 @@
                                              <DropShadow />
                                           </effect>
                                        </Button>
-                                       <Button fx:id="soldButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE">
+                                       <Button fx:id="soldButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE" onAction="#handleSoldButton">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -402,6 +402,11 @@
                                           <DropShadow />
                                        </effect>
                                     </AnchorPane>
+                                    <AnchorPane fx:id="addFormContainer"
+                                                style="-fx-background-color: rgba(0, 0, 255, 0.2);"
+                                                prefHeight="420.0" prefWidth="375.0"
+                                                layoutX="170.0" layoutY="80.0"
+                                                visible="false"/>
                                  </children>
                               </AnchorPane>
                            </content>
