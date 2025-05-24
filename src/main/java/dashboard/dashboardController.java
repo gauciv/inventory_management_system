@@ -3,12 +3,15 @@ package dashboard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -76,6 +79,34 @@ public class dashboardController {
 
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
         myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Listen for inventorypane size changes to recenter addFormContainer
+        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
+        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
+
+        Platform.runLater(() -> {
+            centerAddFormContainer(); // initial center
+        });
+    }
+
+    private void centerAddFormContainer() {
+        if (!addFormContainer.isVisible()) return;
+
+        double parentWidth = inventorypane.getWidth();
+        double parentHeight = inventorypane.getHeight();
+
+        double formWidth = addFormContainer.getWidth() <= 0 ? addFormContainer.getPrefWidth() : addFormContainer.getWidth();
+        double formHeight = addFormContainer.getHeight() <= 0 ? addFormContainer.getPrefHeight() : addFormContainer.getHeight();
+
+        double leftAnchor = (parentWidth - formWidth) / 2;
+        double topAnchor = (parentHeight - formHeight) / 2;
+
+        AnchorPane.clearConstraints(addFormContainer);
+
+        AnchorPane.setLeftAnchor(addFormContainer, leftAnchor);
+        AnchorPane.setTopAnchor(addFormContainer, topAnchor);
+        AnchorPane.setRightAnchor(addFormContainer, null);
+        AnchorPane.setBottomAnchor(addFormContainer, null);
     }
 
     private void styleActiveButton(Button selectedButton) {
@@ -136,6 +167,8 @@ public class dashboardController {
 
             isFullscreen = false;
         }
+        // Recenter form container after resize toggle
+        Platform.runLater(this::centerAddFormContainer);
     }
 
     @FXML
@@ -196,8 +229,11 @@ public class dashboardController {
             Parent addForm = loader.load();
 
             addFormContainer.getChildren().setAll(addForm);
-            addFormContainer.setVisible(true); // show the form when button is clicked
+            addFormContainer.setVisible(true);
             addFormContainer.toFront();
+
+            addFormContainer.layout();
+            centerAddFormContainer();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -214,10 +250,11 @@ public class dashboardController {
             addFormContainer.setVisible(true);
             addFormContainer.toFront();
 
+            addFormContainer.layout();
+            centerAddFormContainer();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }

@@ -388,6 +388,7 @@
                                           </effect>
                                        </Button>
                                     </HBox>
+
                                     <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">
                                        <TableView fx:id="myTable" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>
@@ -402,11 +403,10 @@
                                           <DropShadow />
                                        </effect>
                                     </AnchorPane>
-                                    <AnchorPane fx:id="addFormContainer"
-                                                style="-fx-background-color: rgba(0, 0, 255, 0.2);"
-                                                prefHeight="420.0" prefWidth="375.0"
-                                                layoutX="170.0" layoutY="80.0"
-                                                visible="false"/>
+                                       <AnchorPane fx:id="addFormContainer"
+                                                   style="-fx-background-color: rgba(0, 0, 255, 0.2);"
+                                                   prefHeight="420.0" prefWidth="375.0"
+                                                   visible="false"/>
                                  </children>
                               </AnchorPane>
                            </content>
