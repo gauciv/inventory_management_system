@@ -1,33 +1,29 @@
 package confirmation;
 
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class confirmation extends Application {
-    @Override
-    public void start(@NotNull Stage stage) throws IOException {
-        // Set icon (taskbar, window bar)
+
+public class confirmation {
+
+    public void showPopup() throws IOException {
+        Stage stage = new Stage();
+
         stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
-        FXMLLoader fxmlLoader = new FXMLLoader(confirmation.class.getResource("/confirmation/confirmation_form.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 338, 180);
-        scene.setFill(Color.TRANSPARENT); // removes white background
-        stage.setTitle("confirmation page");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
+        Scene scene = new Scene(loader.load(), 377, 432);
+        scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
-        stage.initStyle(StageStyle.TRANSPARENT); // <--- this removes the top bar
-        stage.show();
-
-        System.out.println("Java version: " + System.getProperty("java.version"));
-        System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
-    }
-
-    public static void main(String[] args) {
-        launch();
+        stage.setTitle("Add or Edit Product");
+        stage.initStyle(StageStyle.TRANSPARENT); // or UNDECORATED if preferred
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.showAndWait();
     }
 }
