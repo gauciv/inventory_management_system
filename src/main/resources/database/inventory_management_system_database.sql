@@ -4,7 +4,7 @@ USE `inventory_management_system_database`;
 --
 -- Host: 127.0.0.1    Database: inventory_management_system_database
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,6 +46,108 @@ INSERT INTO `accounts` VALUES ('Augustoj','augusto123','John Vincent','D','Augus
 UNLOCK TABLES;
 
 --
+-- Table structure for table `sale_offtake`
+--
+
+DROP TABLE IF EXISTS `sale_offtake`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sale_offtake` (
+  `item_code` int NOT NULL,
+  `item_description` text,
+  `volume` int DEFAULT NULL,
+  `category` varchar(45) DEFAULT NULL,
+  `jan` int DEFAULT NULL,
+  `feb` int DEFAULT NULL,
+  `mar` int DEFAULT NULL,
+  `apr` int DEFAULT NULL,
+  `may` int DEFAULT NULL,
+  `jun` int DEFAULT NULL,
+  `jul` int DEFAULT NULL,
+  `aug` int DEFAULT NULL,
+  `sep` int DEFAULT NULL,
+  `oct` int DEFAULT NULL,
+  `nov` int DEFAULT NULL,
+  `dec` int DEFAULT NULL,
+  PRIMARY KEY (`item_code`),
+  UNIQUE KEY `item_code_UNIQUE` (`item_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sale_offtake`
+--
+
+LOCK TABLES `sale_offtake` WRITE;
+/*!40000 ALTER TABLE `sale_offtake` DISABLE KEYS */;
+INSERT INTO `sale_offtake` VALUES (1144133,'Sterile Water for Irrigation',1000,'Intravenous',9960,11088,8751,10468,13826,9912,14491,16116,12335,13266,10778,14552),(1242388,'Dextrose 5% in Normal Saline 0.9%',1000,'Intravenous',1310,950,1280,800,1070,1910,1291,1020,2270,1120,1730,1120),(1638562,'Dextrose 5% in 1/3 Normal Saline',500,'Intravenous',280,225,143,795,260,740,160,380,240,140,380,240),(1786381,'Isotonic Sodium Chloride',500,'Intravenous',13300,12246,13246,12094,14323,15098,14742,16769,15119,15500,14415,17900),(2182224,'Sterile Water for Injection (vial)',50,'Intravenous',7900,3300,800,6602,7459,8135,5773,8052,3596,15396,11487,6400),(2559759,'Dextrose 5% in Lactated Ringers Injection',1000,'Intravenous',4510,4533,5467,5497,4225,5640,5302,8690,6555,8260,6763,7647),(2608832,'Isotonic Sodium Chloride',50,'Intravenous',8600,10350,15826,17300,16868,23680,20294,17715,716,23150,29599,21000),(2677699,'Acetated Ringers Injection',1000,'Intravenous',3400,4995,3851,4599,6063,5440,6464,7152,4886,14162,7500,8350),(3102709,'Normal Saline Solution',1000,'Intravenous',14030,13719,11425,17501,16320,13556,18748,18610,16104,20211,19810,19788),(3151923,'Dextrose 5% in Lactated Ringers Injection',500,'Intravenous',1140,1080,2303,1520,1440,780,3060,2830,2810,3180,3760,3160),(3928884,'Dextrose 5% in Distilled Water',250,'Intravenous',3822,3307,3209,6237,4518,3678,5932,5814,6498,6980,9022,5520),(4218236,'Dextrose 5% in Distilled Water',100,'Intravenous',663,779,1455,1655,671,860,1220,1500,740,943,2034,960),(4640611,'Dextrose 5% in Distilled Water',1000,'Intravenous',200,60,260,310,160,110,1,200,0,40,110,390),(4723125,'Lactated Ringers Injection',500,'Intravenous',860,1820,540,1060,540,1060,740,1560,2360,1800,1180,1240),(5979463,'Dextrose 5% in 1/3 Normal Saline',1000,'Intravenous',390,58,440,1160,450,410,500,680,340,180,250,340),(6161467,'Dextrose 5% in Distilled Water',500,'Intravenous',1140,5688,696,1322,2380,900,1054,2920,2025,1860,2782,1840),(6253621,'Isotonic Sodium Chloride',1000,'Intravenous',56494,50856,50856,46929,54610,63550,57740,58833,75834,50260,59496,58980),(6424333,'Sterile Water for Injection',1000,'Intravenous',1110,3490,16310,6724,8733,12008,22391,7842,10062,8530,8220,9670),(6635459,'Isotonic Sodium Chloride',100,'Intravenous',36937,40083,36837,33479,41870,41661,39300,53015,58834,51129,59650,58750),(6667643,'Lactated Ringers Injection',1000,'Intravenous',8020,10327,7091,11650,12410,7229,8570,12380,18402,9460,13460,15320),(6994222,'Dextrose 5% in 1/2 Normal Saline',500,'Intravenous',3430,1903,2866,1445,3735,3610,2447,6910,2685,5505,2842,2020),(7139530,'Mannitol 20%',500,'Intravenous',1520,1160,2220,1300,2520,1940,1700,1800,1980,1080,1770,2120),(7420811,'Isotonic Sodium Chloride',2000,'Intravenous',1194,900,894,810,1824,1176,1326,66,0,2064,1662,1806),(7464610,'Sterile Water for Injection',100,'Intravenous',1240,2660,2000,1500,2940,4240,2800,1660,900,9500,2000,1700),(7623778,'Isotonic Sodium Chloride',250,'Intravenous',3810,6440,2940,6080,4800,5081,5765,6394,11506,14589,7897,13660),(9703078,'Dextrose 5% in 1/2 Normal Saline',1000,'Intravenous',3690,950,3117,1099,567,2540,3550,1173,1059,1883,1755,2069);
+/*!40000 ALTER TABLE `sale_offtake` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `before_insert_sale_offtake` BEFORE INSERT ON `sale_offtake` FOR EACH ROW BEGIN
+    DECLARE random_id INT;
+    DECLARE exists_id INT;
+
+    REPEAT
+        SET random_id = FLOOR(1000000 + RAND() * 9000000); -- generates 7-digit number
+        SELECT COUNT(*) INTO exists_id FROM sale_offtake WHERE item_code = random_id;
+    UNTIL exists_id = 0
+    END REPEAT;
+
+    SET NEW.item_code = random_id;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `stock_onhand`
+--
+
+DROP TABLE IF EXISTS `stock_onhand`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stock_onhand` (
+  `item_code` int NOT NULL,
+  `jan1` int DEFAULT NULL,
+  `feb1` int DEFAULT NULL,
+  `mar1` int DEFAULT NULL,
+  `apr1` int DEFAULT NULL,
+  `may1` int DEFAULT NULL,
+  `jun1` int DEFAULT NULL,
+  `jul1` int DEFAULT NULL,
+  `aug1` int DEFAULT NULL,
+  `sep1` int DEFAULT NULL,
+  `oct1` int DEFAULT NULL,
+  `nov1` int DEFAULT NULL,
+  `dec1` int DEFAULT NULL,
+  PRIMARY KEY (`item_code`),
+  UNIQUE KEY `item_code_UNIQUE` (`item_code`),
+  CONSTRAINT `stock_onhand_ibfk_1` FOREIGN KEY (`item_code`) REFERENCES `sale_offtake` (`item_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_onhand`
+--
+
+LOCK TABLES `stock_onhand` WRITE;
+/*!40000 ALTER TABLE `stock_onhand` DISABLE KEYS */;
+INSERT INTO `stock_onhand` VALUES (1144133,1746,633,13623,8413,7189,11446,35815,48026,40213,26651,45621,37401),(1242388,9388,8078,9738,8848,9047,8977,7067,8276,10256,7986,12864,11134),(1638562,61740,61460,61235,61092,29557,29297,28557,26600,26220,25980,26415,27015),(1786381,53532,39732,31360,47480,59660,65220,70420,75920,59320,44400,39900,44380),(2182224,18500,11000,7800,11300,8400,2897,4200,14300,6800,3500,17200,9000),(2559759,25600,20139,16539,14377,15486,17566,25426,29026,20336,13786,21106,34145),(2608832,46845,35043,26893,17098,10048,3899,3745,20795,3045,2345,70695,59245),(2677699,27203,23802,19312,14464,14033,11762,10582,12527,5614,893,6487,3587),(3102709,58783,44253,30630,48460,51270,61147,70297,68879,64779,42835,54374,58564),(3151923,6500,5360,4280,1977,1457,420,4740,3880,3950,1140,5960,5200),(3928884,22535,18835,12385,15205,14565,14733,18573,18753,19053,12673,23693,21163),(4218236,1762,1120,3360,4920,6230,8570,9650,10350,10850,10100,11160,8900),(4640611,1790,1590,1430,1200,890,720,620,619,919,919,1879,2769),(4723125,3540,2680,1340,2820,2760,3180,3160,4020,3460,1100,1300,2120),(5979463,729,59,1101,1051,1091,2121,3731,5231,5551,5211,8031,8781),(6161467,11859,8419,7259,6723,6403,4903,6123,7123,4203,2060,7840,7260),(6253621,299464,243384,195114,186563,190497,195343,243073,259486,226143,150306,268116,267719),(6424333,1746,633,13623,8413,7189,11446,35815,48026,40213,26651,45621,37401),(6635459,158994,122212,126172,89374,65914,34150,81840,198089,148339,88286,198036,187585),(6667643,42724,34704,36977,35886,36233,34843,40592,44125,43693,25291,45830,46368),(6994222,13400,11409,9679,12467,14807,11587,13223,13440,9820,2900,8120,5460),(7139530,7790,6270,6320,4100,4010,2640,2960,5770,3970,1990,7510,9590),(7420811,8310,7116,6300,5406,4596,2760,1332,186,120,120,2652,3534),(7464610,8440,7200,4540,5540,7040,4900,1860,1060,2400,500,3000,3500),(7623778,15662,13982,13462,11522,10942,14562,17062,16419,15309,4537,697,2217),(9703078,14965,10724,9624,6614,7661,6221,9961,12550,14400,13420,16050,14180);
+/*!40000 ALTER TABLE `stock_onhand` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'inventory_management_system_database'
 --
 
@@ -62,4 +164,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-05  0:04:32
+-- Dump completed on 2025-05-24 18:39:37
