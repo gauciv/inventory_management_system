@@ -320,10 +320,9 @@ public class dashboardController {
             confirmationContainer.layout();
             centerConfirmationContainer();
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }
