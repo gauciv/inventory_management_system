@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<Pane prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="add_stocks.addstocksController">
+<Pane prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="20.0" prefHeight="76.0" prefWidth="328.0">
          <children>

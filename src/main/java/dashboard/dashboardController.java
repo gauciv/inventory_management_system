@@ -2,6 +2,7 @@ package dashboard;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -11,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class dashboardController {
@@ -35,6 +37,7 @@ public class dashboardController {
     @FXML private Button activeButton;
     @FXML private TextField searchField;
     @FXML private TableView myTable;
+    @FXML private AnchorPane addFormContainer;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -45,7 +48,6 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-        // Set default styled button
         styleActiveButton(dashboardbutton);
 
         borderpane.setOnMousePressed((MouseEvent event) -> {
@@ -72,7 +74,6 @@ public class dashboardController {
         TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
 
-        // *** RESPONSIVE TEXTFIELD WIDTH BINDING ***
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
         myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
@@ -187,4 +188,36 @@ public class dashboardController {
         }
         return false;
     }
+
+    @FXML
+    private void handleAddButton() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addstocks_form.fxml"));
+            Parent addForm = loader.load();
+
+            addFormContainer.getChildren().setAll(addForm);
+            addFormContainer.setVisible(true); // show the form when button is clicked
+            addFormContainer.toFront();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleSoldButton() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/soldStocks/soldstock_form.fxml"));
+            Parent soldForm = loader.load();
+
+            addFormContainer.getChildren().setAll(soldForm);
+            addFormContainer.setVisible(true);
+            addFormContainer.toFront();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
