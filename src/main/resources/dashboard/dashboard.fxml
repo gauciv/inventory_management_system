@@ -38,7 +38,7 @@
                   </ImageView>
                </children>
             </StackPane>
-            <VBox prefHeight="310.0" prefWidth="265.0">
+            <VBox prefHeight="310.0" prefWidth="265.0" VBox.vgrow="ALWAYS">
                <children>
                   <HBox fillHeight="false" prefHeight="43.0">
                      <children>
@@ -148,6 +148,9 @@
                <padding>
                   <Insets left="31.0" />
                </padding>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </VBox>
             <Line endX="150.0" startX="-100.0" stroke="#4c5574">
                <VBox.margin>
@@ -197,7 +200,7 @@
                   </Button>
                </children>
                <VBox.margin>
-                  <Insets bottom="33.0" left="30.0" right="15.0" top="15.0" />
+                  <Insets bottom="20.0" left="30.0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
          </children>
@@ -475,7 +478,7 @@
                            <content>
                               <AnchorPane fx:id="helppane" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <HBox alignment="CENTER" AnchorPane.topAnchor="23.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                    <HBox alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0">
                                        <ImageView fitHeight="270.0" fitWidth="246.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
                                              <Image url="@../images/devilias_logo.png" />
