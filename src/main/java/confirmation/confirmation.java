@@ -22,6 +22,7 @@ public class confirmation extends Application {
         stage.setScene(scene);
         stage.initStyle(StageStyle.TRANSPARENT); // <--- this removes the top bar
         stage.show();
+
         System.out.println("Java version: " + System.getProperty("java.version"));
         System.out.println("JavaFX version: " + System.getProperty("javafx.version"));
     }
