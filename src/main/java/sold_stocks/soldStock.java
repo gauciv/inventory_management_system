@@ -12,8 +12,10 @@ import java.io.IOException;
 
 public class soldStock {
 
-    public void showPopup() throws IOException {
+    public void showPopup(Stage owner) throws IOException {
         Stage stage = new Stage();
+        stage.initOwner(owner); // Set the owner to avoid taskbar icon
+        stage.initModality(Modality.WINDOW_MODAL); // Must be used with initOwner
 
         stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/soldStocks/soldstock_form.fxml"));
