@@ -25,4 +25,9 @@ module inventory.example.inventory_ms {
     opens confirmation to javafx.fxml;
     
     opens database;
+
+    exports add_edit_product to javafx.fxml;
+    opens add_edit_product to javafx.fxml;
+
+
 }
