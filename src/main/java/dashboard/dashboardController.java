@@ -93,6 +93,15 @@ public class dashboardController {
         Platform.runLater(() -> {
             centerAddFormContainer(); // initial center
         });
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
+            Parent confirmationForm = loader.load();
+            confirmationContainer.getChildren().setAll(confirmationForm);
+            confirmationContainer.setVisible(false); // keep hidden initially
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void centerAddFormContainer() {
@@ -121,8 +130,15 @@ public class dashboardController {
         double parentWidth = inventorypane.getWidth();
         double parentHeight = inventorypane.getHeight();
 
-        double formWidth = confirmationContainer.getWidth() <= 0 ? confirmationContainer.getPrefWidth() : confirmationContainer.getWidth();
-        double formHeight = confirmationContainer.getHeight() <= 0 ? confirmationContainer.getPrefHeight() : confirmationContainer.getHeight();
+        confirmationContainer.applyCss();
+        confirmationContainer.layout();
+
+        double formWidth = confirmationContainer.getWidth();
+        double formHeight = confirmationContainer.getHeight();
+
+        // If width/height are 0, fallback to prefWidth
+        if (formWidth <= 0) formWidth = confirmationContainer.getPrefWidth();
+        if (formHeight <= 0) formHeight = confirmationContainer.getPrefHeight();
 
         double leftAnchor = (parentWidth - formWidth) / 2;
         double topAnchor = (parentHeight - formHeight) / 2;
@@ -133,6 +149,7 @@ public class dashboardController {
         AnchorPane.setRightAnchor(confirmationContainer, null);
         AnchorPane.setBottomAnchor(confirmationContainer, null);
     }
+
 
 
     private void styleActiveButton(Button selectedButton) {
@@ -295,17 +312,26 @@ public class dashboardController {
             Parent confirmationForm = loader.load();
 
             confirmationContainer.getChildren().setAll(confirmationForm);
+            confirmationForm.setLayoutX(0);
+            confirmationForm.setTranslateX(0);
+
             confirmationContainer.setVisible(true);
             confirmationContainer.toFront();
 
-            confirmationContainer.layout();
-            centerConfirmationContainer();
+            Platform.runLater(() -> {
+                confirmationContainer.applyCss();
+                confirmationContainer.layout();
+                centerConfirmationContainer();
+            });
+
             addFormContainer.setVisible(false);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     @FXML
     private void handleContinueClick() {
@@ -314,15 +340,22 @@ public class dashboardController {
             Parent confirmationForm = loader.load();
 
             confirmationContainer.getChildren().setAll(confirmationForm);
+            confirmationForm.setLayoutX(0);
+            confirmationForm.setTranslateX(0);
+
             confirmationContainer.setVisible(true);
             confirmationContainer.toFront();
 
-            confirmationContainer.layout();
-            centerConfirmationContainer();
-
+            // Wait for layout pass, then center
+            Platform.runLater(() -> {
+                confirmationContainer.applyCss();
+                confirmationContainer.layout();
+                centerConfirmationContainer();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

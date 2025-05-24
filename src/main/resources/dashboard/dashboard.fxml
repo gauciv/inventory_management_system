@@ -407,7 +407,7 @@
                                                    style="-fx-background-color: rgba(0, 0, 255, 0.2);"
                                                    prefHeight="420.0" prefWidth="375.0"
                                                    visible="false"/>
-                                    <AnchorPane fx:id="confirmationContainer" visible="false" prefWidth="400" prefHeight="300">
+                                    <AnchorPane fx:id="confirmationContainer" visible="false" prefWidth="300" prefHeight="200">
                                     </AnchorPane>
                                  </children>
                               </AnchorPane>
