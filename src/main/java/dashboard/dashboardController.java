@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -46,7 +47,7 @@ public class dashboardController {
     @FXML private TableView myTable;
     @FXML private AnchorPane addFormContainer;
     @FXML private AnchorPane confirmationContainer;
-
+    @FXML private VBox right_pane;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -312,18 +313,35 @@ public class dashboardController {
 
     @FXML
     private void handleSoldButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/soldStocks/soldstock_form.fxml"));
-            loader.setController(this);
-            Parent soldForm = loader.load();
+            Parent addForm = FXMLLoader.load(getClass().getResource("/soldStocks/soldstock_form.fxml"));
 
-            addFormContainer.getChildren().setAll(soldForm);
-            addFormContainer.setVisible(true);
-            addFormContainer.toFront();
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Sold Stocks Form");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            addFormContainer.layout();
-            centerAddFormContainer();
-            confirmationContainer.setVisible(false);
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
