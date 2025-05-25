@@ -271,9 +271,6 @@ public class dashboardController {
     }
 
     @FXML
-    private VBox right_pane;
-
-    @FXML
     private void handleAddButton() {
 
         try {
