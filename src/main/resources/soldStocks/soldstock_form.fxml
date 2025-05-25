@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="sold_pane" prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sold_stocks.soldstocksController">
     <children>
         <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="20.0" prefHeight="76.0" prefWidth="328.0">
             <children>
@@ -93,7 +93,7 @@
                 </DropShadow>
             </effect>
         </TextField>
-        <Button layoutX="223.0" layoutY="362.0" mnemonicParsing="false" onAction="#handleContinueClick" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
+        <Button layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
             <effect>
                 <DropShadow>
                     <color>
@@ -102,7 +102,7 @@
                 </DropShadow>
             </effect>
         </Button>
-      <Button layoutX="315.0" layoutY="2.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="57.0" style="-fx-background-color: transparent;">
+      <Button layoutX="315.0" layoutY="2.0" mnemonicParsing="false" onAction="#Exit" prefHeight="32.0" prefWidth="57.0" style="-fx-background-color: transparent;">
          <graphic>
             <ImageView fitHeight="31.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                <image>
