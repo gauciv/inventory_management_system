@@ -3,6 +3,7 @@ package dashboard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -12,8 +13,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.List;
@@ -266,23 +270,44 @@ public class dashboardController {
     }
 
     @FXML
+    private VBox right_pane;
+
+    @FXML
     private void handleAddButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addstocks_form.fxml"));
-            loader.setController(this);
-            Parent addForm = loader.load();
+            // Load the full layout from FXML (with its own controller)
+            Parent addForm = FXMLLoader.load(getClass().getResource("/addStocks/addstocks_form.fxml"));
 
-            addFormContainer.getChildren().setAll(addForm);
-            addFormContainer.setVisible(true);
-            addFormContainer.toFront();
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Add Stocks Form");
 
-            addFormContainer.layout();
-            centerAddFormContainer();
-            confirmationContainer.setVisible(false);
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @FXML
@@ -357,5 +382,8 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
+
+
+
 
 }

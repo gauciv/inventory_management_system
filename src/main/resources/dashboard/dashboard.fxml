@@ -212,7 +212,7 @@
 
    <!-- Main Content Area -->
    <center>
-      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="652.0" prefWidth="747.0" style="-fx-background-color: #081028; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 45.1, 0.75, 0, 4);;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
+      <VBox fx:id="right_pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="652.0" prefWidth="747.0" style="-fx-background-color: #081028; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 45.1, 0.75, 0, 4);;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
          <children>
             <StackPane alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0">
                <children>
@@ -363,7 +363,7 @@
                                              <DropShadow />
                                           </effect>
                                        </TextField>
-                                       <Button fx:id="addButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Add" textFill="WHITE" onAction="#handleAddButton">
+                                       <Button fx:id="addButton" onAction="#handleAddButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Add" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -371,7 +371,7 @@
                                              <DropShadow />
                                           </effect>
                                        </Button>
-                                       <Button fx:id="soldButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE" onAction="#handleSoldButton">
+                                       <Button fx:id="soldButton" onAction="#handleSoldButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -379,7 +379,7 @@
                                              <DropShadow />
                                           </effect>
                                        </Button>
-                                       <Button fx:id="deleteButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Delete" textFill="WHITE" onAction="#handleConfirmationButton">
+                                       <Button fx:id="deleteButton" onAction="#handleConfirmationButton" prefHeight="52.0" prefWidth="152.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Delete" textFill="WHITE">
                                           <font>
                                              <Font size="16.0" />
                                           </font>
@@ -403,11 +403,8 @@
                                           <DropShadow />
                                        </effect>
                                     </AnchorPane>
-                                       <AnchorPane fx:id="addFormContainer"
-                                                   style="-fx-background-color: rgba(0, 0, 255, 0.2);"
-                                                   prefHeight="420.0" prefWidth="375.0"
-                                                   visible="false"/>
-                                    <AnchorPane fx:id="confirmationContainer" visible="false" prefWidth="300" prefHeight="200">
+                                       <AnchorPane fx:id="addFormContainer" prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(0, 0, 255, 0.2);" visible="false" />
+                                    <AnchorPane fx:id="confirmationContainer" prefHeight="200" prefWidth="300" visible="false">
                                     </AnchorPane>
                                  </children>
                               </AnchorPane>
