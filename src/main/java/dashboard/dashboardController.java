@@ -1,19 +1,20 @@
 package dashboard;
 
+import database.database_utility;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -21,10 +22,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.List;
+import database.database_utility;
 
 public class dashboardController {
-
     @FXML private Button minimizeButton;
     @FXML private Button resizeButton;
     @FXML private Button exitButton;
@@ -44,10 +47,11 @@ public class dashboardController {
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
     @FXML private TextField searchField;
-    @FXML private TableView myTable;
+    @FXML private TableView<SalesOfftake> myTable;
     @FXML private AnchorPane addFormContainer;
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
+    @FXML private ChoiceBox<String> monthChoiceBox;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -59,7 +63,35 @@ public class dashboardController {
     @FXML
     public void initialize() {
         styleActiveButton(dashboardbutton);
+        setupWindowControls();
+        setupTableView();
+        
+        // Initialize form containers
+        setupFormContainers();
+    }
+      private void setupTableView() {
+        // Initialize table columns
+        col_number.setCellValueFactory(cellData -> 
+            javafx.beans.binding.Bindings.createObjectBinding(
+                () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
+            )
+        );
+        col_item_code.setCellValueFactory(new PropertyValueFactory<>("item_code"));
+        col_item_des.setCellValueFactory(new PropertyValueFactory<>("item_des"));
+        col_volume.setCellValueFactory(new PropertyValueFactory<>("volume"));
+        col_category.setCellValueFactory(new PropertyValueFactory<>("category"));
+        col_soh.setCellValueFactory(new PropertyValueFactory<>("soh"));
+        col_sot.setCellValueFactory(new PropertyValueFactory<>("sot"));
 
+        // Initialize data list and set it to table
+        inventory_management_table = FXCollections.observableArrayList();
+        inventory_table.setItems(inventory_management_table);
+        
+        // Load the inventory data
+        inventory_management_query();
+    }
+    
+    private void setupWindowControls() {
         borderpane.setOnMousePressed((MouseEvent event) -> {
             borderpane.setPickOnBounds(true);
             Stage stage = (Stage) borderpane.getScene().getWindow();
@@ -83,21 +115,19 @@ public class dashboardController {
         TabSwitch(salesbutton, salespane);
         TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
-
+    }
+    
+    private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
-        myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        myTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        // Listen for inventorypane size changes to recenter addFormContainer
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
+        // Listen for size changes with more concise syntax
+        inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
+        inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
 
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
-
-
-        Platform.runLater(() -> {
-            centerAddFormContainer(); // initial center
-        });
+        Platform.runLater(() -> centerAddFormContainer());
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
@@ -107,6 +137,30 @@ public class dashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        monthChoiceBox.getItems().addAll(
+                "January", "February", "March", "April",
+                "May", "June", "July", "August",
+                "September", "October", "November", "December"
+        );
+
+        monthChoiceBox.setValue("January");
+
+        searchField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            String baseStyle = "-fx-background-color: #081739; -fx-background-radius: 30; " +
+                    "-fx-background-insets: 0; -fx-border-radius: 30; -fx-border-color: transparent; " +
+                    "-fx-prompt-text-fill: rgba(170,170,170,0.5);";
+
+            if (newVal) {
+                // Focus gained: add text fill white, keep other styles
+                searchField.setStyle(baseStyle + " -fx-text-fill: white;");
+            } else {
+                // Focus lost: remove the text fill override to default (black text)
+                searchField.setStyle(baseStyle + " -fx-text-fill: black;");
+            }
+        });
+
+
     }
 
     private void centerAddFormContainer() {
@@ -154,7 +208,6 @@ public class dashboardController {
         AnchorPane.setRightAnchor(confirmationContainer, null);
         AnchorPane.setBottomAnchor(confirmationContainer, null);
     }
-
 
 
     private void styleActiveButton(Button selectedButton) {
@@ -237,8 +290,7 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-
-        button.setOnAction(event -> {
+        button.setOnAction(e -> {
             styleActiveButton(button);
 
             for (Tab tab : tabpane.getTabs()) {
@@ -282,11 +334,6 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
             stage.setTitle("Add Stocks Form");
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -320,11 +367,6 @@ public class dashboardController {
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -357,11 +399,6 @@ public class dashboardController {
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -381,7 +418,6 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-
 
 
     @FXML
@@ -408,8 +444,58 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
+    //this section is for the inventory management tab
+    @FXML
+    private TableView<Inventory_management_bin> inventory_table;    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_number;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_item_code;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_item_des;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_volume;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_category;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_soh;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_sot;
+    
+    private ObservableList<Inventory_management_bin> inventory_management_table;
 
 
+    void inventory_management_query() {
+        Connection connect = null;
+        try {
+            String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
+                    "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code";
 
-
+            Object[] result_from_query = database_utility.query(sql_query);
+            if (result_from_query != null) {
+                connect = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+                
+                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
+                while (result.next()) {
+                    items.add(new Inventory_management_bin(
+                        result.getInt("item_code"),
+                        result.getString("item_description"),
+                        result.getInt("volume"),
+                        result.getString("category"),
+                        result.getInt("dec"),
+                        result.getInt("dec1")
+                    ));
+                }
+                
+                inventory_management_table.setAll(items);
+                inventory_table.refresh();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
+            }
+        }
+    }
 }
