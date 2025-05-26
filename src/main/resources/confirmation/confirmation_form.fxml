@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="173.0" prefWidth="338.0" style="-fx-background-color: #0B1739; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="confirmation.confirmationController">
+<AnchorPane fx:id="confirmation_pane" prefHeight="173.0" prefWidth="338.0" style="-fx-background-color: #0B1739; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="confirmation.confirmationController">
    <children>
       <VBox alignment="TOP_CENTER" layoutY="6.0" prefHeight="97.0" prefWidth="338.0" spacing="5.0">
          <padding>
@@ -50,11 +50,13 @@
             <Insets bottom="20.0" />
          </padding>
       </HBox>
-      <Button layoutX="286.0" layoutY="2.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="43.0" style="-fx-background-color: transparent;" />
-      <ImageView fitHeight="25.0" fitWidth="37.0" layoutX="298.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/x_white.png" />
-         </image>
-      </ImageView>
+      <Button layoutX="283.0" layoutY="-6.0" mnemonicParsing="false" onAction="#Exit" prefHeight="53.0" prefWidth="46.0" style="-fx-background-color: transparent;">
+         <graphic>
+            <ImageView fitHeight="25.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/x_white.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
    </children>
 </AnchorPane>
