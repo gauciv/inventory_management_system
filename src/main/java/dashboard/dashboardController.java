@@ -62,12 +62,6 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-        setupTableColumns();
-        loadTableData();
-        
-        // Add search field listener with more concise syntax
-        searchField.textProperty().addListener((o) -> searchTable());
-        
         styleActiveButton(dashboardbutton);
         setupWindowControls();
         setupTableView();
