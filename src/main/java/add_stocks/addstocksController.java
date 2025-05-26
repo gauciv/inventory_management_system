@@ -1,10 +1,15 @@
 package add_stocks;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+
+
 public class addstocksController {
+
+
 
     @FXML
     private Pane add_pane;
@@ -17,7 +22,12 @@ public class addstocksController {
 
         // Close the stage (window)
         stage.close();
+
+
+
     }
+
+
 
 
 
