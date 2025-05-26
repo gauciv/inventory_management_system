@@ -32,7 +32,7 @@
         <VBox layoutY="82.0" prefHeight="268.0" prefWidth="375.0" spacing="7.0">
             <children>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField id="white-textfield" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -42,7 +42,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -52,7 +52,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sales Offtake" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -62,7 +62,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
