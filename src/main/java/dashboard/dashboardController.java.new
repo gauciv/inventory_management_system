@@ -1,0 +1,52 @@
+package dashboard;
+
+import add_stocks.addstock;
+import database.database_utility;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.List;
+
+public class dashboardController {
+    // ... existing field declarations ...
+
+    @FXML
+    private void handleAddButton() {
+        try {
+            addstock dialog = new addstock();
+            Stage owner = (Stage) right_pane.getScene().getWindow();
+            dialog.showPopup(owner);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load the Add Stocks form. Error: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    // ... rest of the class remains the same ...
+}
