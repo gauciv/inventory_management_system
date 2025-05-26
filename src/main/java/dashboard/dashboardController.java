@@ -334,11 +334,6 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
             stage.setTitle("Add Stocks Form");
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -372,11 +367,6 @@ public class dashboardController {
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -408,11 +398,6 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
 
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
