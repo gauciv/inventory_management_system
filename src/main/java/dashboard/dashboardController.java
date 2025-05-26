@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.List;
+import database.database_utility;
 
 public class dashboardController {
     @FXML private Button minimizeButton;
@@ -62,14 +62,36 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-        setupTableColumns();
-        loadTableData();
-        
-        // Add search field listener with more concise syntax
-        searchField.textProperty().addListener((o) -> searchTable());
-        
         styleActiveButton(dashboardbutton);
+        setupWindowControls();
+        setupTableView();
+        
+        // Initialize form containers
+        setupFormContainers();
+    }
+      private void setupTableView() {
+        // Initialize table columns
+        col_number.setCellValueFactory(cellData -> 
+            javafx.beans.binding.Bindings.createObjectBinding(
+                () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
+            )
+        );
+        col_item_code.setCellValueFactory(new PropertyValueFactory<>("item_code"));
+        col_item_des.setCellValueFactory(new PropertyValueFactory<>("item_des"));
+        col_volume.setCellValueFactory(new PropertyValueFactory<>("volume"));
+        col_category.setCellValueFactory(new PropertyValueFactory<>("category"));
+        col_soh.setCellValueFactory(new PropertyValueFactory<>("soh"));
+        col_sot.setCellValueFactory(new PropertyValueFactory<>("sot"));
 
+        // Initialize data list and set it to table
+        inventory_management_table = FXCollections.observableArrayList();
+        inventory_table.setItems(inventory_management_table);
+        
+        // Load the inventory data
+        inventory_management_query();
+    }
+    
+    private void setupWindowControls() {
         borderpane.setOnMousePressed((MouseEvent event) -> {
             borderpane.setPickOnBounds(true);
             Stage stage = (Stage) borderpane.getScene().getWindow();
@@ -93,7 +115,9 @@ public class dashboardController {
         TabSwitch(salesbutton, salespane);
         TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
-
+    }
+    
+    private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
         myTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
@@ -103,10 +127,7 @@ public class dashboardController {
         inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
         inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
 
-
-        Platform.runLater(() -> {
-            centerAddFormContainer(); // initial center
-        });
+        Platform.runLater(() -> centerAddFormContainer());
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
@@ -189,7 +210,6 @@ public class dashboardController {
     }
 
 
-
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
@@ -270,7 +290,6 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-
         button.setOnAction(e -> {
             styleActiveButton(button);
 
@@ -315,11 +334,6 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
             stage.setTitle("Add Stocks Form");
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -353,11 +367,6 @@ public class dashboardController {
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -390,11 +399,6 @@ public class dashboardController {
             stage.setTitle("Sold Stocks Form");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            // Create a scene with transparent fill
-            Scene scene = new Scene(addForm);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-
             // Before showing, calculate position to center on right_pane
             // Get screen bounds of right_pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -414,7 +418,6 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-
 
 
     @FXML
@@ -441,125 +444,58 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-
-    private void setupTableColumns() {
-        // Clear existing columns
-        myTable.getColumns().clear();
-
-        // Create and configure columns
-        TableColumn<SalesOfftake, String> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        TableColumn<SalesOfftake, String> productNameColumn = new TableColumn<>("Product Name");
-        productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
-
-        TableColumn<SalesOfftake, Integer> quantityColumn = new TableColumn<>("Quantity");
-        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-
-        TableColumn<SalesOfftake, Double> priceColumn = new TableColumn<>("Price");
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-        TableColumn<SalesOfftake, String> dateColumn = new TableColumn<>("Date");
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        // Add columns to table one by one to avoid varargs warning
-        myTable.getColumns().add(idColumn);
-        myTable.getColumns().add(productNameColumn);
-        myTable.getColumns().add(quantityColumn);
-        myTable.getColumns().add(priceColumn);
-        myTable.getColumns().add(dateColumn);
-    }
-
-    private void loadTableData() {
-        try {
-            Object[] result = database_utility.query("SELECT * FROM sales_offtake");
-            if (result != null) {
-                Connection conn = (Connection) result[0];
-                ResultSet rs = (ResultSet) result[1];
-
-                ObservableList<SalesOfftake> data = FXCollections.observableArrayList();
-
-                while (rs.next()) {
-                    SalesOfftake item = new SalesOfftake(
-                        rs.getString("id"),
-                        rs.getString("product_name"),
-                        rs.getInt("quantity"),
-                        rs.getDouble("price"),
-                        rs.getString("date")
-                    );
-                    data.add(item);
-                }
-
-                myTable.setItems(data);
-
-                // Close resources
-                rs.close();
-                database_utility.close(conn);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Show error alert
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Error loading data: " + e.getMessage());
-            alert.showAndWait();
-        }
-    }
-
+    //this section is for the inventory management tab
     @FXML
-    private void searchTable() {
-        String searchText = searchField.getText().toLowerCase();
-        
+    private TableView<Inventory_management_bin> inventory_table;    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_number;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_item_code;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_item_des;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_volume;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_category;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_soh;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_sot;
+    
+    private ObservableList<Inventory_management_bin> inventory_management_table;
+
+
+    void inventory_management_query() {
+        Connection connect = null;
         try {
-            String query = "SELECT * FROM sales_offtake WHERE " +
-                          "LOWER(id) LIKE ? OR " +
-                          "LOWER(product_name) LIKE ? OR " +
-                          "CAST(quantity AS CHAR) LIKE ? OR " +
-                          "CAST(price AS CHAR) LIKE ? OR " +
-                          "LOWER(date) LIKE ?";
-            
-            String searchPattern = "%" + searchText + "%";
-            Object[] result = database_utility.query(query, 
-                searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
-            
-            if (result != null) {
-                Connection conn = (Connection) result[0];
-                ResultSet rs = (ResultSet) result[1];
+            String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
+                    "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code";
 
-                ObservableList<SalesOfftake> filteredData = FXCollections.observableArrayList();
-
-                while (rs.next()) {
-                    SalesOfftake item = new SalesOfftake(
-                        rs.getString("id"),
-                        rs.getString("product_name"),
-                        rs.getInt("quantity"),
-                        rs.getDouble("price"),
-                        rs.getString("date")
-                    );
-                    filteredData.add(item);
+            Object[] result_from_query = database_utility.query(sql_query);
+            if (result_from_query != null) {
+                connect = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+                
+                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
+                while (result.next()) {
+                    items.add(new Inventory_management_bin(
+                        result.getInt("item_code"),
+                        result.getString("item_description"),
+                        result.getInt("volume"),
+                        result.getString("category"),
+                        result.getInt("dec"),
+                        result.getInt("dec1")
+                    ));
                 }
-
-                myTable.setItems(filteredData);
-
-                // Close resources
-                rs.close();
-                database_utility.close(conn);
+                
+                inventory_management_table.setAll(items);
+                inventory_table.refresh();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Search Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Error searching data: " + e.getMessage());
-            alert.showAndWait();
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
+            }
         }
     }
-
-    public void refreshTable() {
-        loadTableData();
-    }
-
-
-
 }
