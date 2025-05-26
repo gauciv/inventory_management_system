@@ -1,47 +1,70 @@
 package dashboard;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.List;
+import database.database_utility;
 
 public class dashboardController {
 
-    @FXML private Button minimizeButton;
-    @FXML private Button resizeButton;
-    @FXML private Button exitButton;
-    @FXML private BorderPane borderpane;
-    @FXML private TabPane tabpane;
-    @FXML private Button dashboardbutton;
-    @FXML private AnchorPane dashboardpane;
-    @FXML private Button inventorybutton;
-    @FXML private AnchorPane inventorypane;
-    @FXML private Button forecastingbutton;
-    @FXML private AnchorPane forecastingpane;
-    @FXML private Button salesbutton;
-    @FXML private AnchorPane salespane;
-    @FXML private Button settingsbutton;
-    @FXML private AnchorPane settingspane;
-    @FXML private Button helpbutton;
-    @FXML private AnchorPane helppane;
-    @FXML private Button activeButton;
-    @FXML private TextField searchField;
-    @FXML private TableView myTable;
-    @FXML private AnchorPane addFormContainer;
-    @FXML private AnchorPane confirmationContainer;
+    @FXML
+    private Button minimizeButton;
+    @FXML
+    private Button resizeButton;
+    @FXML
+    private Button exitButton;
+    @FXML
+    private BorderPane borderpane;
+    @FXML
+    private TabPane tabpane;
+    @FXML
+    private Button dashboardbutton;
+    @FXML
+    private AnchorPane dashboardpane;
+    @FXML
+    private Button inventorybutton;
+    @FXML
+    private AnchorPane inventorypane;
+    @FXML
+    private Button forecastingbutton;
+    @FXML
+    private AnchorPane forecastingpane;
+    @FXML
+    private Button salesbutton;
+    @FXML
+    private AnchorPane salespane;
+    @FXML
+    private Button settingsbutton;
+    @FXML
+    private AnchorPane settingspane;
+    @FXML
+    private Button helpbutton;
+    @FXML
+    private AnchorPane helppane;
+    @FXML
+    private Button activeButton;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private AnchorPane addFormContainer;
+    @FXML
+    private AnchorPane confirmationContainer;
 
 
     private double xOffset = 0;
@@ -53,8 +76,37 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
+        // Initialize the window controls
         styleActiveButton(dashboardbutton);
+        setupWindowControls();
+        setupTableView();
+        
+        // Initialize form containers
+        setupFormContainers();
+    }
+      private void setupTableView() {
+        // Initialize table columns
+        col_number.setCellValueFactory(cellData -> 
+            javafx.beans.binding.Bindings.createObjectBinding(
+                () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
+            )
+        );
+        col_item_code.setCellValueFactory(new PropertyValueFactory<>("item_code"));
+        col_item_des.setCellValueFactory(new PropertyValueFactory<>("item_des"));
+        col_volume.setCellValueFactory(new PropertyValueFactory<>("volume"));
+        col_category.setCellValueFactory(new PropertyValueFactory<>("category"));
+        col_soh.setCellValueFactory(new PropertyValueFactory<>("soh"));
+        col_sot.setCellValueFactory(new PropertyValueFactory<>("sot"));
 
+        // Initialize data list and set it to table
+        inventory_management_table = FXCollections.observableArrayList();
+        inventory_table.setItems(inventory_management_table);
+        
+        // Load the inventory data
+        inventory_management_query();
+    }
+    
+    private void setupWindowControls() {
         borderpane.setOnMousePressed((MouseEvent event) -> {
             borderpane.setPickOnBounds(true);
             Stage stage = (Stage) borderpane.getScene().getWindow();
@@ -78,21 +130,18 @@ public class dashboardController {
         TabSwitch(salesbutton, salespane);
         TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
-
+    }
+    
+    private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
-        myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Listen for inventorypane size changes to recenter addFormContainer
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
+        // Listen for inventorypane size changes to recenter containers
+        inventorypane.widthProperty().addListener((_obs, _old, _new) -> centerAddFormContainer());
+        inventorypane.heightProperty().addListener((_obs, _old, _new) -> centerAddFormContainer());
+        inventorypane.widthProperty().addListener((_obs, _old, _new) -> centerConfirmationContainer());
+        inventorypane.heightProperty().addListener((_obs, _old, _new) -> centerConfirmationContainer());
 
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
-
-
-        Platform.runLater(() -> {
-            centerAddFormContainer(); // initial center
-        });
+        Platform.runLater(() -> centerAddFormContainer());
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
@@ -149,7 +198,6 @@ public class dashboardController {
         AnchorPane.setRightAnchor(confirmationContainer, null);
         AnchorPane.setBottomAnchor(confirmationContainer, null);
     }
-
 
 
     private void styleActiveButton(Button selectedButton) {
@@ -233,7 +281,7 @@ public class dashboardController {
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
 
-        button.setOnAction(event -> {
+        button.setOnAction(_event -> {
             styleActiveButton(button);
 
             for (Tab tab : tabpane.getTabs()) {
@@ -332,7 +380,6 @@ public class dashboardController {
     }
 
 
-
     @FXML
     private void handleContinueClick() {
         try {
@@ -357,5 +404,61 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
+
+    //this section is for the inventory management tab
+    @FXML
+    private TableView<Inventory_management_bin> inventory_table;    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_number;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_item_code;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_item_des;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_volume;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_category;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_soh;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_sot;
+    
+    private ObservableList<Inventory_management_bin> inventory_management_table;
+
+
+    void inventory_management_query() {
+        Connection connect = null;
+        try {
+            String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
+                    "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code";
+
+            Object[] result_from_query = database_utility.query(sql_query);
+            if (result_from_query != null) {
+                connect = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+                
+                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
+                while (result.next()) {
+                    items.add(new Inventory_management_bin(
+                        result.getInt("item_code"),
+                        result.getString("item_description"),
+                        result.getInt("volume"),
+                        result.getString("category"),
+                        result.getInt("dec"),
+                        result.getInt("dec1")
+                    ));
+                }
+                
+                inventory_management_table.setAll(items);
+                inventory_table.refresh();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
+            }
+        }
+    }
+
 
 }

@@ -389,11 +389,15 @@
                                        </Button>
                                     </HBox>
 
-                                    <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">
-                                       <TableView fx:id="myTable" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       <TableView fx:id="inventory_table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>
-                                             <TableColumn text="C1" />
-                                             <TableColumn text="C2" />
+                                             <TableColumn fx:id="col_number" style="-fx-alignment: CENTER;" prefWidth="50.0" text="No." />
+                                             <TableColumn fx:id="col_item_code" text="Item Code" />
+                                             <TableColumn fx:id="col_item_des" text="Description" />
+                                             <TableColumn fx:id="col_volume" text="Volume" />
+                                             <TableColumn fx:id="col_category" text="Category" />
+                                             <TableColumn fx:id="col_soh" text="Stock on Hand" />
+                                             <TableColumn fx:id="col_sot" text="Sales Offtake" />
                                           </columns>
                                           <padding>
                                              <Insets bottom="30.0" />

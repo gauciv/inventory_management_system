@@ -5,10 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class database_utility {
-    private static final String database_url = String.format("jdbc:mysql://%s:%s/%s",
+public class database_utility {    private static final String database_url = String.format("jdbc:mysql://%s:%s/%s",
             System.getenv().getOrDefault("DB_HOST", "127.0.0.1"),
-            System.getenv().getOrDefault("DB_PORT", "3306"),
+            System.getenv().getOrDefault("DB_PORT", "3307"),
             System.getenv().getOrDefault("DB_NAME", "inventory_management_system_database"));
     private static final String database_username = System.getenv().getOrDefault("DB_USER", "root");
     private static final String database_password = System.getenv().getOrDefault("DB_PASS", "computerengineering");
