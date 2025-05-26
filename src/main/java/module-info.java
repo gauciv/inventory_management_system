@@ -5,12 +5,9 @@ module inventory.example.inventory_ms {
     requires transitive javafx.graphics;
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
-    requires org.jetbrains.annotations;
     requires java.desktop;
     requires java.sql;
     requires org.jetbrains.annotations;
-    requires transitive javafx.graphics;
-    requires transitive javafx.base;
 
     opens dashboard to javafx.fxml, javafx.base;
     opens login to javafx.fxml;
