@@ -1,11 +1,12 @@
 module inventory.example.inventory_ms {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.controls;
+    requires transitive javafx.fxml;
+    requires transitive javafx.base;
+    requires transitive javafx.graphics;
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.jetbrains.annotations;
     requires java.desktop;
-    requires javafx.graphics;
     requires java.sql;
     requires mysql.connector.j;
 

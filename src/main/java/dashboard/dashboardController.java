@@ -1,19 +1,21 @@
 package dashboard;
 
+import database.database_utility;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -21,10 +23,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.List;
 
 public class dashboardController {
-
     @FXML private Button minimizeButton;
     @FXML private Button resizeButton;
     @FXML private Button exitButton;
@@ -44,10 +47,11 @@ public class dashboardController {
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
     @FXML private TextField searchField;
-    @FXML private TableView myTable;
+    @FXML private TableView<SalesOfftake> myTable;
     @FXML private AnchorPane addFormContainer;
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
+    @FXML private ChoiceBox<String> monthChoiceBox;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -58,6 +62,12 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
+        setupTableColumns();
+        loadTableData();
+        
+        // Add search field listener with more concise syntax
+        searchField.textProperty().addListener((o) -> searchTable());
+        
         styleActiveButton(dashboardbutton);
 
         borderpane.setOnMousePressed((MouseEvent event) -> {
@@ -85,14 +95,13 @@ public class dashboardController {
         TabSwitch(helpbutton, helppane);
 
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
-        myTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        myTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        // Listen for inventorypane size changes to recenter addFormContainer
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerAddFormContainer());
-
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
-        inventorypane.heightProperty().addListener((obs, oldVal, newVal) -> centerConfirmationContainer());
+        // Listen for size changes with more concise syntax
+        inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
+        inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
 
 
         Platform.runLater(() -> {
@@ -107,6 +116,30 @@ public class dashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        monthChoiceBox.getItems().addAll(
+                "January", "February", "March", "April",
+                "May", "June", "July", "August",
+                "September", "October", "November", "December"
+        );
+
+        monthChoiceBox.setValue("January");
+
+        searchField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            String baseStyle = "-fx-background-color: #081739; -fx-background-radius: 30; " +
+                    "-fx-background-insets: 0; -fx-border-radius: 30; -fx-border-color: transparent; " +
+                    "-fx-prompt-text-fill: rgba(170,170,170,0.5);";
+
+            if (newVal) {
+                // Focus gained: add text fill white, keep other styles
+                searchField.setStyle(baseStyle + " -fx-text-fill: white;");
+            } else {
+                // Focus lost: remove the text fill override to default (black text)
+                searchField.setStyle(baseStyle + " -fx-text-fill: black;");
+            }
+        });
+
+
     }
 
     private void centerAddFormContainer() {
@@ -238,7 +271,7 @@ public class dashboardController {
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
 
-        button.setOnAction(event -> {
+        button.setOnAction(e -> {
             styleActiveButton(button);
 
             for (Tab tab : tabpane.getTabs()) {
@@ -409,6 +442,123 @@ public class dashboardController {
         }
     }
 
+    private void setupTableColumns() {
+        // Clear existing columns
+        myTable.getColumns().clear();
+
+        // Create and configure columns
+        TableColumn<SalesOfftake, String> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<SalesOfftake, String> productNameColumn = new TableColumn<>("Product Name");
+        productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+
+        TableColumn<SalesOfftake, Integer> quantityColumn = new TableColumn<>("Quantity");
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        TableColumn<SalesOfftake, Double> priceColumn = new TableColumn<>("Price");
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        TableColumn<SalesOfftake, String> dateColumn = new TableColumn<>("Date");
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+        // Add columns to table one by one to avoid varargs warning
+        myTable.getColumns().add(idColumn);
+        myTable.getColumns().add(productNameColumn);
+        myTable.getColumns().add(quantityColumn);
+        myTable.getColumns().add(priceColumn);
+        myTable.getColumns().add(dateColumn);
+    }
+
+    private void loadTableData() {
+        try {
+            Object[] result = database_utility.query("SELECT * FROM sales_offtake");
+            if (result != null) {
+                Connection conn = (Connection) result[0];
+                ResultSet rs = (ResultSet) result[1];
+
+                ObservableList<SalesOfftake> data = FXCollections.observableArrayList();
+
+                while (rs.next()) {
+                    SalesOfftake item = new SalesOfftake(
+                        rs.getString("id"),
+                        rs.getString("product_name"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("price"),
+                        rs.getString("date")
+                    );
+                    data.add(item);
+                }
+
+                myTable.setItems(data);
+
+                // Close resources
+                rs.close();
+                database_utility.close(conn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Show error alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Database Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error loading data: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    private void searchTable() {
+        String searchText = searchField.getText().toLowerCase();
+        
+        try {
+            String query = "SELECT * FROM sales_offtake WHERE " +
+                          "LOWER(id) LIKE ? OR " +
+                          "LOWER(product_name) LIKE ? OR " +
+                          "CAST(quantity AS CHAR) LIKE ? OR " +
+                          "CAST(price AS CHAR) LIKE ? OR " +
+                          "LOWER(date) LIKE ?";
+            
+            String searchPattern = "%" + searchText + "%";
+            Object[] result = database_utility.query(query, 
+                searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
+            
+            if (result != null) {
+                Connection conn = (Connection) result[0];
+                ResultSet rs = (ResultSet) result[1];
+
+                ObservableList<SalesOfftake> filteredData = FXCollections.observableArrayList();
+
+                while (rs.next()) {
+                    SalesOfftake item = new SalesOfftake(
+                        rs.getString("id"),
+                        rs.getString("product_name"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("price"),
+                        rs.getString("date")
+                    );
+                    filteredData.add(item);
+                }
+
+                myTable.setItems(filteredData);
+
+                // Close resources
+                rs.close();
+                database_utility.close(conn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Search Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error searching data: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    public void refreshTable() {
+        loadTableData();
+    }
 
 
 
