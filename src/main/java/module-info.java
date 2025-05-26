@@ -1,6 +1,12 @@
-module inventory_management_system {
+module inventory.example.inventory_ms {
     requires transitive javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.fxml;
+    requires transitive javafx.base;
+    requires transitive javafx.graphics;
+    requires org.controlsfx.controls;
+    requires com.dlsc.formsfx;
+    requires org.jetbrains.annotations;
+    requires java.desktop;
     requires java.sql;
     requires org.jetbrains.annotations;
     requires transitive javafx.graphics;

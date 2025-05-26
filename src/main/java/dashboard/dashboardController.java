@@ -1,19 +1,25 @@
 package dashboard;
 
+import database.database_utility;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,50 +28,30 @@ import java.util.List;
 import database.database_utility;
 
 public class dashboardController {
-
-    @FXML
-    private Button minimizeButton;
-    @FXML
-    private Button resizeButton;
-    @FXML
-    private Button exitButton;
-    @FXML
-    private BorderPane borderpane;
-    @FXML
-    private TabPane tabpane;
-    @FXML
-    private Button dashboardbutton;
-    @FXML
-    private AnchorPane dashboardpane;
-    @FXML
-    private Button inventorybutton;
-    @FXML
-    private AnchorPane inventorypane;
-    @FXML
-    private Button forecastingbutton;
-    @FXML
-    private AnchorPane forecastingpane;
-    @FXML
-    private Button salesbutton;
-    @FXML
-    private AnchorPane salespane;
-    @FXML
-    private Button settingsbutton;
-    @FXML
-    private AnchorPane settingspane;
-    @FXML
-    private Button helpbutton;
-    @FXML
-    private AnchorPane helppane;
-    @FXML
-    private Button activeButton;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private AnchorPane addFormContainer;
-    @FXML
-    private AnchorPane confirmationContainer;
-
+    @FXML private Button minimizeButton;
+    @FXML private Button resizeButton;
+    @FXML private Button exitButton;
+    @FXML private BorderPane borderpane;
+    @FXML private TabPane tabpane;
+    @FXML private Button dashboardbutton;
+    @FXML private AnchorPane dashboardpane;
+    @FXML private Button inventorybutton;
+    @FXML private AnchorPane inventorypane;
+    @FXML private Button forecastingbutton;
+    @FXML private AnchorPane forecastingpane;
+    @FXML private Button salesbutton;
+    @FXML private AnchorPane salespane;
+    @FXML private Button settingsbutton;
+    @FXML private AnchorPane settingspane;
+    @FXML private Button helpbutton;
+    @FXML private AnchorPane helppane;
+    @FXML private Button activeButton;
+    @FXML private TextField searchField;
+    @FXML private TableView<SalesOfftake> myTable;
+    @FXML private AnchorPane addFormContainer;
+    @FXML private AnchorPane confirmationContainer;
+    @FXML private VBox right_pane;
+    @FXML private ChoiceBox<String> monthChoiceBox;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -76,7 +62,12 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-        // Initialize the window controls
+        setupTableColumns();
+        loadTableData();
+        
+        // Add search field listener with more concise syntax
+        searchField.textProperty().addListener((o) -> searchTable());
+        
         styleActiveButton(dashboardbutton);
         setupWindowControls();
         setupTableView();
@@ -134,12 +125,13 @@ public class dashboardController {
     
     private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
+        myTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        // Listen for inventorypane size changes to recenter containers
-        inventorypane.widthProperty().addListener((_obs, _old, _new) -> centerAddFormContainer());
-        inventorypane.heightProperty().addListener((_obs, _old, _new) -> centerAddFormContainer());
-        inventorypane.widthProperty().addListener((_obs, _old, _new) -> centerConfirmationContainer());
-        inventorypane.heightProperty().addListener((_obs, _old, _new) -> centerConfirmationContainer());
+        // Listen for size changes with more concise syntax
+        inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
+        inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
+        inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
 
         Platform.runLater(() -> centerAddFormContainer());
 
@@ -151,6 +143,30 @@ public class dashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        monthChoiceBox.getItems().addAll(
+                "January", "February", "March", "April",
+                "May", "June", "July", "August",
+                "September", "October", "November", "December"
+        );
+
+        monthChoiceBox.setValue("January");
+
+        searchField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            String baseStyle = "-fx-background-color: #081739; -fx-background-radius: 30; " +
+                    "-fx-background-insets: 0; -fx-border-radius: 30; -fx-border-color: transparent; " +
+                    "-fx-prompt-text-fill: rgba(170,170,170,0.5);";
+
+            if (newVal) {
+                // Focus gained: add text fill white, keep other styles
+                searchField.setStyle(baseStyle + " -fx-text-fill: white;");
+            } else {
+                // Focus lost: remove the text fill override to default (black text)
+                searchField.setStyle(baseStyle + " -fx-text-fill: black;");
+            }
+        });
+
+
     }
 
     private void centerAddFormContainer() {
@@ -280,8 +296,7 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-
-        button.setOnAction(_event -> {
+        button.setOnAction(e -> {
             styleActiveButton(button);
 
             for (Tab tab : tabpane.getTabs()) {
@@ -315,38 +330,73 @@ public class dashboardController {
 
     @FXML
     private void handleAddButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addstocks_form.fxml"));
-            loader.setController(this);
-            Parent addForm = loader.load();
+            // Load the full layout from FXML (with its own controller)
+            Parent addForm = FXMLLoader.load(getClass().getResource("/addStocks/addstocks_form.fxml"));
 
-            addFormContainer.getChildren().setAll(addForm);
-            addFormContainer.setVisible(true);
-            addFormContainer.toFront();
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Add Stocks Form");
 
-            addFormContainer.layout();
-            centerAddFormContainer();
-            confirmationContainer.setVisible(false);
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @FXML
     private void handleSoldButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/soldStocks/soldstock_form.fxml"));
-            loader.setController(this);
-            Parent soldForm = loader.load();
+            Parent addForm = FXMLLoader.load(getClass().getResource("/soldStocks/soldstock_form.fxml"));
 
-            addFormContainer.getChildren().setAll(soldForm);
-            addFormContainer.setVisible(true);
-            addFormContainer.toFront();
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Sold Stocks Form");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            addFormContainer.layout();
-            centerAddFormContainer();
-            confirmationContainer.setVisible(false);
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -355,24 +405,35 @@ public class dashboardController {
 
     @FXML
     private void handleConfirmationButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
-            Parent confirmationForm = loader.load();
+            Parent addForm = FXMLLoader.load(getClass().getResource("/confirmation/confirmation_form.fxml"));
 
-            confirmationContainer.getChildren().setAll(confirmationForm);
-            confirmationForm.setLayoutX(0);
-            confirmationForm.setTranslateX(0);
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Sold Stocks Form");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            confirmationContainer.setVisible(true);
-            confirmationContainer.toFront();
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
 
-            Platform.runLater(() -> {
-                confirmationContainer.applyCss();
-                confirmationContainer.layout();
-                centerConfirmationContainer();
-            });
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
 
-            addFormContainer.setVisible(false);
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -404,7 +465,6 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-
     //this section is for the inventory management tab
     @FXML
     private TableView<Inventory_management_bin> inventory_table;    @FXML
@@ -459,6 +519,4 @@ public class dashboardController {
             }
         }
     }
-
-
 }
