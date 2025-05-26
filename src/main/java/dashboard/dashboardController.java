@@ -347,24 +347,35 @@ public class dashboardController {
 
     @FXML
     private void handleConfirmationButton() {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
-            Parent confirmationForm = loader.load();
+            Parent addForm = FXMLLoader.load(getClass().getResource("/confirmation/confirmation_form.fxml"));
 
-            confirmationContainer.getChildren().setAll(confirmationForm);
-            confirmationForm.setLayoutX(0);
-            confirmationForm.setTranslateX(0);
+            // Create a new Stage (window) to display the loaded layout
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
+            stage.setTitle("Sold Stocks Form");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
 
-            confirmationContainer.setVisible(true);
-            confirmationContainer.toFront();
+            // Create a scene with transparent fill
+            Scene scene = new Scene(addForm);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
 
-            Platform.runLater(() -> {
-                confirmationContainer.applyCss();
-                confirmationContainer.layout();
-                centerConfirmationContainer();
-            });
+            // Before showing, calculate position to center on right_pane
+            // Get screen bounds of right_pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
 
-            addFormContainer.setVisible(false);
+            // Show the stage first to get its width and height
+            stage.show();
+
+            // Calculate centered position relative to right_pane
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+
+            // Set stage position
+            stage.setX(centerX);
+            stage.setY(centerY);
 
         } catch (IOException e) {
             e.printStackTrace();
