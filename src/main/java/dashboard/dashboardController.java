@@ -47,7 +47,6 @@ public class dashboardController {
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
     @FXML private TextField searchField;
-    @FXML private TableView<SalesOfftake> myTable;
     @FXML private AnchorPane addFormContainer;
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
@@ -119,7 +118,7 @@ public class dashboardController {
     
     private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
-        myTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        inventory_table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
         // Listen for size changes with more concise syntax
         inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
@@ -446,7 +445,8 @@ public class dashboardController {
     }
     //this section is for the inventory management tab
     @FXML
-    private TableView<Inventory_management_bin> inventory_table;    @FXML
+    private TableView<Inventory_management_bin> inventory_table;    
+    @FXML
     private TableColumn<Inventory_management_bin, Integer> col_number;
     @FXML
     private TableColumn<Inventory_management_bin, Integer> col_item_code;
