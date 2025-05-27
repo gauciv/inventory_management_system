@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 public class database_utility {
     private static final String database_url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8",
             System.getenv().getOrDefault("DB_HOST", "localhost"),
-            System.getenv().getOrDefault("DB_PORT", "3306"),
+            System.getenv().getOrDefault("DB_PORT", "3307"),
             System.getenv().getOrDefault("DB_NAME", "inventory_management_system_database"));
     private static final String database_username = System.getenv().getOrDefault("DB_USER", "root");
     private static final String database_password = System.getenv().getOrDefault("DB_PASS", "computerengineering");
