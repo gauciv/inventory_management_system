@@ -6,7 +6,7 @@ module inventory.example.inventory_ms {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires java.desktop;
-    requires java.sql;
+    requires transitive java.sql;
     requires org.jetbrains.annotations;
 
     opens dashboard to javafx.fxml, javafx.base;
