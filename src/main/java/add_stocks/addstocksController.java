@@ -44,6 +44,7 @@ public class addstocksController {
         if (selectedItem != null) {
             selectedItem.setText(description);
         }
+    }
 
     // Call this from dashboardController when opening the form
     public void setItemCodeAndSoh(int itemCode, int soh) {
