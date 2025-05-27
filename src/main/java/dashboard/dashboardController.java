@@ -435,39 +435,80 @@ public class dashboardController {
             }
         }
         return false;
-    }
-
-    @FXML
+    }    @FXML
     private void handleAddButton() {
-
         try {
-            // Load the full layout from FXML (with its own controller)
-            Parent addForm = FXMLLoader.load(getClass().getResource("/addStocks/addstocks_form.fxml"));
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            // Get the path and load appropriate FXML based on checkbox state
+            String fxmlPath;
+            String title;
+            
+            if (checkedCount > 1) {
+                // Show error alert if multiple checkboxes are checked
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select only one item.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            } else if (checkedCount == 1) {
+                // Load addstocks form if exactly one checkbox is checked
+                fxmlPath = "/addStocks/addstocks_form.fxml";
+                title = "Add Stocks Form";
+            } else {
+                // Load addproduct form if no checkbox is checked
+                fxmlPath = "/addStocks/addproduct.fxml";
+                title = "Add Product Form";
+            }
 
-            // Create a new Stage (window) to display the loaded layout
+            // Load the FXML and create scene
+            Parent addForm = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(addForm);
+            scene.setFill(null); // Make scene background transparent
+            
+            // Create and configure stage
             Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
-            stage.setTitle("Add Stocks Form");
-
-            // Before showing, calculate position to center on right_pane
-            // Get screen bounds of right_pane
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.setTitle(title);
+            stage.setScene(scene);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            
+            // Get screen bounds of right_pane for centering
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-
-            // Show the stage first to get its width and height
+            
+            // Show stage to get its dimensions
             stage.show();
-
-            // Calculate centered position relative to right_pane
+            
+            // Center the stage on right_pane
             double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
             double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
-
-            // Set stage position
+            
+            // Set position and bring to front
             stage.setX(centerX);
             stage.setY(centerY);
+            stage.toFront();
 
         } catch (IOException e) {
             e.printStackTrace();
+            // Show error alert if loading fails
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to load form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
         }
-
     }
 
     @FXML
@@ -637,5 +678,24 @@ public class dashboardController {
         }), new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
+    }
+
+
+    @FXML
+    private void handleRefreshData() {
+        // Clear existing table data
+        if (inventory_management_table != null) {
+            inventory_management_table.clear();
+        }
+        
+        // Re-fetch data from database
+        inventory_management_query();
+        
+        // Show success message
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Refresh Complete");
+        alert.setHeaderText(null);
+        alert.setContentText("Data has been refreshed successfully!");
+        alert.showAndWait();
     }
 }

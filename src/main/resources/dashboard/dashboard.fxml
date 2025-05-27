@@ -543,6 +543,18 @@
                                        <AnchorPane fx:id="addFormContainer" prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(0, 0, 255, 0.2);" visible="false" />
                                     <AnchorPane fx:id="confirmationContainer" prefHeight="200" prefWidth="300" visible="false">
                                     </AnchorPane>
+                                    <AnchorPane layoutY="517.0" prefHeight="58.0" prefWidth="727.0">
+                                       <children>
+                                          <Button fx:id="refreshButton" layoutX="393.0" layoutY="12.0" onAction="#handleRefreshData" prefHeight="27.0" prefWidth="221.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
+                                          </Button>
+                                       </children>
+                                    </AnchorPane>
                                  </children>
                               </AnchorPane>
                            </content>
