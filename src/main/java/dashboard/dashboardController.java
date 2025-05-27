@@ -704,58 +704,18 @@ public class dashboardController {
     }
 
     private void initializeSalesSection() {
-        // Set the current date in the sales section
-        if (salesDateLabel != null) {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
-            salesDateLabel.setText("As of " + now.format(formatter));
-        }
-
         try {
-            // Query to get monthly sales data
-            String monthlyQuery = "SELECT jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec`, " +
-                "(jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + `dec`) as total_volume, " +
-                "item_description FROM sale_offtake";
-
-            Object[] result = database_utility.query(monthlyQuery);
-            if (result != null) {
-                ResultSet rs = (ResultSet) result[1];
-
-                if (salesChart != null) {
-                    salesChart.getData().clear();
-                    XYChart.Series<String, Number> series = new XYChart.Series<>();
-                    series.setName("Monthly Sales Volume");
-
-                    // Total volume for all products
-                    int totalVolume = 0;
-                    String topProductName = "";
-                    int maxVolume = 0;
-
-                    while (rs.next()) {
-                        // Update top product if current product has higher volume
-                        int currentTotal = rs.getInt("total_volume");
-                        if (currentTotal > maxVolume) {
-                            maxVolume = currentTotal;
-                            topProductName = rs.getString("item_description");
-                        }
-                        
-                        // Add to total volume
-                        totalVolume += currentTotal;
-                    }
-
-                    // Set total volume and top product
-                    if (totalSalesLabel != null) {
-                        totalSalesLabel.setText(String.format("%,d units", totalVolume));
-                    }
-                    if (topProductLabel != null) {
-                        topProductLabel.setText(String.format("%s\n(%,d units)", topProductName, maxVolume));
-                    }
-                }
-            }
+            // Create and initialize the sales controller
+            SalesController salesController = new SalesController();
+            
+            // Inject the FXML components from dashboardController
+            salesController.injectComponents(salesChart, totalSalesLabel, topProductLabel, salesDateLabel);
+            
+            // Initialize the sales controller
+            salesController.initialize();
         } catch (Exception e) {
             e.printStackTrace();
-            if (totalSalesLabel != null) totalSalesLabel.setText("0 units");
-            if (topProductLabel != null) topProductLabel.setText("N/A");
+            System.err.println("Error initializing sales section: " + e.getMessage());
         }
     }
 }

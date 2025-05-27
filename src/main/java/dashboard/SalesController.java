@@ -19,8 +19,11 @@ public class SalesController {
     @FXML private Label topProductLabel;
     @FXML private Label salesDateLabel;
 
-    @FXML
     public void initialize() {
+        if (salesChart == null || totalSalesLabel == null || topProductLabel == null || salesDateLabel == null) {
+            System.err.println("Error: Sales components not properly injected");
+            return;
+        }
         setupSalesChart();
         setupClock();
         Platform.runLater(this::updateSalesData);
@@ -54,6 +57,11 @@ public class SalesController {
             // Initialize labels
             if (totalSalesLabel != null) totalSalesLabel.setText("0 units");
             if (topProductLabel != null) topProductLabel.setText("No data available");
+            
+            // Create an empty series to avoid null pointer
+            XYChart.Series<String, Number> emptySeries = new XYChart.Series<>();
+            emptySeries.setName("Total Volume");
+            salesChart.getData().add(emptySeries);
         }
     }
 
@@ -68,12 +76,13 @@ public class SalesController {
                 "SUM(oct) as Oct, SUM(nov) as Nov, SUM(dec) as Dec " +
                 "FROM sale_offtake";
 
-            Object[] result = database_utility.query(monthlySalesQuery);
+            Object[] result = database.database_utility.query(monthlySalesQuery);
             if (result != null && result.length == 2) {
                 conn = (Connection) result[0];
                 ResultSet rs = (ResultSet) result[1];
 
                 if (rs.next()) {
+                    // Clear existing data
                     Platform.runLater(() -> salesChart.getData().clear());
 
                     XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -94,7 +103,7 @@ public class SalesController {
                         salesChart.getData().add(series);
                         series.getNode().setStyle("-fx-stroke: #4CAF50;");
                         
-                        // Style the data points and add tooltips
+                        // Style the data points
                         for (XYChart.Data<String, Number> data : series.getData()) {
                             Node node = data.getNode();
                             if (node != null) {
@@ -104,7 +113,7 @@ public class SalesController {
                                             "-fx-padding: 5px;");
                                 
                                 Tooltip tooltip = new Tooltip(
-                                    String.format("%s: %,d units sold", data.getXValue(), data.getYValue().intValue())
+                                    String.format("%s: %,d units", data.getXValue(), data.getYValue().intValue())
                                 );
                                 Tooltip.install(node, tooltip);
                             }
@@ -126,7 +135,7 @@ public class SalesController {
                 "FROM sale_offtake " +
                 "ORDER BY total_sales DESC LIMIT 1";
 
-            Object[] topProductResult = database_utility.query(topProductQuery);
+            Object[] topProductResult = database.database_utility.query(topProductQuery);
             if (topProductResult != null && topProductResult.length == 2) {
                 ResultSet rs = (ResultSet) topProductResult[1];
                 if (rs.next()) {
@@ -134,8 +143,7 @@ public class SalesController {
                     int topSales = rs.getInt("total_sales");
                     Platform.runLater(() -> {
                         if (topProductLabel != null) {
-                            topProductLabel.setText(String.format("%s\nAnnual Volume: %,d units", 
-                                topProduct, topSales));
+                            topProductLabel.setText(String.format("%s\nAnnual Volume: %,d units", topProduct, topSales));
                         }
                     });
                 }
@@ -151,8 +159,16 @@ public class SalesController {
             });
         } finally {
             if (conn != null) {
-                database_utility.close(conn);
+                database.database_utility.close(conn);
             }
         }
     }
+    
+    public void injectComponents(LineChart<String, Number> salesChart, Label totalSalesLabel, 
+                                  Label topProductLabel, Label salesDateLabel) {
+            this.salesChart = salesChart;
+            this.totalSalesLabel = totalSalesLabel;
+            this.topProductLabel = topProductLabel;
+            this.salesDateLabel = salesDateLabel;
+        }
 }
