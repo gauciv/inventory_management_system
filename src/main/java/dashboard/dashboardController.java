@@ -53,7 +53,7 @@ public class dashboardController {
     @FXML private AnchorPane addFormContainer;
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
-    @FXML private ChoiceBox<String> monthChoiceBox;
+    @FXML private ComboBox<String> monthComboBox;
     @FXML private LineChart<String, Number> forecastChart;
     @FXML private ComboBox<String> forecastProductComboBox;
     @FXML private Label forecastAccuracyLabel;
@@ -89,6 +89,12 @@ public class dashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
+        }
+
+        if (monthComboBox != null) {
+            monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
+            monthComboBox.setPromptText("Select a Month");
+
         }
     }
 
@@ -234,13 +240,13 @@ public class dashboardController {
             e.printStackTrace();
         }
 
-        monthChoiceBox.getItems().addAll(
+        monthComboBox.getItems().addAll(
                 "January", "February", "March", "April",
                 "May", "June", "July", "August",
                 "September", "October", "November", "December"
         );
 
-        monthChoiceBox.setValue("January");
+        monthComboBox.setValue("January");
 
         searchField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             String baseStyle = "-fx-background-color: #081739; -fx-background-radius: 30; " +
