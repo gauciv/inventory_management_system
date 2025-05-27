@@ -21,7 +21,6 @@
             <Image url="@../images/x_white.png" />
          </image>
       </ImageView>
-      <Button layoutX="331.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="29.0" prefWidth="51.0" style="-fx-background-color: transparent;" />
       <VBox alignment="TOP_CENTER" layoutX="24.0" layoutY="14.0" prefHeight="70.0" prefWidth="328.0">
 
 
@@ -113,5 +112,6 @@
             </DropShadow>
          </effect>
       </Button>
+      <Button layoutX="331.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="29.0" prefWidth="51.0" style="-fx-background-color: transparent;" />
    </children>
 </Pane>
