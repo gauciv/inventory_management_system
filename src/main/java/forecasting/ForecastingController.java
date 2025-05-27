@@ -28,24 +28,43 @@ public class ForecastingController {
     
     @FXML
     public void initialize() {
+        System.out.println("Initializing ForecastingController...");
         loadProducts();
-        forecastProductComboBox.setOnAction(event -> updateForecast());
+        forecastProductComboBox.setOnAction(event -> {
+            System.out.println("Product selection changed to: " + forecastProductComboBox.getValue());
+            updateForecast();
+        });
         
         // Set default text
+        forecastChart.setTitle("Sales Forecast");
         forecastTrendLabel.setText("Select a product to view trend analysis");
         forecastRecommendationsLabel.setText("Select a product to view recommendations");
+        
+        System.out.println("ForecastingController initialization complete.");
     }
     
     private void loadProducts() {
+        System.out.println("Loading products...");
         try (Connection conn = database_utility.connect()) {
             String query = "SELECT DISTINCT item_description FROM sale_offtake";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             
+            int count = 0;
             while (rs.next()) {
-                forecastProductComboBox.getItems().add(rs.getString("item_description"));
+                String product = rs.getString("item_description");
+                forecastProductComboBox.getItems().add(product);
+                count++;
+                System.out.println("Added product: " + product);
+            }
+            System.out.println("Loaded " + count + " products");
+            
+            if (count > 0) {
+                forecastProductComboBox.setValue(forecastProductComboBox.getItems().get(0));
+                updateForecast(); // Load initial forecast
             }
         } catch (SQLException e) {
+            System.err.println("Error loading products: " + e.getMessage());
             e.printStackTrace();
         }
     }

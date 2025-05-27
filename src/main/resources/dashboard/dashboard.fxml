@@ -495,7 +495,7 @@
                                               <ComboBox fx:id="forecastProductComboBox" 
                                                       prefWidth="300"
                                                       promptText="Select Product"
-                                                      style="-fx-background-color: #081739; -fx-text-fill: white;"/>
+                                                      style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: #aeb9e1;"/>
                                                       
                                               <Label fx:id="forecastAccuracyLabel" 
                                                      text="Forecast Accuracy: N/A" 
@@ -521,13 +521,19 @@
                                                   <xAxis>
                                                       <CategoryAxis side="BOTTOM" 
                                                                  label="Month" 
-                                                                 tickLabelFill="white"/>
+                                                                 tickLabelFill="white"
+                                                                 style="-fx-tick-label-fill: white;"/>
                                                   </xAxis>
                                                   <yAxis>
                                                       <NumberAxis side="LEFT" 
                                                                label="Sales Volume" 
-                                                               tickLabelFill="white"/>
+                                                               tickLabelFill="white"
+                                                               style="-fx-tick-label-fill: white;"/>
                                                   </yAxis>
+                                                  <style>
+                                                      -fx-text-fill: white;
+                                                      -fx-background-color: transparent;
+                                                  </style>
                                               </LineChart>
                                           </VBox>
 
