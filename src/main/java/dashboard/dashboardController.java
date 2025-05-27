@@ -54,7 +54,6 @@ public class dashboardController {
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
     @FXML private ChoiceBox<String> monthChoiceBox;
-    @FXML private Pane sold_pane;
     @FXML private LineChart<String, Number> forecastChart;
     @FXML private ComboBox<String> forecastProductComboBox;
     @FXML private Label forecastAccuracyLabel;
