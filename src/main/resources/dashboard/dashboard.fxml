@@ -415,8 +415,8 @@
                                     </HBox>
 
                                     <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       <TableView fx:id="inventory_table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                          <columns>
-                                             <TableColumn fx:id="col_number" style="-fx-alignment: CENTER;" prefWidth="50.0" text="No." />
+                                          <columns>                                             <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="Select" />
+                                             <TableColumn fx:id="col_number" prefWidth="50.0" style="-fx-alignment: CENTER;" text="No." />
                                              <TableColumn fx:id="col_item_code" text="Item Code" />
                                              <TableColumn fx:id="col_item_des" text="Description" />
                                              <TableColumn fx:id="col_volume" text="Volume" />
@@ -427,6 +427,9 @@
                                           <padding>
                                              <Insets bottom="30.0" />
                                           </padding>
+                                          <columnResizePolicy>
+                                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                          </columnResizePolicy>
                                        </TableView>
                                        <effect>
                                           <DropShadow />
