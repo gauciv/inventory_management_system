@@ -31,6 +31,7 @@ import javafx.stage.StageStyle;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
+import sold_stocks.soldStock;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -545,39 +546,61 @@ public class dashboardController {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
-    }
-
-    @FXML
+    }    @FXML
     private void handleSoldButton() {
-
         try {
-            Parent addForm = FXMLLoader.load(getClass().getResource("/soldStocks/soldstock_form.fxml"));
-
-            // Create a new Stage (window) to display the loaded layout
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
-            stage.setTitle("Sold Stocks Form");
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-
-            // Before showing, calculate position to center on right_pane
-            // Get screen bounds of right_pane
-            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-
-            // Show the stage first to get its width and height
-            stage.show();
-
-            // Calculate centered position relative to right_pane
-            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
-            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
-
-            // Set stage position
-            stage.setX(centerX);
-            stage.setY(centerY);
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to mark as sold.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            } else if (checkedCount > 1) {
+                // Show error alert if multiple checkboxes are checked
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select only one item.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }            soldStock dialog = new soldStock();
+            Stage owner = (Stage) right_pane.getScene().getWindow();
+            dialog.showPopup(
+                owner,
+                inventorypane,
+                selectedItem.getItem_code(),
+                selectedItem.getFormattedItemDesc(),
+                selectedItem.getVolume(),
+                selectedItem.getCategory(),
+                selectedItem.getSot(),
+                selectedItem.getSoh()
+            );
 
         } catch (IOException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to open sold stocks form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
         }
-    }    @FXML
+    }@FXML
     private void handleConfirmationButton() {
         try {
             // Count checked checkboxes in inventory table

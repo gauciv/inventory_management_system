@@ -15,14 +15,14 @@
 
 <Pane fx:id="sold_pane" prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(11, 23, 57, 1); -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sold_stocks.soldstocksController">
     <children>
-        <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="20.0" prefHeight="76.0" prefWidth="328.0">
+        <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="14.0" prefHeight="76.0" prefWidth="328.0">
             <children>
                 <Text fill="#a9adff" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks Sold">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Text>
-                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="IV Solution 500 mL" textAlignment="CENTER" wrappingWidth="177.234375">
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="IV Solution 500 mL" textAlignment="CENTER" wrappingWidth="327.49523413181305">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
@@ -32,7 +32,7 @@
         <VBox layoutY="82.0" prefHeight="268.0" prefWidth="375.0" spacing="7.0">
             <children>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume" wrappingWidth="93.63671875" />
-                <TextField id="white-textfield" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
+                <TextField id="white-textfield" fx:id="volumeField" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -42,7 +42,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="93.63671875" />
-                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
+                <TextField id="white-textfield" fx:id="categoryField" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -52,7 +52,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sales Offtake" wrappingWidth="93.63671875" />
-                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
+                <TextField id="white-textfield" fx:id="salesOfftakeField" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -62,7 +62,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
-                <TextField id="white-textfield" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
+                <TextField id="white-textfield" fx:id="stocksOnHandField" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                     <effect>
                         <DropShadow>
                             <color>
@@ -84,7 +84,7 @@
                 <Insets left="40.0" right="40.0" />
             </padding>
         </HBox>
-        <TextField layoutX="45.0" layoutY="362.0" prefHeight="29.0" prefWidth="168.0" style="-fx-background-radius: 30; -fx-border-color: #0A1196; -fx-border-radius: 30; -fx-background-color: rgba(217, 217, 217, 1);">
+        <TextField fx:id="soldStocksField" layoutX="45.0" layoutY="362.0" prefHeight="29.0" prefWidth="168.0" style="-fx-background-radius: 30; -fx-border-color: #0A1196; -fx-border-radius: 30; -fx-background-color: rgba(217, 217, 217, 1);">
             <effect>
                 <DropShadow spread="0.26">
                     <color>
@@ -93,7 +93,7 @@
                 </DropShadow>
             </effect>
         </TextField>
-        <Button layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
+        <Button fx:id="continueButton" layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
             <effect>
                 <DropShadow>
                     <color>
