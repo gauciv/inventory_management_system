@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+
+<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: transparent;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="forecasting.ForecastingController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Product Selection Area -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <ComboBox fx:id="forecastProductComboBox" 
+                  prefWidth="300"
+                  promptText="Select Product"
+                  style="-fx-background-color: #081739; -fx-text-fill: white;"/>
+                  
+        <Label fx:id="forecastAccuracyLabel" 
+               text="Forecast Accuracy: N/A" 
+               style="-fx-text-fill: white;">
+            <font>
+                <Font size="14"/>
+            </font>
+        </Label>
+    </HBox>
+    
+    <!-- Chart Area -->
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: #081739; -fx-background-radius: 15;">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        
+        <effect>
+            <DropShadow/>
+        </effect>
+        
+        <LineChart fx:id="forecastChart" 
+                   title="Sales Forecast"
+                   legendVisible="true"
+                   createSymbols="true"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: transparent;">
+            <xAxis>
+                <CategoryAxis side="BOTTOM" 
+                             label="Month" 
+                             tickLabelFill="white"/>
+            </xAxis>
+            <yAxis>
+                <NumberAxis side="LEFT" 
+                           label="Sales Volume" 
+                           tickLabelFill="white"/>
+            </yAxis>
+        </LineChart>
+    </VBox>
+
+    <!-- Analysis Cards -->
+    <HBox spacing="20" alignment="CENTER">
+        <!-- Trend Card -->
+        <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
+              minHeight="100" 
+              maxHeight="100" 
+              HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets top="10" right="15" bottom="10" left="15"/>
+            </padding>
+            
+            <effect>
+                <DropShadow/>
+            </effect>
+            
+            <Label text="Trend Analysis" style="-fx-text-fill: white;">
+                <font>
+                    <Font size="14" name="System Bold"/>
+                </font>
+            </Label>
+            <Label fx:id="forecastTrendLabel" 
+                   text="N/A" 
+                   style="-fx-text-fill: white;" 
+                   wrapText="true"/>
+        </VBox>
+
+        <!-- Recommendations Card -->
+        <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
+              minHeight="100" 
+              maxHeight="100" 
+              HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets top="10" right="15" bottom="10" left="15"/>
+            </padding>
+            
+            <effect>
+                <DropShadow/>
+            </effect>
+            
+            <Label text="Recommendations" style="-fx-text-fill: white;">
+                <font>
+                    <Font size="14" name="System Bold"/>
+                </font>
+            </Label>
+            <Label fx:id="forecastRecommendationsLabel" 
+                   text="N/A"
+                   style="-fx-text-fill: white;"
+                   wrapText="true"/>
+        </VBox>
+    </HBox>
+</VBox>

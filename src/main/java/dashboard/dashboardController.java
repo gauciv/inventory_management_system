@@ -4,11 +4,14 @@ import database.database_utility;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -16,16 +19,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import forecasting.ForecastingController;
+import forecasting.ForecastingModel;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.List;
-import database.database_utility;
 
 public class dashboardController {
     @FXML private Button minimizeButton;
@@ -51,6 +54,11 @@ public class dashboardController {
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
     @FXML private ChoiceBox<String> monthChoiceBox;
+    @FXML private LineChart<String, Number> forecastChart;
+    @FXML private ComboBox<String> forecastProductComboBox;
+    @FXML private Label forecastAccuracyLabel;
+    @FXML private Label forecastTrendLabel;
+    @FXML private Label forecastRecommendationsLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -59,16 +67,74 @@ public class dashboardController {
     private double prevHeight = 450;
     private double prevX, prevY;
 
+    private ForecastingController forecastingController;
+
     @FXML
     public void initialize() {
-        styleActiveButton(dashboardbutton);
-        setupWindowControls();
-        setupTableView();
-        
-        // Initialize form containers
-        setupFormContainers();
+       try {
+            // Initialize table first since other components may depend on it
+            inventory_management_table = FXCollections.observableArrayList();
+            if (inventory_table != null) {
+                inventory_table.setItems(inventory_management_table);
+            }
+            
+            setupTableView();
+            setupWindowControls();
+            setupFormContainers();
+            styleActiveButton(dashboardbutton);
+            initializeForecastingSection();
+            
+            // Load initial data
+            Platform.runLater(this::inventory_management_query);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
+        }
     }
-      private void setupTableView() {
+
+    private void initializeForecastingSection() {
+        try {
+            // Initialize forecasting controller
+            forecastingController = new ForecastingController();
+            
+            // Configure chart before passing to controller
+            if (forecastChart != null) {
+                forecastChart.setAnimated(false); // Disable animations for better performance
+                forecastChart.getXAxis().setLabel("Month");
+                forecastChart.getYAxis().setLabel("Sales Volume");
+            }
+            
+            // Initialize the forecasting controller with all UI components
+            forecastingController.initialize(
+                forecastChart,
+                forecastProductComboBox,
+                forecastAccuracyLabel,
+                forecastTrendLabel,
+                forecastRecommendationsLabel
+            );
+        } catch (Exception e) {
+            System.err.println("Error initializing forecasting section: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show error in a dialog
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Initialization Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to initialize forecasting section: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+  
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.showAndWait();
+    }
+
+    private void setupTableView() {
         // Initialize table columns
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
@@ -81,6 +147,37 @@ public class dashboardController {
         col_category.setCellValueFactory(new PropertyValueFactory<>("category"));
         col_soh.setCellValueFactory(new PropertyValueFactory<>("soh"));
         col_sot.setCellValueFactory(new PropertyValueFactory<>("sot"));
+        
+        // Setup checkbox column
+        col_select.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
+        
+        // Create CheckBoxes in each cell
+        col_select.setCellFactory(column -> new TableCell<>() {
+            private final CheckBox checkBox = new CheckBox();
+            {
+                // Add action handler to checkbox
+                checkBox.setOnAction((ActionEvent _event) -> {
+                    Inventory_management_bin bin = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (bin != null) {
+                        bin.setSelected(checkBox.isSelected());
+                    }
+                });
+            }
+            
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Inventory_management_bin bin = getTableRow().getItem();
+                    if (bin != null) {
+                        checkBox.setSelected(bin.getSelected());
+                    }
+                    setGraphic(checkBox);
+                }
+            }
+        });
 
         // Initialize data list and set it to table
         inventory_management_table = FXCollections.observableArrayList();
@@ -444,8 +541,9 @@ public class dashboardController {
         }
     }
     //this section is for the inventory management tab
+
     @FXML
-    private TableView<Inventory_management_bin> inventory_table;    
+    private TableView<Inventory_management_bin> inventory_table;
     @FXML
     private TableColumn<Inventory_management_bin, Integer> col_number;
     @FXML
@@ -460,7 +558,8 @@ public class dashboardController {
     private TableColumn<Inventory_management_bin, Integer> col_soh;
     @FXML
     private TableColumn<Inventory_management_bin, Integer> col_sot;
-    
+   @FXML 
+    private TableColumn<Inventory_management_bin, Boolean> col_select;
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
 
@@ -474,7 +573,7 @@ public class dashboardController {
             if (result_from_query != null) {
                 connect = (Connection) result_from_query[0];
                 ResultSet result = (ResultSet) result_from_query[1];
-                
+
                 ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
                 while (result.next()) {
                     items.add(new Inventory_management_bin(
@@ -486,7 +585,7 @@ public class dashboardController {
                         result.getInt("dec1")
                     ));
                 }
-                
+
                 inventory_management_table.setAll(items);
                 inventory_table.refresh();
             }
