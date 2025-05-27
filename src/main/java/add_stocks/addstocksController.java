@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import database.database_utility;
 import java.sql.Connection;
@@ -22,6 +23,8 @@ public class addstocksController {
     @FXML @SuppressWarnings("all")
     public TextField text_field4;
     @FXML
+    private Text selectedItem;
+    @FXML
     public TextField newstock;
     @FXML
     public Button continueButton;
@@ -34,6 +37,13 @@ public class addstocksController {
         // Get the window/stage the button is in and close it
         Stage stage = (Stage) addPane.getScene().getWindow();
         stage.close();
+    }
+
+
+    public void setSelectedItemDescription(String description) {
+        if (selectedItem != null) {
+            selectedItem.setText(description);
+        }
     }
 
     // Call this from dashboardController when opening the form
