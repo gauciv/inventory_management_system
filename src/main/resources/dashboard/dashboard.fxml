@@ -616,7 +616,7 @@
                                        <!-- Analysis Cards -->
                                        <HBox alignment="CENTER" spacing="20">
                                            <!-- Trend Card -->
-                                           <VBox maxHeight="100" minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                                           <VBox maxHeight="100" minHeight="100" prefWidth="335" minWidth="335" maxWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                <padding>
                                                    <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>
@@ -634,7 +634,7 @@
                                            </VBox>
 
                                            <!-- Recommendations Card -->
-                                           <VBox maxHeight="100" minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                                           <VBox maxHeight="100" minHeight="100" prefWidth="335" minWidth="335" maxWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                <padding>
                                                    <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>
