@@ -10,14 +10,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="confirmation_pane" prefHeight="173.0" prefWidth="338.0" style="-fx-background-color: #0B1739; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="confirmation.confirmationController">
+<AnchorPane fx:id="confirmation_pane" prefHeight="173.0" prefWidth="338.0" style="-fx-background-color: #081739; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="confirmation.confirmationController">
    <children>
       <VBox alignment="TOP_CENTER" layoutY="6.0" prefHeight="97.0" prefWidth="338.0" spacing="5.0">
          <padding>
             <Insets left="10.0" right="10.0" top="15.0" />
          </padding>
-         <children>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="TYPE OF CONFIRMATION">
+         <children>            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="DELETE CONFIRMATION">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
@@ -25,22 +24,21 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
             </Text>
-            <Text fill="WHITE" lineSpacing="5.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IV Solution 500 mL ">
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Are you sure you want to delete the selected item?">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font size="12.0" />
                </font>
             </Text>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="has been deleted from the directory" />
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="This action cannot be undone." />
          </children>
       </VBox>
       <HBox alignment="CENTER" layoutY="96.0" prefHeight="97.0" prefWidth="338.0" spacing="30.0">
-         <children>
-            <Button minHeight="40.0" mnemonicParsing="false" prefWidth="95.0" style="-fx-background-color: #0A1196; -fx-background-radius: 20;" text="Next" textFill="WHITE">
+         <children>            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleNextButton" prefWidth="95.0" style="-fx-background-color: #0A1196; -fx-background-radius: 20;" text="Next" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button minHeight="40.0" mnemonicParsing="false" prefWidth="95.0" style="-fx-background-color: #06774A; -fx-background-radius: 20;" text="Undo" textFill="WHITE">
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleUndoButton" prefWidth="95.0" style="-fx-background-color: #06774A; -fx-background-radius: 20;" text="Undo" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
