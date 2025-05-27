@@ -476,6 +476,8 @@ public class dashboardController {
                     controller.textfield2.setText(selectedItem.getCategory());
                     controller.text_field3.setText(String.valueOf(selectedItem.getSot())); // Sales Offtake
                     controller.text_field4.setText(String.valueOf(selectedItem.getSoh())); // Stock on Hand
+                    // Pass item code and current SOH for updating
+                    controller.setItemCodeAndSoh(selectedItem.getItem_code(), selectedItem.getSoh());
                 }
                 Scene scene = new Scene(addForm);
                 scene.setFill(null); // Make scene background transparent

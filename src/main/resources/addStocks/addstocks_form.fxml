@@ -95,7 +95,7 @@
             <Insets left="40.0" right="40.0" />
          </padding>
       </HBox>
-      <TextField layoutX="45.0" layoutY="362.0" prefHeight="29.0" prefWidth="168.0" style="-fx-background-radius: 30; -fx-border-color: #0A1196; -fx-border-radius: 30; -fx-background-color: rgba(217, 217, 217, 1);">
+      <TextField fx:id="newstock" layoutX="45.0" layoutY="362.0" prefHeight="29.0" prefWidth="168.0" style="-fx-background-radius: 30; -fx-border-color: #0A1196; -fx-border-radius: 30; -fx-background-color: rgba(217, 217, 217, 1);">
          <effect>
             <DropShadow spread="0.26">
                <color>
@@ -104,7 +104,7 @@
             </DropShadow>
          </effect>
       </TextField>
-      <Button layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
+      <Button fx:id="continueButton" layoutX="223.0" layoutY="362.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
          <effect>
             <DropShadow>
                <color>
