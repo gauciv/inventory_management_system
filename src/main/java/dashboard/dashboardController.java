@@ -1,6 +1,12 @@
 package dashboard;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import database.database_utility;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,6 +65,10 @@ public class dashboardController {
     @FXML private Label forecastAccuracyLabel;
     @FXML private Label forecastTrendLabel;
     @FXML private Label forecastRecommendationsLabel;
+    @FXML private Label dateLabel;
+    @FXML private Label dateTimeLabel;
+    @FXML private Label salesDateLabel; // Add this field for sales date
+    @FXML private Label salesTimeLabel; // Add this field for sales time
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -68,6 +78,7 @@ public class dashboardController {
     private double prevX, prevY;
 
     private ForecastingController forecastingController;
+    private Timeline clockTimeline;
 
     @FXML
     public void initialize() {
@@ -83,9 +94,11 @@ public class dashboardController {
             setupFormContainers();
             styleActiveButton(dashboardbutton);
             initializeForecastingSection();
+            startClock(); // Initialize the clock
             
             // Load initial data
             Platform.runLater(this::inventory_management_query);
+            
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
@@ -602,5 +615,27 @@ public class dashboardController {
                 database_utility.close(connect);
             }
         }
+    }
+
+    private void startClock() {
+        Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            String formattedDate = currentTime.format(dateFormatter);
+            String formattedTime = currentTime.format(timeFormatter);
+            
+            // Update dashboard date and time
+            if (dateLabel != null) {
+                dateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
+            }
+            
+            // Update sales pane date and time
+            if (salesDateLabel != null) {
+                salesDateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
+            }
+        }), new KeyFrame(Duration.seconds(1)));
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
 }

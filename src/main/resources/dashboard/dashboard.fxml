@@ -288,7 +288,7 @@
                                                 <Font size="10.0" />
                                              </font>
                                           </Label>
-                                          <Label layoutX="354.0" layoutY="287.0" text="December 30, 2025 " textFill="WHITE" StackPane.alignment="TOP_LEFT">
+                                          <Label fx:id="dateLabel" text="DATE:" textFill="WHITE" StackPane.alignment="TOP_LEFT">
                                              <StackPane.margin>
                                                 <Insets left="20.0" top="55.0" />
                                              </StackPane.margin>
@@ -551,7 +551,7 @@
                            <content>
                               <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <Label text="DATE:" textFill="WHITE">
+                                    <Label fx:id="salesDateLabel" textFill="WHITE">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
