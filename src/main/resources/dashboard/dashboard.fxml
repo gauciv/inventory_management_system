@@ -290,7 +290,7 @@
                                                 <Font size="10.0" />
                                              </font>
                                           </Label>
-                                          <Label layoutX="354.0" layoutY="287.0" text="December 30, 2025 " textFill="WHITE" StackPane.alignment="TOP_LEFT">
+                                          <Label fx:id="dateLabel" text="DATE:" textFill="WHITE" StackPane.alignment="TOP_LEFT">
                                              <StackPane.margin>
                                                 <Insets left="20.0" top="55.0" />
                                              </StackPane.margin>
@@ -568,7 +568,7 @@
                            <content>
                               <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <Label text="DATE:" textFill="WHITE">
+                                    <Label fx:id="salesDateLabel" textFill="WHITE">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -594,94 +594,66 @@
 
                                        <!-- Product Selection Area -->
                                        <HBox alignment="CENTER_LEFT" spacing="20">
-                                           <ComboBox fx:id="forecastProductComboBox" 
-                                                   prefWidth="300"
-                                                   promptText="Select Product"
-                                                   style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
-                                           <Label fx:id="forecastAccuracyLabel" 
-                                                  text="Forecast Accuracy: N/A" 
-                                                  style="-fx-text-fill: white;">
+                                           <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Select Product" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                           <Label fx:id="forecastAccuracyLabel" style="-fx-text-fill: white;" text="Forecast Accuracy: N/A">
                                                <font>
-                                                   <Font size="14"/>
+                                                   <Font size="14" />
                                                </font>
                                            </Label>
                                        </HBox>
 
                                        <!-- Chart Area -->
-                                       <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: #081739;">
+                                       <VBox style="-fx-background-color: #081739;" VBox.vgrow="ALWAYS">
                                            <padding>
-                                               <Insets top="20" right="20" bottom="20" left="20"/>
+                                               <Insets bottom="20" left="20" right="20" top="20" />
                                            </padding>
                                            
-                                           <LineChart fx:id="forecastChart" 
-                                                    title="Sales Forecast"
-                                                    legendVisible="true"
-                                                    createSymbols="true"
-                                                    VBox.vgrow="ALWAYS"
-                                                    style="-fx-background-color: transparent; -fx-text-fill: white;">
+                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Sales Forecast" VBox.vgrow="ALWAYS">
                                                <xAxis>
-                                                   <CategoryAxis side="BOTTOM" 
-                                                              label="Month" 
-                                                              tickLabelFill="white"
-                                                              style="-fx-tick-label-fill: white; -fx-text-fill: white;"/>
+                                                   <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
                                                </xAxis>
                                                <yAxis>
-                                                   <NumberAxis side="LEFT" 
-                                                            label="Sales Volume" 
-                                                            tickLabelFill="white"
-                                                            style="-fx-tick-label-fill: white; -fx-text-fill: white;"/>
+                                                   <NumberAxis label="Sales Volume" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
                                                </yAxis>
                                            </LineChart>
                                        </VBox>
 
                                        <!-- Analysis Cards -->
-                                       <HBox spacing="20" alignment="CENTER">
+                                       <HBox alignment="CENTER" spacing="20">
                                            <!-- Trend Card -->
-                                           <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
-                                                 minHeight="100" 
-                                                 maxHeight="100" 
-                                                 HBox.hgrow="ALWAYS">
+                                           <VBox maxHeight="100" minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                                                <padding>
-                                                   <Insets top="10" right="15" bottom="10" left="15"/>
+                                                   <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>
                                                
                                                <effect>
-                                                   <DropShadow/>
+                                                   <DropShadow />
                                                </effect>
                                                
-                                               <Label text="Trend Analysis" style="-fx-text-fill: white;">
+                                               <Label style="-fx-text-fill: white;" text="Trend Analysis">
                                                    <font>
-                                                       <Font size="14" name="System Bold"/>
+                                                       <Font name="System Bold" size="14" />
                                                    </font>
                                                </Label>
-                                               <Label fx:id="forecastTrendLabel" 
-                                                      text="N/A" 
-                                                      style="-fx-text-fill: white;" 
-                                                      wrapText="true"/>
+                                               <Label fx:id="forecastTrendLabel" style="-fx-text-fill: white;" text="N/A" wrapText="true" />
                                            </VBox>
 
                                            <!-- Recommendations Card -->
-                                           <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
-                                                 minHeight="100" 
-                                                 maxHeight="100" 
-                                                 HBox.hgrow="ALWAYS">
+                                           <VBox maxHeight="100" minHeight="100" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
                                                <padding>
-                                                   <Insets top="10" right="15" bottom="10" left="15"/>
+                                                   <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>
                                                
                                                <effect>
-                                                   <DropShadow/>
+                                                   <DropShadow />
                                                </effect>
                                                
-                                               <Label text="Recommendations" style="-fx-text-fill: white;">
+                                               <Label style="-fx-text-fill: white;" text="Recommendations">
                                                    <font>
-                                                       <Font size="14" name="System Bold"/>
+                                                       <Font name="System Bold" size="14" />
                                                    </font>
                                                </Label>
-                                               <Label fx:id="forecastRecommendationsLabel" 
-                                                      text="N/A" 
-                                                      style="-fx-text-fill: white;" 
-                                                      wrapText="true"/>
+                                               <Label fx:id="forecastRecommendationsLabel" style="-fx-text-fill: white;" text="N/A" wrapText="true" />
                                            </VBox>
                                        </HBox>
                                     </VBox>
