@@ -30,10 +30,16 @@ public class Inventory_management_bin {
     // Existing getters
     public Integer getItem_code() {
         return item_code.get();
-    }
-
-    public String getItem_des() {
+    }    public String getItem_des() {
         return item_des.get();
+    }
+    
+    public String getFormattedItemDesc() {
+        String desc = getItem_des();
+        if (desc != null) {
+            return desc.trim(); // Remove any extra whitespace
+        }
+        return "";
     }
 
     public Integer getVolume() {

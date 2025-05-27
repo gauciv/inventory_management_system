@@ -469,14 +469,14 @@ public class dashboardController {
                 title = "Add Stocks Form";
                 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent addForm = loader.load();
-                // Set the selected row data to the text fields in the addstocks form
+                Parent addForm = loader.load();                // Set the selected row data to the text fields in the addstocks form
+                
                 add_stocks.addstocksController controller = loader.getController();
-                if (selectedItem != null && controller != null) {
-                    controller.text_field1.setText(String.valueOf(selectedItem.getVolume()));
+                if (selectedItem != null && controller != null) {                    controller.text_field1.setText(String.valueOf(selectedItem.getVolume()));
                     controller.textfield2.setText(selectedItem.getCategory());
                     controller.text_field3.setText(String.valueOf(selectedItem.getSot())); // Sales Offtake
                     controller.text_field4.setText(String.valueOf(selectedItem.getSoh())); // Stock on Hand
+                    controller.setSelectedItemDescription(selectedItem.getFormattedItemDesc()); // Set the formatted description in the form
                 }
                 Scene scene = new Scene(addForm);
                 scene.setFill(null); // Make scene background transparent
