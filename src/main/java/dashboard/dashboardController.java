@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
+import confirmation.confirmationController;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -574,34 +575,92 @@ public class dashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @FXML
+    }    @FXML
     private void handleConfirmationButton() {
-
         try {
-            Parent addForm = FXMLLoader.load(getClass().getResource("/confirmation/confirmation_form.fxml"));
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to delete.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }
 
-            // Create a new Stage (window) to display the loaded layout
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
-            stage.setTitle("Sold Stocks Form");
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            final Inventory_management_bin itemToDelete = selectedItem;
 
-            // Before showing, calculate position to center on right_pane
-            // Get screen bounds of right_pane
-            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
+            Parent confirmationForm = loader.load();
+            confirmationController controller = loader.getController();
+            
+            // Set up the deletion callback
+            controller.setDeletionCallback(new confirmationController.DeletionCallback() {
+                @Override
+                public void onConfirmDeletion() {
+                    // Remove from table
+                    inventory_table.getItems().remove(itemToDelete);
+                    
+                    // Delete from database
+                    try {
+                        Connection connect = null;
+                        try {
+                            Object[] result = database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
+                            if (result != null) {
+                                connect = (Connection)result[0];
+                                database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
+                            }
+                        } finally {
+                            if (connect != null) {
+                                database_utility.close(connect);
+                            }
+                        }
+                        
+                        // Refresh table data
+                        inventory_management_query();
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Failed to delete item from database: " + e.getMessage());
+                        alert.initStyle(StageStyle.UNDECORATED);
+                        alert.showAndWait();
+                    }
+                }
 
-            // Show the stage first to get its width and height
-            stage.show();
+                @Override
+                public void onCancelDeletion() {
+                    // Do nothing, dialog will be hidden by controller
+                }
+            });
 
-            // Calculate centered position relative to right_pane
-            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
-            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+            confirmationContainer.getChildren().setAll(confirmationForm);
+            confirmationForm.setLayoutX(0);
+            confirmationForm.setTranslateX(0);
+            
+            confirmationContainer.setVisible(true);
+            confirmationContainer.toFront();
 
-            // Set stage position
-            stage.setX(centerX);
-            stage.setY(centerY);
+            // Wait for layout pass, then center
+            Platform.runLater(() -> {
+                confirmationContainer.applyCss();
+                confirmationContainer.layout();
+                centerConfirmationContainer();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
