@@ -2,16 +2,15 @@ package add_stocks;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
-public class addstocksController {
-
+public class addstocksController {    @FXML
+    private Pane addPane;    
+    
     @FXML
-    private Pane add_pane;
-
-    @FXML
-    private void Exit() {
-        if (add_pane.getParent() instanceof Pane parent) {
-            parent.getChildren().remove(add_pane);
-        }
+    private void handleExit() {
+        // Get the window/stage the button is in and close it
+        Stage stage = (Stage) addPane.getScene().getWindow();
+        stage.close();
     }
 }
