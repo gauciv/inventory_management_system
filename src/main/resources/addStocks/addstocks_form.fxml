@@ -53,7 +53,7 @@
                </effect>
             </TextField>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="93.63671875" />
-            <TextField fx:id="textfield2" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+            <TextField id="white-textfield" fx:id="textfield2" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                <effect>
                   <DropShadow>
                      <color>
@@ -63,7 +63,7 @@
                </effect>
             </TextField>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sales Offtake" wrappingWidth="93.63671875" />
-            <TextField fx:id="text_field3" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+            <TextField id="white-textfield" fx:id="text_field3" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                <effect>
                   <DropShadow>
                      <color>
@@ -73,7 +73,7 @@
                </effect>
             </TextField>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
-            <TextField fx:id="text_field4" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+            <TextField id="white-textfield" fx:id="text_field4" editable="false" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #656484; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;" stylesheets="@../style.css">
                <effect>
                   <DropShadow>
                      <color>
