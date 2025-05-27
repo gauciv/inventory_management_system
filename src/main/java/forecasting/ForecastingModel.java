@@ -16,11 +16,11 @@ public class ForecastingModel {
     }
     
     public double[] forecast(double[] historicalData, int periodsAhead) {
-        if (historicalData.length < seasonLength * 2) {
-            throw new IllegalArgumentException("Need at least 2 years of data");
+        if (historicalData.length < seasonLength) {
+            throw new IllegalArgumentException("Need at least 1 year of data");
         }
         
-        // Initialize level, trend, and seasonal components
+        // Initialize seasonal components using the available data
         double[] seasons = initializeSeasonalComponents(historicalData);
         double level = calculateInitialLevel(historicalData);
         double trend = calculateInitialTrend(historicalData);
@@ -31,7 +31,7 @@ public class ForecastingModel {
         
         for (int i = 0; i < periodsAhead; i++) {
             int season = (n + i) % seasonLength;
-            forecast[i] = (level + trend * (i + 1)) * seasons[season];
+            forecast[i] = Math.max(0, (level + trend * (i + 1)) * seasons[season]); // Ensure non-negative values
         }
         
         return forecast;
@@ -39,48 +39,71 @@ public class ForecastingModel {
     
     private double[] initializeSeasonalComponents(double[] data) {
         double[] seasonalIndices = new double[seasonLength];
-        int numSeasons = data.length / seasonLength;
+        int numPeriods = data.length;
         
-        // Calculate average for each season
-        for (int season = 0; season < seasonLength; season++) {
-            double sum = 0;
-            for (int year = 0; year < numSeasons; year++) {
-                sum += data[year * seasonLength + season];
-            }
-            seasonalIndices[season] = sum / numSeasons;
+        // Calculate average for each season using available data
+        double[] seasonSums = new double[seasonLength];
+        int[] seasonCounts = new int[seasonLength];
+        
+        for (int i = 0; i < numPeriods; i++) {
+            int season = i % seasonLength;
+            seasonSums[season] += data[i];
+            seasonCounts[season]++;
         }
         
-        // Normalize seasonal indices
-        double seasonsSum = Arrays.stream(seasonalIndices).sum();
+        // Calculate seasonal indices
+        double totalAverage = Arrays.stream(data).sum() / numPeriods;
+        if (totalAverage == 0) totalAverage = 1; // Avoid division by zero
+        
         for (int i = 0; i < seasonLength; i++) {
-            seasonalIndices[i] = seasonalIndices[i] * seasonLength / seasonsSum;
+            double seasonAverage = seasonCounts[i] > 0 ? seasonSums[i] / seasonCounts[i] : totalAverage;
+            seasonalIndices[i] = seasonAverage / totalAverage;
         }
         
         return seasonalIndices;
     }
     
     private double calculateInitialLevel(double[] data) {
-        return Arrays.stream(data, 0, seasonLength).average().orElse(0);
+        // Use the average of first season as initial level
+        return Arrays.stream(data, 0, Math.min(data.length, seasonLength)).average().orElse(0);
     }
     
     private double calculateInitialTrend(double[] data) {
+        if (data.length <= seasonLength) {
+            // With only one season, estimate trend using first and last months
+            return (data[data.length - 1] - data[0]) / (data.length - 1);
+        }
+        
+        // With more data, use average change between seasons
         double sum = 0;
-        for (int i = 0; i < seasonLength; i++) {
+        int n = Math.min(data.length - seasonLength, seasonLength);
+        for (int i = 0; i < n; i++) {
             sum += (data[seasonLength + i] - data[i]) / seasonLength;
         }
-        return sum / seasonLength;
+        return sum / n;
     }
     
     public static double calculateAccuracy(double[] actual, double[] forecast) {
-        if (actual.length != forecast.length) {
-            throw new IllegalArgumentException("Arrays must be of equal length");
+        if (actual.length != forecast.length || actual.length == 0) {
+            throw new IllegalArgumentException("Arrays must be of equal non-zero length");
         }
         
-        double sumError = 0;
+        double sumAbsPercentError = 0.0;
+        int validPoints = 0;
+        
         for (int i = 0; i < actual.length; i++) {
-            sumError += Math.abs((actual[i] - forecast[i]) / actual[i]);
+            if (actual[i] != 0) {  // Avoid division by zero
+                double absPercentError = Math.abs((actual[i] - forecast[i]) / actual[i]) * 100;
+                sumAbsPercentError += absPercentError;
+                validPoints++;
+            }
         }
         
-        return (1 - (sumError / actual.length)) * 100; // Return accuracy percentage
+        if (validPoints == 0) {
+            return 0.0;
+        }
+        
+        // Return accuracy as 100 - MAPE (Mean Absolute Percentage Error)
+        return Math.min(100.0, Math.max(0.0, 100.0 - (sumAbsPercentError / validPoints)));
     }
 }
