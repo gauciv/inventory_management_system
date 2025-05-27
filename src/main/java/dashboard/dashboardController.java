@@ -18,6 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -28,12 +31,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.paint.Color;
+import javafx.scene.control.Tooltip;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class dashboardController {
@@ -67,8 +73,10 @@ public class dashboardController {
     @FXML private Label forecastRecommendationsLabel;
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
-    @FXML private Label salesDateLabel; // Add this field for sales date
-    @FXML private Label salesTimeLabel; // Add this field for sales time
+    @FXML private Label salesDateLabel;
+    @FXML private LineChart<String, Number> salesChart;
+    @FXML private Label totalSalesLabel;
+    @FXML private Label topProductLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -82,7 +90,7 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-       try {
+        try {
             // Initialize table first since other components may depend on it
             inventory_management_table = FXCollections.observableArrayList();
             if (inventory_table != null) {
@@ -94,10 +102,13 @@ public class dashboardController {
             setupFormContainers();
             styleActiveButton(dashboardbutton);
             initializeForecastingSection();
+            initializeSalesSection();
             startClock(); // Initialize the clock
             
             // Load initial data
-            Platform.runLater(this::inventory_management_query);
+            Platform.runLater(() -> {
+                inventory_management_query();
+            });
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -405,27 +416,24 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-        button.setOnAction(e -> {
+        button.setOnAction(__ -> {
             styleActiveButton(button);
 
+            String tabText = button.getText().trim();
             for (Tab tab : tabpane.getTabs()) {
-                Node content = tab.getContent();
-
-                if (content == pane) {
+                if (tab.getText().equalsIgnoreCase(tabText) || 
+                    tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
                     tabpane.getSelectionModel().select(tab);
-                    return;
-                }
-
-                if (isDescendant(content, pane)) {
-                    tabpane.getSelectionModel().select(tab);
+                    if (pane != null) {
+                        pane.setVisible(true);
+                    }
                     return;
                 }
             }
-
-            System.out.println("No tab contains the given AnchorPane.");
+            System.out.println("No matching tab found for " + tabText);
         });
     }
-
+    
     private boolean isDescendant(Node parent, Node child) {
         if (parent instanceof Parent) {
             for (Node node : ((Parent) parent).getChildrenUnmodifiable()) {
@@ -671,10 +679,6 @@ public class dashboardController {
                 dateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
             }
             
-            // Update sales pane date and time
-            if (salesDateLabel != null) {
-                salesDateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
-            }
         }), new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
@@ -697,5 +701,61 @@ public class dashboardController {
         alert.setHeaderText(null);
         alert.setContentText("Data has been refreshed successfully!");
         alert.showAndWait();
+    }
+
+    private void initializeSalesSection() {
+        // Set the current date in the sales section
+        if (salesDateLabel != null) {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+            salesDateLabel.setText("As of " + now.format(formatter));
+        }
+
+        try {
+            // Query to get monthly sales data
+            String monthlyQuery = "SELECT jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec`, " +
+                "(jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + `dec`) as total_volume, " +
+                "item_description FROM sale_offtake";
+
+            Object[] result = database_utility.query(monthlyQuery);
+            if (result != null) {
+                ResultSet rs = (ResultSet) result[1];
+
+                if (salesChart != null) {
+                    salesChart.getData().clear();
+                    XYChart.Series<String, Number> series = new XYChart.Series<>();
+                    series.setName("Monthly Sales Volume");
+
+                    // Total volume for all products
+                    int totalVolume = 0;
+                    String topProductName = "";
+                    int maxVolume = 0;
+
+                    while (rs.next()) {
+                        // Update top product if current product has higher volume
+                        int currentTotal = rs.getInt("total_volume");
+                        if (currentTotal > maxVolume) {
+                            maxVolume = currentTotal;
+                            topProductName = rs.getString("item_description");
+                        }
+                        
+                        // Add to total volume
+                        totalVolume += currentTotal;
+                    }
+
+                    // Set total volume and top product
+                    if (totalSalesLabel != null) {
+                        totalSalesLabel.setText(String.format("%,d units", totalVolume));
+                    }
+                    if (topProductLabel != null) {
+                        topProductLabel.setText(String.format("%s\n(%,d units)", topProductName, maxVolume));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (totalSalesLabel != null) totalSalesLabel.setText("0 units");
+            if (topProductLabel != null) topProductLabel.setText("N/A");
+        }
     }
 }
