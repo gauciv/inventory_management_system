@@ -632,4 +632,22 @@ public class dashboardController {
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
     }
+
+    @FXML
+    private void handleRefreshData() {
+        // Clear existing table data
+        if (inventory_management_table != null) {
+            inventory_management_table.clear();
+        }
+        
+        // Re-fetch data from database
+        inventory_management_query();
+        
+        // Show success message
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Refresh Complete");
+        alert.setHeaderText(null);
+        alert.setContentText("Data has been refreshed successfully!");
+        alert.showAndWait();
+    }
 }
