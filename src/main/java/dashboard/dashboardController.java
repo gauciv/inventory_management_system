@@ -11,6 +11,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -21,6 +22,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import forecasting.ForecastingController;
+import forecasting.ForecastingModel;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -51,15 +54,25 @@ public class dashboardController {
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
     @FXML private ChoiceBox<String> monthChoiceBox;
+    @FXML private Pane sold_pane;
+    @FXML private LineChart<String, Number> forecastChart;
+    @FXML private ComboBox<String> forecastProductComboBox;
+    @FXML private Label forecastAccuracyLabel;
+    @FXML private Label forecastTrendLabel;
+    @FXML private Label forecastRecommendationsLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
     private boolean isFullscreen = false;
     private double prevWidth = 900;
     private double prevHeight = 450;
-    private double prevX, prevY;    @FXML
+    private double prevX, prevY;
+
+    private ForecastingController forecastingController;
+
+    @FXML
     public void initialize() {
-        try {
+       try {
             // Initialize table first since other components may depend on it
             inventory_management_table = FXCollections.observableArrayList();
             if (inventory_table != null) {
@@ -70,6 +83,7 @@ public class dashboardController {
             setupWindowControls();
             setupFormContainers();
             styleActiveButton(dashboardbutton);
+            initializeForecastingSection();
             
             // Load initial data
             Platform.runLater(this::inventory_management_query);
@@ -78,7 +92,40 @@ public class dashboardController {
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
         }
     }
-    
+
+    private void initializeForecastingSection() {
+        try {
+            // Initialize forecasting controller
+            forecastingController = new ForecastingController();
+            
+            // Configure chart before passing to controller
+            if (forecastChart != null) {
+                forecastChart.setAnimated(false); // Disable animations for better performance
+                forecastChart.getXAxis().setLabel("Month");
+                forecastChart.getYAxis().setLabel("Sales Volume");
+            }
+            
+            // Initialize the forecasting controller with all UI components
+            forecastingController.initialize(
+                forecastChart,
+                forecastProductComboBox,
+                forecastAccuracyLabel,
+                forecastTrendLabel,
+                forecastRecommendationsLabel
+            );
+        } catch (Exception e) {
+            System.err.println("Error initializing forecasting section: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show error in a dialog
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Initialization Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to initialize forecasting section: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+  
     private void showErrorAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -86,9 +133,9 @@ public class dashboardController {
         alert.setContentText(content);
         alert.initStyle(StageStyle.UNDECORATED);
         alert.showAndWait();
-    }private void setupTableView() {
-        if (inventory_table == null) return; // Safety check
-        
+    }
+
+    private void setupTableView() {
         // Initialize table columns
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
@@ -495,16 +542,25 @@ public class dashboardController {
         }
     }
     //this section is for the inventory management tab
-    @FXML private TableView<Inventory_management_bin> inventory_table;    
-    @FXML private TableColumn<Inventory_management_bin, Integer> col_number;
-    @FXML private TableColumn<Inventory_management_bin, Integer> col_item_code;
-    @FXML private TableColumn<Inventory_management_bin, String> col_item_des;
-    @FXML private TableColumn<Inventory_management_bin, Integer> col_volume;
-    @FXML private TableColumn<Inventory_management_bin, String> col_category;
-    @FXML private TableColumn<Inventory_management_bin, Integer> col_soh;
-    @FXML private TableColumn<Inventory_management_bin, Integer> col_sot;
-    @FXML private TableColumn<Inventory_management_bin, Boolean> col_select;
-    
+
+    @FXML
+    private TableView<Inventory_management_bin> inventory_table;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_number;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_item_code;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_item_des;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_volume;
+    @FXML
+    private TableColumn<Inventory_management_bin, String> col_category;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_soh;
+    @FXML
+    private TableColumn<Inventory_management_bin, Integer> col_sot;
+   @FXML 
+    private TableColumn<Inventory_management_bin, Boolean> col_select;
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
 
@@ -518,7 +574,7 @@ public class dashboardController {
             if (result_from_query != null) {
                 connect = (Connection) result_from_query[0];
                 ResultSet result = (ResultSet) result_from_query[1];
-                
+
                 ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
                 while (result.next()) {
                     items.add(new Inventory_management_bin(
@@ -530,7 +586,7 @@ public class dashboardController {
                         result.getInt("dec1")
                     ));
                 }
-                
+
                 inventory_management_table.setAll(items);
                 inventory_table.refresh();
             }
