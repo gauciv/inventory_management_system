@@ -114,7 +114,6 @@ public class login_controller {
     @FXML
     private void login_button_clicked() {
         String username = username_field.getText().trim();
-        // Get password from the appropriate field based on visibility state
         String password_string = isPasswordVisible ? visiblePassword.getText() : password.getText();
 
         if (username.isEmpty() || password_string.isEmpty()) {
@@ -142,12 +141,22 @@ public class login_controller {
                     String fullName = result.getString("first_name") + " " + 
                                     result.getString("middle_initial") + " " + 
                                     result.getString("last_name");
-                    
-                    showAlert(Alert.AlertType.INFORMATION, "Login Successful", 
-                             "Welcome " + fullName + "!\nRedirecting to dashboard...");
-                    
-                    // Load the dashboard
-                    loadDashboard(result.getString("username"));
+                    String usernameFromDb = result.getString("username");
+
+                    // Show loading overlay (non-blocking)
+                    showLoadingOverlay();
+
+                    // Load the dashboard in a background thread
+                    new Thread(() -> {
+                        try {
+                            // Simulate loading time (optional, remove in production)
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {}
+                        javafx.application.Platform.runLater(() -> {
+                            loadDashboard(usernameFromDb);
+                            hideLoadingOverlay();
+                        });
+                    }).start();
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Login Failed", 
                              "Invalid username or password.\nPlease try again.");
@@ -206,6 +215,31 @@ public class login_controller {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", 
                      "Could not load the dashboard.\n" + e.getMessage());
+        }
+    }
+
+    // --- Loading overlay logic ---
+    private Stage loadingStage;
+    private void showLoadingOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login/loading.fxml"));
+            Parent loadingRoot = loader.load();
+            loadingStage = new Stage(StageStyle.TRANSPARENT);
+            loadingStage.initOwner(login_pane.getScene().getWindow());
+            loadingStage.initStyle(StageStyle.UNDECORATED);
+            loadingStage.setAlwaysOnTop(true);
+            Scene scene = new Scene(loadingRoot);
+            scene.setFill(null);
+            loadingStage.setScene(scene);
+            loadingStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void hideLoadingOverlay() {
+        if (loadingStage != null) {
+            loadingStage.close();
+            loadingStage = null;
         }
     }
 }
