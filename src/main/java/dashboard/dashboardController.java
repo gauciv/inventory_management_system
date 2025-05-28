@@ -653,10 +653,12 @@ public class dashboardController {
                     try {
                         Connection connect = null;
                         try {
-                            Object[] result = database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
+                            // First delete from stock_onhand (child table)
+                            Object[] result = database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
                             if (result != null) {
                                 connect = (Connection)result[0];
-                                database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
+                                // Then delete from sale_offtake (parent table)
+                                database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
                             }
                         } finally {
                             if (connect != null) {
