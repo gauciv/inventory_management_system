@@ -631,7 +631,16 @@ public class dashboardController {
             }
 
             // Load the FXML and create scene
-            Parent addForm = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent addForm = loader.load();
+            
+            // Get the controller and pass dashboard reference
+            add_stocks.addproductController controller = loader.getController();
+            if (controller == null) {
+                throw new RuntimeException("Failed to get controller for add product form");
+            }
+            controller.setDashboardController(this);
+            
             Scene scene = new Scene(addForm);
             scene.setFill(null); // Make scene background transparent
             
@@ -664,6 +673,15 @@ public class dashboardController {
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("Failed to load form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // Show error alert if controller initialization fails
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
