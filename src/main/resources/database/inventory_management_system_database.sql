@@ -156,6 +156,7 @@ DROP TABLE IF EXISTS `notifications_activities`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications_activities` (
   `id` INT AUTO_INCREMENT,
+  `notifications` TEXT,
   `activities` TEXT,
   `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
