@@ -960,7 +960,11 @@ public class dashboardController {
             imageView.setFitWidth(22);
             imageView.setPreserveRatio(true);
 
-            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility as of " + formattedDate);
             label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
             hBox.getChildren().addAll(imageView, label);
@@ -977,6 +981,50 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
         });
+    }
 
+    /**
+     * Adds a notification to the recent VBox for sold stocks.
+     * @param stockCount The number of stocks sold.
+     * @param description The item description.
+     */
+    public void addSoldStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has been sold as of " + formattedDate);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
     }
 }
