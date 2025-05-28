@@ -1,26 +1,28 @@
 module inventory.example.inventory_ms {
-    requires transitive javafx.controls;
-    requires transitive javafx.fxml;
-    requires transitive javafx.base;
-    requires transitive javafx.graphics;
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires javafx.base;
+    requires javafx.graphics;
+    requires java.sql;
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
-    requires java.desktop;
-    requires transitive java.sql;
     requires org.jetbrains.annotations;
 
-    opens dashboard to javafx.fxml, javafx.base;
-    opens login to javafx.fxml;
-    opens add_edit_product to javafx.fxml;
-    opens add_stocks to javafx.fxml;
-    opens confirmation to javafx.fxml;
-    opens sold_stocks to javafx.fxml;
+    opens login to javafx.fxml, javafx.base, javafx.controls;
+    opens dashboard to javafx.fxml, javafx.base, javafx.controls;
+    opens forecasting to javafx.fxml, javafx.base, javafx.controls;
+    opens confirmation to javafx.fxml, javafx.base, javafx.controls;
+    opens sold_stocks to javafx.fxml, javafx.base, javafx.controls;
+    opens add_stocks to javafx.fxml, javafx.base, javafx.controls;
+    opens add_edit_product to javafx.fxml, javafx.base, javafx.controls;
+    opens database to javafx.fxml, javafx.base, javafx.controls;
     
-    exports dashboard;
     exports login;
-    exports add_edit_product;
-    exports add_stocks;
+    exports dashboard;
+    exports forecasting;
     exports confirmation;
     exports sold_stocks;
+    exports add_stocks;
+    exports add_edit_product;
     exports database;
 }

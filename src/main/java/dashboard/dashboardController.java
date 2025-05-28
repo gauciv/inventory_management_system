@@ -86,6 +86,13 @@ public class dashboardController {
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
     @FXML private Button formulaHelpButton;
+    @FXML private ComboBox<String> chartTypeComboBox;
+    @FXML private ComboBox<String> compareProductComboBox;
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
+    @FXML private Button exportButton;
+    @FXML private Label growthRateLabel;
+    @FXML private Label averageSalesLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -857,7 +864,10 @@ public class dashboardController {
             
             // Make sure components are loaded
             if (salesChart == null || totalSalesLabel == null || 
-                topProductLabel == null || salesDateLabel == null) {
+                topProductLabel == null || salesDateLabel == null ||
+                chartTypeComboBox == null || compareProductComboBox == null ||
+                startDate == null || endDate == null || exportButton == null ||
+                growthRateLabel == null || averageSalesLabel == null) {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
@@ -885,6 +895,8 @@ public class dashboardController {
             // Show user-friendly error
             if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
             if (topProductLabel != null) topProductLabel.setText("Error loading data");
+            if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
+            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
         }
     }
 
