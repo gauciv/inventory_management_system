@@ -41,6 +41,7 @@ import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
 import sold_stocks.soldStock;
+import add_edit_product.addeditproductController;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -1206,16 +1207,12 @@ public class dashboardController {
                 return;
             }
 
-
-            // Create and show the edit form using add-edit-product_form.fxml
-            add_edit_product.addeditproduct editForm = new add_edit_product.addeditproduct();
-            editForm.showPopup((Stage) right_pane.getScene().getWindow(), inventorypane, selectedItem, this);
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
-            
+            // Load and show the edit form
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addEditProduct/add-edit-product_form.fxml"));
+            Parent editForm = loader.load();
             
             // Get the controller and set up the data
-            add_stocks.addproductController controller = loader.getController();
+            addeditproductController controller = loader.getController();
             controller.setDashboardController(this);
             controller.setItemToEdit(selectedItem);
 
@@ -1236,14 +1233,12 @@ public class dashboardController {
             stage.setY(centerY);
             stage.toFront();
 
-
         } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("Failed to open edit form: " + e.getMessage());
-            alert.initStyle(StageStyle.UNDECORATED);
+            alert.setContentText("Error loading edit form: " + e.getMessage());
             alert.showAndWait();
         }
     }
