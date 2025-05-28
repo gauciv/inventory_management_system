@@ -108,6 +108,12 @@ public class dashboardController {
     private ForecastingController forecastingController;
     private Timeline clockTimeline;
 
+    private javafx.application.HostServices hostServices;
+
+    public void setHostServices(javafx.application.HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
     @FXML
     public void initialize() {
         try {
@@ -1118,5 +1124,36 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
         });
+    }
+
+    @FXML
+    private void handleGithubLink(MouseEvent event) {
+        Label clickedLabel = (Label) event.getSource();
+        String url = (String) clickedLabel.getUserData();
+        if (hostServices != null) {
+            hostServices.showDocument(url);
+        } else {
+            // Fallback using Runtime if HostServices is not available
+            try {
+                String os = System.getProperty("os.name").toLowerCase();
+                ProcessBuilder pb;
+                if (os.contains("win")) {
+                    pb = new ProcessBuilder("cmd", "/c", "start", url);
+                } else if (os.contains("mac")) {
+                    pb = new ProcessBuilder("open", url);
+                } else {
+                    pb = new ProcessBuilder("xdg-open", url);
+                }
+                pb.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Show error dialog
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Could not open the link: " + e.getMessage());
+                alert.showAndWait();
+            }
+        }
     }
 }
