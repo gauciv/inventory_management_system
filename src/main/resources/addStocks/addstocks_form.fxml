@@ -22,10 +22,6 @@
          </image>
       </ImageView>
       <VBox alignment="TOP_CENTER" layoutX="24.0" layoutY="14.0" prefHeight="70.0" prefWidth="328.0">
-
-
-
-
          <children>
             <Text fill="#a9adff" strokeType="OUTSIDE" strokeWidth="0.0" text="Adding Stocks">
                <font>
@@ -88,7 +84,7 @@
       </VBox>
       <HBox layoutX="-1.0" layoutY="338.0" prefHeight="17.0" prefWidth="375.0">
          <children>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="New Stocks (December):" wrappingWidth="158.13671875" />
+            <Text fx:id="monthLabel" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="New Stocks (December):" wrappingWidth="158.13671875" />
          </children>
          <padding>
             <Insets left="40.0" right="40.0" />

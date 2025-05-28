@@ -596,8 +596,9 @@
                                                         createSymbols="true" 
                                                         legendVisible="true" 
                                                         animated="false"
-                                                        style="-fx-background-color: transparent; -fx-text-fill: white;"
+                                                        style="-fx-background-color: transparent;"
                                                         title="Monthly Sales Overview"
+                                                        stylesheets="@chart-styles.css"
                                                         VBox.vgrow="ALWAYS">
                                                   <xAxis>
                                                       <CategoryAxis fx:id="salesChartXAxis"
