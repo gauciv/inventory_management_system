@@ -15,7 +15,7 @@ public class login_app extends Application {
     @Override
     public void start(@NotNull Stage stage) throws IOException {
         // Set icon (taskbar, window bar)
-        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm()));
         FXMLLoader fxmlLoader = new FXMLLoader(login_app.class.getResource("login_form.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 900, 450);
         scene.setFill(Color.TRANSPARENT); // removes white background
