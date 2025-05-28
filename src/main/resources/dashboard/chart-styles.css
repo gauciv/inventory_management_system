@@ -11,11 +11,19 @@
 }
 
 .chart-legend {
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 
 .chart-legend-item {
-    -fx-text-fill: white;
+    -fx-text-fill: black;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 0;
+}
+
+.chart-legend-item-text {
+    -fx-fill: black;
 }
 
 .axis {
