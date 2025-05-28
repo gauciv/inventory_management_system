@@ -25,10 +25,8 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-<?import javafx.geometry.Side?>
-<?import java.lang.String?>
 
-<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
    <!-- Left Panel (Sidebar) -->
    <left>
@@ -445,7 +443,7 @@
                                                             </DropShadow>
                                                          </effect>
                                                       </VBox>
-                                                      <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                                                      <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
                                                                <VBox.margin>
@@ -463,6 +461,9 @@
                                                                </effect>
                                                             </VBox>
                                                          </content>
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" right="20.0" />
+                                                         </VBox.margin>
                                                       </ScrollPane>
                                                    </children>
                                                    <padding>
@@ -493,7 +494,7 @@
                                              <Insets />
                                           </HBox.margin>
                                        </TextField>
-                                       <ComboBox fx:id="monthComboBox" prefHeight="30.0" prefWidth="144.0" promptText="Select Month" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;">
+                                       <ComboBox id="combo-box" fx:id="monthComboBox" prefHeight="30.0" prefWidth="144.0" promptText="Select Month" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;" stylesheets="@../style.css">
                                           <HBox.margin>
                                              <Insets top="10.0" />
                                           </HBox.margin>
@@ -568,14 +569,9 @@
                         </Tab>
                         <Tab text="Sales">
                            <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" 
-                                        prefHeight="580.0" prefWidth="726.0" 
-                                        style="-fx-background-color: #081028;">
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="580.0" prefWidth="726.0" style="-fx-background-color: #081028;">
                                   <children>
-                                      <VBox spacing="20" AnchorPane.bottomAnchor="15.0" 
-                                            AnchorPane.leftAnchor="27.0" 
-                                            AnchorPane.rightAnchor="28.0" 
-                                            AnchorPane.topAnchor="15.0">
+                                      <VBox spacing="20" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="15.0">
                                           <Label fx:id="salesDateLabel" textFill="WHITE">
                                               <font>
                                                   <Font name="Arial" size="16.0" />
@@ -583,8 +579,7 @@
                                           </Label>
                                           
                                           <!-- Chart Area -->
-                                          <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
-                                                VBox.vgrow="ALWAYS">
+                                          <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" VBox.vgrow="ALWAYS">
                                               <padding>
                                                   <Insets bottom="20" left="20" right="20" top="20" />
                                               </padding>
@@ -592,74 +587,50 @@
                                                   <DropShadow />
                                               </effect>
                                               
-                                              <LineChart fx:id="salesChart" 
-                                                        createSymbols="true" 
-                                                        legendVisible="true" 
-                                                        animated="false"
-                                                        style="-fx-background-color: transparent;"
-                                                        title="Monthly Sales Overview"
-                                                        stylesheets="@chart-styles.css"
-                                                        VBox.vgrow="ALWAYS">
+                                              <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" VBox.vgrow="ALWAYS">
                                                   <xAxis>
-                                                      <CategoryAxis fx:id="salesChartXAxis"
-                                                                  label="Month" 
-                                                                  side="BOTTOM" 
-                                                                  tickLabelFill="white"
-                                                                  style="-fx-tick-label-fill: white; -fx-text-fill: white;" />
+                                                      <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
                                                   </xAxis>
                                                   <yAxis>
-                                                      <NumberAxis fx:id="salesChartYAxis"
-                                                                label="Sales Volume" 
-                                                                side="LEFT" 
-                                                                tickLabelFill="white"
-                                                                style="-fx-tick-label-fill: white; -fx-text-fill: white;"
-                                                                autoRanging="true"
-                                                                minorTickCount="2" />
+                                                      <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
                                                   </yAxis>
                                               </LineChart>
                                           </VBox>
                                           
                                           <!-- Sales Summary Section -->
-                                          <HBox spacing="20" alignment="CENTER">
+                                          <HBox alignment="CENTER" spacing="20">
                                               <!-- Total Sales Volume Card -->
-                                              <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
-                                                    minWidth="250" maxWidth="300">
+                                              <VBox maxWidth="300" minWidth="250" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                   <padding>
                                                       <Insets bottom="10" left="15" right="15" top="10" />
                                                   </padding>
                                                   <effect>
                                                       <DropShadow />
                                                   </effect>
-                                                  <Label text="Total Sales Volume" style="-fx-text-fill: white;">
+                                                  <Label style="-fx-text-fill: white;" text="Total Sales Volume">
                                                       <font>
                                                           <Font name="System Bold" size="14" />
                                                       </font>
                                                   </Label>
-                                                  <Label text="Total units sold across all products" 
-                                                         style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" />
-                                                  <Label fx:id="totalSalesLabel" 
-                                                         style="-fx-text-fill: white; -fx-font-size: 24;" />
+                                                  <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" text="Total units sold across all products" />
+                                                  <Label fx:id="totalSalesLabel" style="-fx-text-fill: white; -fx-font-size: 24;" />
                                               </VBox>
                                               
                                               <!-- Top Product Card -->
-                                              <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
-                                                    minWidth="250" maxWidth="300">
+                                              <VBox maxWidth="300" minWidth="250" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                   <padding>
                                                       <Insets bottom="10" left="15" right="15" top="10" />
                                                   </padding>
                                                   <effect>
                                                       <DropShadow />
                                                   </effect>
-                                                  <Label text="Top Product" style="-fx-text-fill: white;">
+                                                  <Label style="-fx-text-fill: white;" text="Top Product">
                                                       <font>
                                                           <Font name="System Bold" size="14" />
                                                       </font>
                                                   </Label>
-                                                  <Label text="Product with highest sales volume" 
-                                                         style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" />
-                                                  <Label fx:id="topProductLabel" 
-                                                         style="-fx-text-fill: white; -fx-font-size: 16;" 
-                                                         wrapText="true" />
+                                                  <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" text="Product with highest sales volume" />
+                                                  <Label fx:id="topProductLabel" style="-fx-text-fill: white; -fx-font-size: 16;" wrapText="true" />
                                               </VBox>
                                           </HBox>
                                       </VBox>
@@ -692,7 +663,7 @@
 
                                            <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" stylesheets="@../style.css">
                                                <xAxis>
-                                                   <CategoryAxis fx:id="xAxis" label="Month" side="BOTTOM" />
+                                                   <CategoryAxis label="Month" side="BOTTOM" fx:id="xAxis" />
                                                </xAxis>
                                                <yAxis>
                                                    <NumberAxis fx:id="yAxis" label="Sales Volume" side="LEFT" />

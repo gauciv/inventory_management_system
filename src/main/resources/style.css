@@ -73,3 +73,65 @@
     background-color: #081739;
     -fx-background-color: #081739;
 }
+
+/* Gradient style for ComboBox */
+.combo-box {
+    -fx-background-color: linear-gradient(to bottom, #081739, #0A1196);
+    background-color: linear-gradient(to bottom, #081739, #0A1196);
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    color: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-family: "Arial";
+    font-family: "Arial";
+    -fx-border-color: transparent;
+    border-color: transparent;
+}
+.combo-box .list-cell, .combo-box .text-field {
+    -fx-text-fill: white;
+    color: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-family: "Arial";
+    font-family: "Arial";
+}
+.combo-box-popup {
+    -fx-background-color: linear-gradient(to bottom, #081739, #0A1196);
+    background-color: linear-gradient(to bottom, #081739, #0A1196);
+}
+.combo-box-popup .list-view {
+    -fx-background-color: linear-gradient(to bottom, #081739, #0A1196);
+    background-color: linear-gradient(to bottom, #081739, #0A1196);
+}
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-text-fill: white !important;
+    color: white !important;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-family: "Arial";
+    font-family: "Arial";
+}
+.combo-box-popup .list-cell:hover, .combo-box-popup .list-cell:selected {
+    -fx-text-fill: white;
+    color: white;
+    /* Remove background-color override to keep gradient visible */
+}
+.combo-box-popup .scroll-pane {
+    -fx-background-color: linear-gradient(to bottom, #081739, #000dfc);
+    background-color: linear-gradient(to bottom, #081739, #00033b);
+}
+.combo-box-popup .scroll-bar:vertical {
+    -fx-background-color: linear-gradient(to bottom, #081739, #0A1196);
+    background-color: linear-gradient(to bottom, #081739, #0A1196);
+}
+.combo-box-popup .thumb {
+    -fx-background-color: linear-gradient(to bottom, #0A1196, #081739);
+    background-color: linear-gradient(to bottom, #0A1196, #081739);
+}
+.combo-box-popup .track {
+    -fx-background-color: linear-gradient(to bottom, #081739, #0A1196);
+    background-color: linear-gradient(to bottom, #081739, #0A1196);
+}

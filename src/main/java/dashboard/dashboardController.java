@@ -134,6 +134,8 @@ public class dashboardController {
         if (monthComboBox != null) {
             monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
             monthComboBox.setPromptText("Select a Month");
+            // Auto-refresh inventory table when month changes
+            monthComboBox.setOnAction(event -> inventory_management_query());
         }
     }
 
