@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -430,7 +431,7 @@
                                                       <Insets top="240.0" />
                                                    </HBox.margin>
                                                    <children>
-                                                      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="687.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" VBox.vgrow="ALWAYS">
+                                                      <VBox id="recentScrollPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="687.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
                                                          <VBox.margin>
                                                             <Insets left="10.0" right="20.0" />
                                                          </VBox.margin>
@@ -442,21 +443,25 @@
                                                             </DropShadow>
                                                          </effect>
                                                       </VBox>
-                                                      <VBox layoutX="20.0" layoutY="10.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;" VBox.vgrow="ALWAYS">
-                                                         <VBox.margin>
-                                                            <Insets bottom="20.0" left="10.0" right="20.0" />
-                                                         </VBox.margin>
-                                                         <padding>
-                                                            <Insets bottom="10.0" />
-                                                         </padding>
-                                                         <effect>
-                                                            <DropShadow>
-                                                               <color>
-                                                                  <Color opacity="0.25" />
-                                                               </color>
-                                                            </DropShadow>
-                                                         </effect>
-                                                      </VBox>
+                                                      <ScrollPane fx:id="recentScrollPane" fitToWidth="true" fitToHeight="false" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" VBox.vgrow="ALWAYS" vbarPolicy="ALWAYS" hbarPolicy="NEVER">
+                                                         <content>
+                                                            <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="20.0" left="10.0" right="20.0" />
+                                                               </VBox.margin>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" />
+                                                               </padding>
+                                                               <effect>
+                                                                  <DropShadow>
+                                                                     <color>
+                                                                        <Color opacity="0.25" />
+                                                                     </color>
+                                                                  </DropShadow>
+                                                               </effect>
+                                                            </VBox>
+                                                         </content>
+                                                      </ScrollPane>
                                                    </children>
                                                    <padding>
                                                       <Insets left="10.0" />
@@ -517,7 +522,7 @@
                                        </Button>
                                     </HBox>
 
-                                    <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       
+                                    <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       
                                       <TableView fx:id="inventory_table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>                                             
                                             <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="Select" />
@@ -543,11 +548,11 @@
                                        <AnchorPane fx:id="addFormContainer" prefHeight="420.0" prefWidth="375.0" style="-fx-background-color: rgba(0, 0, 255, 0.2);" visible="false" />
                                     <AnchorPane fx:id="confirmationContainer" prefHeight="200" prefWidth="300" visible="false">
                                     </AnchorPane>
-                                    <AnchorPane layoutY="517.0" prefHeight="58.0" prefWidth="727.0">
+                                    <AnchorPane fx:id="refreshButtonContainer" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <Button fx:id="refreshButton" layoutX="393.0" layoutY="12.0" onAction="#handleRefreshData" prefHeight="27.0" prefWidth="221.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE">
+                                          <Button fx:id="refreshButton" alignment="CENTER" onAction="#handleRefreshData" prefHeight="27.0" prefWidth="100.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0">
                                              <font>
-                                                <Font size="16.0" />
+                                                <Font size="14.0" />
                                              </font>
                                              <effect>
                                                 <DropShadow />
@@ -681,29 +686,53 @@
                                            <padding>
                                                <Insets bottom="20" left="20" right="20" top="20" />
                                            </padding>
-                                           
-                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Sales Forecast" VBox.vgrow="ALWAYS">
+
+                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" styleClass="custom-chart">
+                                               <style>
+                                                   -fx-background-color: transparent;
+                                                   -fx-text-fill: white;
+                                                   -fx-chart-title-fill: white;
+                                                   -fx-axis-label-fill: white;
+                                                   -fx-tick-label-fill: white;
+                                                   -fx-legend-text-fill: white;
+                                                   -fx-font-size: 14px;
+                                               </style>
                                                <xAxis>
-                                                   <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                   <CategoryAxis label="Month" side="BOTTOM" fx:id="xAxis">
+                                                       <style>
+                                                           -fx-text-fill: white;
+                                                           -fx-tick-label-fill: white;
+                                                           -fx-tick-text-fill: white;
+                                                           -fx-font-family: 'System';
+                                                       </style>
+                                                   </CategoryAxis>
                                                </xAxis>
                                                <yAxis>
-                                                   <NumberAxis label="Sales Volume" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                   <NumberAxis fx:id="yAxis" label="Sales Volume" side="LEFT">
+                                                       <style>
+                                                           -fx-text-fill: white;
+                                                           -fx-tick-label-fill: white;
+                                                           -fx-tick-text-fill: white;
+                                                           -fx-font-family: 'System';
+                                                       </style>
+                                                   </NumberAxis>
                                                </yAxis>
+                                               <title>Sales Forecast</title>
                                            </LineChart>
                                        </VBox>
 
                                        <!-- Analysis Cards -->
                                        <HBox alignment="CENTER" spacing="20">
                                            <!-- Trend Card -->
-                                           <VBox maxHeight="100" minHeight="100" prefWidth="335" minWidth="335" maxWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
+                                           <VBox maxHeight="100" maxWidth="335" minHeight="100" minWidth="335" prefWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                <padding>
                                                    <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>
-                                               
+
                                                <effect>
                                                    <DropShadow />
                                                </effect>
-                                               
+
                                                <Label style="-fx-text-fill: white;" text="Trend Analysis">
                                                    <font>
                                                        <Font name="System Bold" size="14" />
@@ -713,7 +742,7 @@
                                            </VBox>
 
                                            <!-- Recommendations Card -->
-                                           <VBox maxHeight="100" minHeight="100" prefWidth="335" minWidth="335" maxWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
+                                           <VBox maxHeight="100" maxWidth="335" minHeight="100" minWidth="335" prefWidth="335" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                                <padding>
                                                    <Insets bottom="10" left="15" right="15" top="10" />
                                                </padding>

@@ -6,6 +6,8 @@ import database.database_utility;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -35,6 +37,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.Tooltip;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
+import confirmation.confirmationController;
+import sold_stocks.soldStock;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -73,10 +77,13 @@ public class dashboardController {
     @FXML private Label forecastRecommendationsLabel;
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
-    @FXML private Label salesDateLabel;
     @FXML private LineChart<String, Number> salesChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
+    @FXML private Label salesDateLabel; // Add this field for sales date
+    @FXML private Label salesTimeLabel; // Add this field for sales time
+    @FXML private VBox recent; // Add reference to recent VBox
+
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -478,6 +485,35 @@ public class dashboardController {
                 // Load addstocks form if exactly one checkbox is checked
                 fxmlPath = "/addStocks/addstocks_form.fxml";
                 title = "Add Stocks Form";
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent addForm = loader.load();
+                add_stocks.addstocksController controller = loader.getController();
+                if (selectedItem != null && controller != null) {
+                    controller.text_field1.setText(String.valueOf(selectedItem.getVolume()));
+                    controller.textfield2.setText(selectedItem.getCategory());
+                    controller.text_field3.setText(String.valueOf(selectedItem.getSot()));
+                    controller.text_field4.setText(String.valueOf(selectedItem.getSoh()));
+                    controller.setSelectedItemDescription(selectedItem.getFormattedItemDesc());
+                    controller.setItemCodeAndSoh(selectedItem.getItem_code(), selectedItem.getSoh());
+                    // Pass dashboardController reference for auto-refresh
+                    controller.setDashboardController(this);
+                }
+                Scene scene = new Scene(addForm);
+                scene.setFill(null);
+                Stage stage = new Stage();
+                stage.initStyle(StageStyle.TRANSPARENT);
+                stage.setTitle(title);
+                stage.setScene(scene);
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+                stage.show();
+                double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+                double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+                stage.setX(centerX);
+                stage.setY(centerY);
+                stage.toFront();
+                return;
             } else {
                 // Load addproduct form if no checkbox is checked
                 fxmlPath = "/addStocks/addproduct.fxml";
@@ -521,66 +557,146 @@ public class dashboardController {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
-    }
-
-    @FXML
+    }    @FXML
     private void handleSoldButton() {
-
         try {
-            Parent addForm = FXMLLoader.load(getClass().getResource("/soldStocks/soldstock_form.fxml"));
-
-            // Create a new Stage (window) to display the loaded layout
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
-            stage.setTitle("Sold Stocks Form");
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-
-            // Before showing, calculate position to center on right_pane
-            // Get screen bounds of right_pane
-            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-
-            // Show the stage first to get its width and height
-            stage.show();
-
-            // Calculate centered position relative to right_pane
-            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
-            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
-
-            // Set stage position
-            stage.setX(centerX);
-            stage.setY(centerY);
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to mark as sold.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            } else if (checkedCount > 1) {
+                // Show error alert if multiple checkboxes are checked
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select only one item.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }            soldStock dialog = new soldStock();
+            Stage owner = (Stage) right_pane.getScene().getWindow();
+            dialog.showPopup(
+                owner,
+                inventorypane,
+                selectedItem.getItem_code(),
+                selectedItem.getFormattedItemDesc(),
+                selectedItem.getVolume(),
+                selectedItem.getCategory(),
+                selectedItem.getSot(),
+                selectedItem.getSoh()
+            );
 
         } catch (IOException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to open sold stocks form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
         }
-    }
-
-    @FXML
+    }@FXML
     private void handleConfirmationButton() {
-
         try {
-            Parent addForm = FXMLLoader.load(getClass().getResource("/confirmation/confirmation_form.fxml"));
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to delete.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }
 
-            // Create a new Stage (window) to display the loaded layout
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT); // Make stage transparent and undecorated
-            stage.setTitle("Sold Stocks Form");
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            final Inventory_management_bin itemToDelete = selectedItem;
 
-            // Before showing, calculate position to center on right_pane
-            // Get screen bounds of right_pane
-            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
+            Parent confirmationForm = loader.load();
+            confirmationController controller = loader.getController();
+            
+            // Set up the deletion callback
+            controller.setDeletionCallback(new confirmationController.DeletionCallback() {
+                @Override
+                public void onConfirmDeletion() {
+                    // Remove from table
+                    inventory_table.getItems().remove(itemToDelete);
+                    
+                    // Delete from database
+                    try {
+                        Connection connect = null;
+                        try {
+                            Object[] result = database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
+                            if (result != null) {
+                                connect = (Connection)result[0];
+                                database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
+                            }
+                        } finally {
+                            if (connect != null) {
+                                database_utility.close(connect);
+                            }
+                        }
+                        
+                        // Refresh table data
+                        inventory_management_query();
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Failed to delete item from database: " + e.getMessage());
+                        alert.initStyle(StageStyle.UNDECORATED);
+                        alert.showAndWait();
+                    }
+                }
 
-            // Show the stage first to get its width and height
-            stage.show();
+                @Override
+                public void onCancelDeletion() {
+                    // Do nothing, dialog will be hidden by controller
+                }
+            });
 
-            // Calculate centered position relative to right_pane
-            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
-            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+            confirmationContainer.getChildren().setAll(confirmationForm);
+            confirmationForm.setLayoutX(0);
+            confirmationForm.setTranslateX(0);
+            
+            confirmationContainer.setVisible(true);
+            confirmationContainer.toFront();
 
-            // Set stage position
-            stage.setX(centerX);
-            stage.setY(centerY);
+            // Wait for layout pass, then center
+            Platform.runLater(() -> {
+                confirmationContainer.applyCss();
+                confirmationContainer.layout();
+                centerConfirmationContainer();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -635,7 +751,8 @@ public class dashboardController {
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
 
-    void inventory_management_query() {
+    // Make this method public so it can be called from addstocksController
+    public void inventory_management_query() {
         Connection connect = null;
         try {
             String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
@@ -742,5 +859,46 @@ public class dashboardController {
             if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
             if (topProductLabel != null) topProductLabel.setText("Error loading data");
         }
+
+    /**
+     * Adds a notification to the recent VBox for newly arrived stocks.
+     * @param stockCount The number of stocks added.
+     * @param description The item description.
+     */
+    public void addRecentStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
+
     }
 }
