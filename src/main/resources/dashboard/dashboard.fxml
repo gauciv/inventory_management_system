@@ -25,6 +25,8 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
+<?import javafx.geometry.Side?>
+<?import java.lang.String?>
 
 <BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
@@ -687,35 +689,12 @@
                                                <Insets bottom="20" left="20" right="20" top="20" />
                                            </padding>
 
-                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" styleClass="custom-chart">
-                                               <style>
-                                                   -fx-background-color: transparent;
-                                                   -fx-text-fill: white;
-                                                   -fx-chart-title-fill: white;
-                                                   -fx-axis-label-fill: white;
-                                                   -fx-tick-label-fill: white;
-                                                   -fx-legend-text-fill: white;
-                                                   -fx-font-size: 14px;
-                                               </style>
+                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" stylesheets="@../style.css">
                                                <xAxis>
-                                                   <CategoryAxis label="Month" side="BOTTOM" fx:id="xAxis">
-                                                       <style>
-                                                           -fx-text-fill: white;
-                                                           -fx-tick-label-fill: white;
-                                                           -fx-tick-text-fill: white;
-                                                           -fx-font-family: 'System';
-                                                       </style>
-                                                   </CategoryAxis>
+                                                   <CategoryAxis fx:id="xAxis" label="Month" side="BOTTOM" />
                                                </xAxis>
                                                <yAxis>
-                                                   <NumberAxis fx:id="yAxis" label="Sales Volume" side="LEFT">
-                                                       <style>
-                                                           -fx-text-fill: white;
-                                                           -fx-tick-label-fill: white;
-                                                           -fx-tick-text-fill: white;
-                                                           -fx-font-family: 'System';
-                                                       </style>
-                                                   </NumberAxis>
+                                                   <NumberAxis fx:id="yAxis" label="Sales Volume" side="LEFT" />
                                                </yAxis>
                                                <title>Sales Forecast</title>
                                            </LineChart>
