@@ -183,7 +183,46 @@ public class dashboardController {
     }
 
     private void setupTableView() {
-        // Initialize table columns
+        // Add style classes to columns
+        col_number.getStyleClass().add("col-number");
+        col_select.getStyleClass().add("col-select");
+        col_item_code.getStyleClass().add("col-item-code");
+        col_item_des.getStyleClass().add("col-item-des");
+        col_volume.getStyleClass().add("col-volume");
+        col_category.getStyleClass().add("col-category");
+        col_soh.getStyleClass().add("col-soh");
+        col_sot.getStyleClass().add("col-sot");
+
+        // Set column headers
+        col_number.setText("#");
+        col_select.setText("☐");  // Square box symbol
+        col_item_code.setText("Item Code");
+        col_item_des.setText("Product\nDescription");
+        col_volume.setText("Volume");
+        col_category.setText("Category");
+        col_soh.setText("Stocks on\nHand");
+        col_sot.setText("Sales\nOfftake");
+
+        // Disable sorting for all columns to prevent alignment issues
+        inventory_table.setSortPolicy(null);
+        inventory_table.getColumns().forEach(column -> {
+            column.setSortable(false);
+        });
+
+        // Make table responsive with fixed column widths
+        inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
+        // Bind table width to parent width with padding
+        inventory_table.prefWidthProperty().bind(
+            inventorypane.widthProperty().multiply(0.98)
+        );
+        
+        // Bind table height to parent height with padding for other controls
+        inventory_table.prefHeightProperty().bind(
+            inventorypane.heightProperty().multiply(0.85)
+        );
+
+        // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
                 () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
@@ -203,7 +242,6 @@ public class dashboardController {
         col_select.setCellFactory(column -> new TableCell<>() {
             private final CheckBox checkBox = new CheckBox();
             {
-                // Add action handler to checkbox
                 checkBox.setOnAction((ActionEvent _event) -> {
                     Inventory_management_bin bin = getTableRow() != null ? getTableRow().getItem() : null;
                     if (bin != null) {
@@ -227,12 +265,26 @@ public class dashboardController {
             }
         });
 
+        // Make columns not reorderable but resizable
+        inventory_table.getColumns().forEach(column -> {
+            column.setReorderable(false);
+            column.setResizable(true);
+        });
+
+        // Apply CSS styling
+        inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+
         // Initialize data list and set it to table
         inventory_management_table = FXCollections.observableArrayList();
         inventory_table.setItems(inventory_management_table);
         
         // Load the inventory data
         inventory_management_query();
+
+        // Force layout pass to ensure proper alignment
+        Platform.runLater(() -> {
+            inventory_table.refresh();
+        });
     }
     
     private void setupWindowControls() {
@@ -905,7 +957,11 @@ public class dashboardController {
             imageView.setFitWidth(22);
             imageView.setPreserveRatio(true);
 
-            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility as of " + formattedDate);
             label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
             hBox.getChildren().addAll(imageView, label);
@@ -922,6 +978,50 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
         });
+    }
 
+    /**
+     * Adds a notification to the recent VBox for sold stocks.
+     * @param stockCount The number of stocks sold.
+     * @param description The item description.
+     */
+    public void addSoldStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has been sold as of " + formattedDate);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
     }
 }
