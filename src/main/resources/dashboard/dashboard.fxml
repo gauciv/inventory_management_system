@@ -554,10 +554,9 @@
 
                                           <!-- Filter Controls -->
 
-                                          <HBox spacing="10" alignment="CENTER_LEFT">
+                                          <HBox spacing="10" alignment="CENTER">
                                               <Button fx:id="totalSalesButton" text="Show Total Sales" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;" onAction="#handleTotalSales" />
                                               <Button fx:id="compareButton" text="Compare Products" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;" onAction="#handleCompare" />
-                                              <Region HBox.hgrow="ALWAYS" />
                                           </HBox>
 
                                           <!-- Chart Section -->
