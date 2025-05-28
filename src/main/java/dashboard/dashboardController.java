@@ -97,6 +97,8 @@ public class dashboardController {
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
 
+    @FXML private ScrollPane notifScrollPane;
+    @FXML private VBox recent1;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -1283,10 +1285,8 @@ public class dashboardController {
     private void updateStockNotifications() {
         ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
         ComboBox<String> monthCombo = (ComboBox<String>) borderpane.lookup("#month");
-        VBox notifContainer = (VBox) borderpane.lookup("#recent1");
-        ScrollPane notifScrollPane = (ScrollPane) borderpane.lookup("#notifScrollPane");
 
-        if (stocksCombo == null || monthCombo == null || notifContainer == null) {
+        if (stocksCombo == null || monthCombo == null || recent1 == null) {
             return;
         }
 
@@ -1300,7 +1300,7 @@ public class dashboardController {
         String selectedMonth = monthCombo.getValue().toLowerCase().substring(0, 3);
 
         // Clear existing notifications
-        notifContainer.getChildren().clear();
+        recent1.getChildren().clear();
 
         Connection connect = null;
         try {
@@ -1351,7 +1351,7 @@ public class dashboardController {
                     VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 5, 0));
 
                     // Add to container
-                    notifContainer.getChildren().add(notificationBox);
+                    recent1.getChildren().add(notificationBox);
                 }
             }
         } catch (Exception e) {
