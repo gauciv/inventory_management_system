@@ -418,10 +418,34 @@ public class SalesController {
 
     // Component injection methods
     public void injectComponents(LineChart<String, Number> salesChart, Label totalSalesLabel, 
-                               Label topProductLabel, Label salesDateLabel) {
+                               Label topProductLabel, Label salesDateLabel,
+                               ComboBox<String> chartTypeComboBox,
+                               ComboBox<String> compareProductComboBox,
+                               DatePicker startDate,
+                               DatePicker endDate,
+                               Button exportButton,
+                               Label growthRateLabel,
+                               Label averageSalesLabel,
+                               BarChart<String, Number> salesBarChart,
+                               AreaChart<String, Number> salesAreaChart) {
         this.salesChart = salesChart;
         this.totalSalesLabel = totalSalesLabel;
         this.topProductLabel = topProductLabel;
         this.salesDateLabel = salesDateLabel;
+        this.chartTypeComboBox = chartTypeComboBox;
+        this.compareProductComboBox = compareProductComboBox;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.exportButton = exportButton;
+        this.growthRateLabel = growthRateLabel;
+        this.averageSalesLabel = averageSalesLabel;
+        this.salesBarChart = salesBarChart;
+        this.salesAreaChart = salesAreaChart;
+        
+        // After injecting components, set up the controls
+        setupControls();
+        setupSalesChart();
+        setupClock();
+        updateSalesData();
     }
 }

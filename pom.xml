@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
-        <javafx.version>23.0.1</javafx.version>
+        <javafx.version>24.0.1</javafx.version>
     </properties>
 
     <dependencies>
@@ -96,7 +96,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>login.login_app</mainClass>
+                    <mainClass>inventory.example.inventory_ms/login.login_app</mainClass>
                     <options>
                         <option>--add-opens</option>
                         <option>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
@@ -110,6 +110,12 @@
                         <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
                         <option>--add-opens</option>
                         <option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
                         <option>--enable-native-access=ALL-UNNAMED</option>
                     </options>
                 </configuration>
