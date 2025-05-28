@@ -146,6 +146,11 @@ public class dashboardController {
                 inventory_management_query();
             });
             
+            // Initialize search functionality
+            if (searchField != null) {
+                setupSearch();
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
@@ -1251,6 +1256,86 @@ public class dashboardController {
                 alert.setHeaderText(null);
                 alert.setContentText("Could not open the link: " + e.getMessage());
                 alert.showAndWait();
+            }
+        }
+    }
+
+    private void setupSearch() {
+        // Set prompt text and style
+        searchField.setPromptText("Search items...");
+        searchField.setStyle("-fx-background-color: #081739; -fx-background-radius: 30; " +
+                           "-fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.5);");
+
+        // Add listener for real-time search
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                // If search field is empty, show all items
+                inventory_management_query();
+            } else {
+                // Perform search with the new text
+                performSearch(newValue);
+            }
+        });
+    }
+
+    private void performSearch(String searchTerm) {
+        Connection connect = null;
+        try {
+            String selectedMonth = getSelectedMonthColumn();
+            String sql_query = String.format(
+                "SELECT sale_offtake.item_code, item_description, volume, category, " +
+                "sale_offtake.%s as sot, stock_onhand.%s1 as soh " +
+                "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code " +
+                "WHERE LOWER(item_description) LIKE LOWER(?) OR " +
+                "sale_offtake.item_code LIKE ? OR " +
+                "LOWER(category) LIKE LOWER(?)",
+                selectedMonth, selectedMonth
+            );
+
+            Object[] result_from_query = database_utility.query(sql_query, 
+                "%" + searchTerm + "%",
+                "%" + searchTerm + "%",
+                "%" + searchTerm + "%"
+            );
+
+            if (result_from_query != null) {
+                connect = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+
+                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
+                while (result.next()) {
+                    items.add(new Inventory_management_bin(
+                        result.getInt("item_code"),
+                        result.getString("item_description"),
+                        result.getInt("volume"),
+                        result.getString("category"),
+                        result.getInt("sot"),
+                        result.getInt("soh")
+                    ));
+                }
+
+                inventory_management_table.setAll(items);
+                inventory_table.refresh();
+
+                // Show search results count
+                String resultText = items.size() + " item" + (items.size() != 1 ? "s" : "") + " found";
+                Tooltip tooltip = new Tooltip(resultText);
+                searchField.setTooltip(tooltip);
+                tooltip.show(searchField, 
+                    searchField.localToScreen(searchField.getBoundsInLocal()).getMinX(),
+                    searchField.localToScreen(searchField.getBoundsInLocal()).getMaxY());
+                
+                // Hide tooltip after 2 seconds
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), 
+                    ae -> tooltip.hide()));
+                timeline.play();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Search Error", "Failed to perform search: " + e.getMessage());
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
             }
         }
     }
