@@ -83,6 +83,7 @@ public class dashboardController {
     @FXML private VBox recent; // Add reference to recent VBox
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
+    @FXML private Button formulaHelpButton;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -158,7 +159,8 @@ public class dashboardController {
                 forecastTrendLabel,
                 forecastRecommendationsLabel,
                 forecastFormulaComboBox,
-                forecastPlaceholderLabel
+                forecastPlaceholderLabel,
+                formulaHelpButton
             );
         } catch (Exception e) {
             System.err.println("Error initializing forecasting section: " + e.getMessage());

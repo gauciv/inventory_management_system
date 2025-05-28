@@ -519,8 +519,15 @@
                                                <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
                                            </VBox>
                                            <VBox spacing="2">
-                                               <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Forecast Formula" />
-                                               <ComboBox fx:id="forecastFormulaComboBox" prefWidth="200" promptText="Choose a formula" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                               <Label text="Forecast Formula" style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" />
+                                               <HBox spacing="10" alignment="CENTER_LEFT">
+                                                   <ComboBox fx:id="forecastFormulaComboBox" prefWidth="200" promptText="Choose a formula" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                                   <Button fx:id="formulaHelpButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #AEB9E1; -fx-border-radius: 50%;" text="?" prefWidth="25" prefHeight="25">
+                                                       <font>
+                                                           <Font size="12" />
+                                                       </font>
+                                                   </Button>
+                                               </HBox>
                                            </VBox>
                                            <Label fx:id="forecastAccuracyLabel" style="-fx-text-fill: white;" text="Forecast Accuracy: N/A">
                                                <font>
