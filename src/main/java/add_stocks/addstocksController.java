@@ -91,6 +91,11 @@ public class addstocksController {
             // Auto-refresh the table in dashboard
             if (dashboardControllerRef != null) {
                 dashboardControllerRef.inventory_management_query();
+
+                // Add recent notification
+                String description = selectedItem != null ? selectedItem.getText() : "";
+                dashboardControllerRef.addRecentStockNotification(addStock, description);
+
             }
             // Optionally close the window
             Stage stage = (Stage) continueButton.getScene().getWindow();

@@ -11,6 +11,8 @@ import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -23,6 +25,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -33,6 +38,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.paint.Color;
+import javafx.scene.control.Tooltip;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
@@ -42,6 +49,7 @@ import javafx.scene.control.Hyperlink;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class dashboardController {
@@ -73,6 +81,9 @@ public class dashboardController {
     @FXML private Label forecastRecommendationsLabel;
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
+    @FXML private LineChart<String, Number> salesChart;
+    @FXML private Label totalSalesLabel;
+    @FXML private Label topProductLabel;
     @FXML private Label salesDateLabel; // Add this field for sales date
     @FXML private Label salesTimeLabel; // Add this field for sales time
     @FXML private Label githubLabel;
@@ -81,6 +92,7 @@ public class dashboardController {
     @FXML private Hyperlink linkJonna;
     @FXML private Hyperlink linkJonrheym;
     @FXML private Hyperlink linkJoanne;
+    @FXML private VBox recent; // Add reference to recent VBox
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -105,12 +117,21 @@ public class dashboardController {
             setupWindowControls();
             setupFormContainers();
             styleActiveButton(dashboardbutton);
-            initializeForecastingSection();
+            
+            // Initialize views after UI is set up
+            Platform.runLater(() -> {
+                initializeForecastingSection();
+                initializeSalesSection();
+            });
             startClock(); // Initialize the clock
 
             // Load initial data
             Platform.runLater(this::inventory_management_query);
 
+            Platform.runLater(() -> {
+                inventory_management_query();
+            });
+            
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
@@ -458,27 +479,24 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-        button.setOnAction(e -> {
+        button.setOnAction(__ -> {
             styleActiveButton(button);
 
+            String tabText = button.getText().trim();
             for (Tab tab : tabpane.getTabs()) {
-                Node content = tab.getContent();
-
-                if (content == pane) {
+                if (tab.getText().equalsIgnoreCase(tabText) || 
+                    tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
                     tabpane.getSelectionModel().select(tab);
-                    return;
-                }
-
-                if (isDescendant(content, pane)) {
-                    tabpane.getSelectionModel().select(tab);
+                    if (pane != null) {
+                        pane.setVisible(true);
+                    }
                     return;
                 }
             }
-
-            System.out.println("No tab contains the given AnchorPane.");
+            System.out.println("No matching tab found for " + tabText);
         });
     }
-
+    
     private boolean isDescendant(Node parent, Node child) {
         if (parent instanceof Parent) {
             for (Node node : ((Parent) parent).getChildrenUnmodifiable()) {
@@ -834,10 +852,6 @@ public class dashboardController {
                 dateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
             }
             
-            // Update sales pane date and time
-            if (salesDateLabel != null) {
-                salesDateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
-            }
         }), new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
@@ -860,5 +874,84 @@ public class dashboardController {
         alert.setHeaderText(null);
         alert.setContentText("Data has been refreshed successfully!");
         alert.showAndWait();
+    }
+
+    private void initializeSalesSection() {
+        try {
+            System.out.println("Initializing sales section...");
+            
+            // Make sure components are loaded
+            if (salesChart == null || totalSalesLabel == null || 
+                topProductLabel == null || salesDateLabel == null) {
+                throw new RuntimeException("Sales components not found in FXML");
+            }
+            
+            // Configure chart axes
+            salesChart.setAnimated(false);
+            ((CategoryAxis) salesChart.getXAxis()).setLabel("Month");
+            ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
+            
+            // Initialize sales controller
+            SalesController salesController = new SalesController();
+            
+            // Initialize the sales controller with all UI components
+            salesController.injectComponents(salesChart, totalSalesLabel, 
+                                          topProductLabel, salesDateLabel);
+            
+            // Initialize controller after injecting components
+            salesController.initialize();
+            
+            System.out.println("Sales section initialization complete.");
+            
+        } catch (Exception e) {
+            System.err.println("Error initializing sales section: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show user-friendly error
+            if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
+            if (topProductLabel != null) topProductLabel.setText("Error loading data");
+        }
+    }
+
+    /**
+     * Adds a notification to the recent VBox for newly arrived stocks.
+     * @param stockCount The number of stocks added.
+     * @param description The item description.
+     */
+    public void addRecentStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
+
     }
 }

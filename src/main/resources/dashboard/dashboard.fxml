@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -26,7 +27,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" onDragDetected="#initialize" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
    <!-- Left Panel (Sidebar) -->
    <left>
@@ -408,7 +409,7 @@
                                                       <Insets top="240.0" />
                                                    </HBox.margin>
                                                    <children>
-                                                      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="687.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" VBox.vgrow="ALWAYS">
+                                                      <VBox id="recentScrollPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="687.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
                                                          <VBox.margin>
                                                             <Insets left="10.0" right="20.0" />
                                                          </VBox.margin>
@@ -420,21 +421,25 @@
                                                             </DropShadow>
                                                          </effect>
                                                       </VBox>
-                                                      <VBox layoutX="20.0" layoutY="10.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;" VBox.vgrow="ALWAYS">
-                                                         <VBox.margin>
-                                                            <Insets bottom="20.0" left="10.0" right="20.0" />
-                                                         </VBox.margin>
-                                                         <padding>
-                                                            <Insets bottom="10.0" />
-                                                         </padding>
-                                                         <effect>
-                                                            <DropShadow>
-                                                               <color>
-                                                                  <Color opacity="0.25" />
-                                                               </color>
-                                                            </DropShadow>
-                                                         </effect>
-                                                      </VBox>
+                                                      <ScrollPane fx:id="recentScrollPane" fitToWidth="true" fitToHeight="false" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" VBox.vgrow="ALWAYS" vbarPolicy="ALWAYS" hbarPolicy="NEVER">
+                                                         <content>
+                                                            <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="20.0" left="10.0" right="20.0" />
+                                                               </VBox.margin>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" />
+                                                               </padding>
+                                                               <effect>
+                                                                  <DropShadow>
+                                                                     <color>
+                                                                        <Color opacity="0.25" />
+                                                                     </color>
+                                                                  </DropShadow>
+                                                               </effect>
+                                                            </VBox>
+                                                         </content>
+                                                      </ScrollPane>
                                                    </children>
                                                    <padding>
                                                       <Insets left="10.0" />
@@ -539,22 +544,101 @@
                         </Tab>
                         <Tab text="Sales">
                            <content>
-                              <AnchorPane fx:id="salespane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
-                                 <children>
-                                    <Label fx:id="salesDateLabel" textFill="WHITE">
-                                       <font>
-                                          <Font name="Arial" size="16.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="27.0" top="25.0" />
-                                       </padding>
-                                    </Label>
-                                    <VBox fx:id="contentVBox" layoutX="26.4" layoutY="69.0" prefHeight="487.0" prefWidth="671.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="26.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="69.0">
-                                       <effect>
-                                          <DropShadow />
-                                       </effect>
-                                    </VBox>
-                                 </children>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" 
+                                        prefHeight="580.0" prefWidth="726.0" 
+                                        style="-fx-background-color: #081028;">
+                                  <children>
+                                      <VBox spacing="20" AnchorPane.bottomAnchor="15.0" 
+                                            AnchorPane.leftAnchor="27.0" 
+                                            AnchorPane.rightAnchor="28.0" 
+                                            AnchorPane.topAnchor="15.0">
+                                          <Label fx:id="salesDateLabel" textFill="WHITE">
+                                              <font>
+                                                  <Font name="Arial" size="16.0" />
+                                              </font>
+                                          </Label>
+                                          
+                                          <!-- Chart Area -->
+                                          <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
+                                                VBox.vgrow="ALWAYS">
+                                              <padding>
+                                                  <Insets bottom="20" left="20" right="20" top="20" />
+                                              </padding>
+                                              <effect>
+                                                  <DropShadow />
+                                              </effect>
+                                              
+                                              <LineChart fx:id="salesChart" 
+                                                        createSymbols="true" 
+                                                        legendVisible="true" 
+                                                        animated="false"
+                                                        style="-fx-background-color: transparent; -fx-text-fill: white;"
+                                                        title="Monthly Sales Overview"
+                                                        VBox.vgrow="ALWAYS">
+                                                  <xAxis>
+                                                      <CategoryAxis fx:id="salesChartXAxis"
+                                                                  label="Month" 
+                                                                  side="BOTTOM" 
+                                                                  tickLabelFill="white"
+                                                                  style="-fx-tick-label-fill: white; -fx-text-fill: white;" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                      <NumberAxis fx:id="salesChartYAxis"
+                                                                label="Sales Volume" 
+                                                                side="LEFT" 
+                                                                tickLabelFill="white"
+                                                                style="-fx-tick-label-fill: white; -fx-text-fill: white;"
+                                                                autoRanging="true"
+                                                                minorTickCount="2" />
+                                                  </yAxis>
+                                              </LineChart>
+                                          </VBox>
+                                          
+                                          <!-- Sales Summary Section -->
+                                          <HBox spacing="20" alignment="CENTER">
+                                              <!-- Total Sales Volume Card -->
+                                              <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
+                                                    minWidth="250" maxWidth="300">
+                                                  <padding>
+                                                      <Insets bottom="10" left="15" right="15" top="10" />
+                                                  </padding>
+                                                  <effect>
+                                                      <DropShadow />
+                                                  </effect>
+                                                  <Label text="Total Sales Volume" style="-fx-text-fill: white;">
+                                                      <font>
+                                                          <Font name="System Bold" size="14" />
+                                                      </font>
+                                                  </Label>
+                                                  <Label text="Total units sold across all products" 
+                                                         style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" />
+                                                  <Label fx:id="totalSalesLabel" 
+                                                         style="-fx-text-fill: white; -fx-font-size: 24;" />
+                                              </VBox>
+                                              
+                                              <!-- Top Product Card -->
+                                              <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" 
+                                                    minWidth="250" maxWidth="300">
+                                                  <padding>
+                                                      <Insets bottom="10" left="15" right="15" top="10" />
+                                                  </padding>
+                                                  <effect>
+                                                      <DropShadow />
+                                                  </effect>
+                                                  <Label text="Top Product" style="-fx-text-fill: white;">
+                                                      <font>
+                                                          <Font name="System Bold" size="14" />
+                                                      </font>
+                                                  </Label>
+                                                  <Label text="Product with highest sales volume" 
+                                                         style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" />
+                                                  <Label fx:id="topProductLabel" 
+                                                         style="-fx-text-fill: white; -fx-font-size: 16;" 
+                                                         wrapText="true" />
+                                              </VBox>
+                                          </HBox>
+                                      </VBox>
+                                  </children>
                               </AnchorPane>
                            </content>
                         </Tab>
@@ -581,7 +665,7 @@
                                                <Insets bottom="20" left="20" right="20" top="20" />
                                            </padding>
 
-                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" styleClass="custom-chart" VBox.vgrow="ALWAYS">
+                                           <LineChart fx:id="forecastChart" createSymbols="true" legendVisible="true" styleClass="custom-chart">
                                                <style>
                                                    -fx-background-color: transparent;
                                                    -fx-text-fill: white;
