@@ -1241,7 +1241,8 @@ public class dashboardController {
             alert.setContentText("Failed to open edit form: " + e.getMessage());
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
-
+        }
+    }
     private void loadNotificationsFromDatabase() {
         Connection connect = null;
         try {
