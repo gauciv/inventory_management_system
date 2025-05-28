@@ -445,7 +445,7 @@
                                                             </DropShadow>
                                                          </effect>
                                                       </VBox>
-                                                      <ScrollPane fx:id="recentScrollPane" fitToWidth="true" fitToHeight="false" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" VBox.vgrow="ALWAYS" vbarPolicy="ALWAYS" hbarPolicy="NEVER">
+                                                      <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
                                                                <VBox.margin>
@@ -525,16 +525,16 @@
                                     </HBox>
 
                                     <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       
-                                      <TableView fx:id="inventory_table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <TableView fx:id="inventory_table" editable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>                                             
                                             <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="Select" />
                                              <TableColumn fx:id="col_number" prefWidth="50.0" style="-fx-alignment: CENTER;" text="No." />
-                                             <TableColumn fx:id="col_item_code" text="Item Code" />
-                                             <TableColumn fx:id="col_item_des" text="Description" />
-                                             <TableColumn fx:id="col_volume" text="Volume" />
-                                             <TableColumn fx:id="col_category" text="Category" />
-                                             <TableColumn fx:id="col_soh" text="Stock on Hand" />
-                                             <TableColumn fx:id="col_sot" text="Sales Offtake" />
+                                             <TableColumn fx:id="col_item_code" style="-fx-alignment: CENTER;" text="Item Code" />
+                                             <TableColumn fx:id="col_item_des" style="-fx-alignment: CENTER;" text="Description" />
+                                             <TableColumn fx:id="col_volume" style="-fx-alignment: CENTER;" text="Volume" />
+                                             <TableColumn fx:id="col_category" style="-fx-alignment: CENTER;" text="Category" />
+                                             <TableColumn fx:id="col_soh" style="-fx-alignment: CENTER;" text="Stock on Hand" />
+                                             <TableColumn fx:id="col_sot" style="-fx-alignment: CENTER;" text="Sales Offtake" />
                                           </columns>
                                           <padding>
                                              <Insets bottom="30.0" />
