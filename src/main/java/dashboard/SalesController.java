@@ -151,22 +151,36 @@ public class SalesController {
     private void exportData() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export Sales Data");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-            new FileChooser.ExtensionFilter("Excel Files", "*.xlsx")
-        );
+        
+        // Set default filename with current date
+        String defaultFileName = "sales_data_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        fileChooser.setInitialFileName(defaultFileName + ".csv");
+        
+        // Set default directory to user's documents folder
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents"));
+        
+        // Set up file filters with CSV as default
+        FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv");
+        FileChooser.ExtensionFilter excelFilter = new FileChooser.ExtensionFilter("Excel Files (*.xlsx)", "*.xlsx");
+        fileChooser.getExtensionFilters().addAll(csvFilter, excelFilter);
+        fileChooser.setSelectedExtensionFilter(csvFilter); // Set CSV as default
 
         Stage stage = (Stage) exportButton.getScene().getWindow();
         File file = fileChooser.showSaveDialog(stage);
         
         if (file != null) {
             try {
-                if (file.getName().endsWith(".csv")) {
+                // If no extension is provided, default to .csv
+                if (!file.getName().toLowerCase().endsWith(".csv") && !file.getName().toLowerCase().endsWith(".xlsx")) {
+                    file = new File(file.getAbsolutePath() + ".csv");
+                }
+                
+                if (file.getName().toLowerCase().endsWith(".csv")) {
                     exportToCSV(file);
-                } else if (file.getName().endsWith(".xlsx")) {
+                } else if (file.getName().toLowerCase().endsWith(".xlsx")) {
                     exportToExcel(file);
                 }
-                showInfo("Success", "Data exported successfully!");
+                showInfo("Success", "Data exported successfully to: " + file.getName());
             } catch (Exception e) {
                 e.printStackTrace();
                 showError("Export Error", "Failed to export data: " + e.getMessage());
@@ -175,16 +189,17 @@ public class SalesController {
     }
 
     private void exportToCSV(File file) throws IOException {
-        try (PrintWriter writer = new PrintWriter(file)) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
             // Write headers
             writer.println("Month,Product,Sales Volume");
 
             // Write data
             for (XYChart.Series<String, Number> series : currentData) {
+                String productName = series.getName();
                 for (XYChart.Data<String, Number> data : series.getData()) {
                     writer.printf("%s,%s,%d%n", 
                         data.getXValue(),
-                        series.getName(),
+                        productName,
                         data.getYValue().intValue()
                     );
                 }
@@ -266,6 +281,16 @@ public class SalesController {
 
     public void updateTotalSales() {
         System.out.println("Updating total sales data...");
+        // Set button states: total sales active, compare inactive
+        totalSalesButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
+        compareButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
+        
+        // Reset top product card to default state
+        if (topProductLabel != null) {
+            topProductLabel.setText("Loading...");
+            topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
+        }
+        
         Connection conn = null;
         try {
             String monthlySalesQuery = "SELECT " +
@@ -405,6 +430,10 @@ public class SalesController {
     // Placeholder for the new FXML-based dialog
     private void showProductSelectionDialogFXML() {
         try {
+            // Set button states: compare active, total inactive
+            totalSalesButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
+            compareButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
+            
             // Get list of products
             String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
             Object[] result = database_utility.query(query);
@@ -454,6 +483,16 @@ public class SalesController {
             currentData.clear(); // Always clear previous comparison data
             String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+            // Update top product card for comparison mode
+            if (topProductLabel != null) {
+                StringBuilder comparisonInfo = new StringBuilder("Comparing Products:\n");
+                for (String product : products) {
+                    comparisonInfo.append("• ").append(product).append("\n");
+                }
+                topProductLabel.setText(comparisonInfo.toString());
+                topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14;");
+            }
 
             for (int i = 0; i < products.size(); i++) {
                 String product = products.get(i);
