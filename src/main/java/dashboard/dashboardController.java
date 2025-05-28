@@ -256,7 +256,12 @@ public class dashboardController {
                                         tooltip.setStyle(
                                             "-fx-font-size: 12px; " +
                                             "-fx-font-family: 'Arial'; " +
-                                            "-fx-font-weight: bold;"
+                                            "-fx-font-weight: bold; " +
+                                            "-fx-background-color: rgba(255, 255, 255, 0.95); " +
+                                            "-fx-text-fill: #333333; " +
+                                            "-fx-padding: 8px 12px; " +
+                                            "-fx-background-radius: 6px; " +
+                                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);"
                                         );
                                         
                                         // Format the number with commas and add 'k' suffix if needed
@@ -274,31 +279,41 @@ public class dashboardController {
                                             "Sales: " + formattedValue
                                         );
 
-                                        // Set tooltip hide delay to 0
-                                        tooltip.setHideDelay(Duration.ZERO);
+                                        // Configure tooltip behavior
+                                        tooltip.setShowDelay(javafx.util.Duration.millis(100));
+                                        tooltip.setHideDelay(javafx.util.Duration.millis(200));
+                                        tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
+                                        
+                                        // Install tooltip on the node
+                                        Tooltip.install(node, tooltip);
                                         
                                         // Add hover effects
                                         node.setOnMouseEntered(e -> {
-                                            tooltip.show(node, e.getScreenX() + 5, e.getScreenY() - 15);
+                                            // Show tooltip slightly offset from the cursor
+                                            tooltip.show(node, 
+                                                e.getScreenX() + 15, 
+                                                e.getScreenY() - 20);
                                         });
                                         
                                         node.setOnMouseExited(e -> {
-                                            tooltip.hide();
+                                            // Add a small delay before hiding
+                                            javafx.application.Platform.runLater(() -> {
+                                                if (!node.isHover()) {
+                                                    tooltip.hide();
+                                                }
+                                            });
                                         });
 
-                                        // Add mouse moved event to chart
-                                        forecastChart.setOnMouseMoved(e -> {
-                                            // Get the mouse coordinates relative to the node
-                                            Point2D mousePoint = node.sceneToLocal(e.getSceneX(), e.getSceneY());
-                                            // Check if mouse is outside the node's bounds
-                                            if (!node.getBoundsInLocal().contains(mousePoint)) {
+                                        // Remove the chart mouse moved event as it's causing the flickering
+                                        forecastChart.setOnMouseMoved(null);
+
+                                        // Update the chart mouse exited event
+                                        forecastChart.setOnMouseExited(e -> {
+                                            // Only hide if we're really leaving the chart area
+                                            if (!forecastChart.getBoundsInLocal().contains(
+                                                    forecastChart.sceneToLocal(e.getSceneX(), e.getSceneY()))) {
                                                 tooltip.hide();
                                             }
-                                        });
-
-                                        // Ensure tooltip is hidden when mouse exits the chart
-                                        forecastChart.setOnMouseExited(e -> {
-                                            tooltip.hide();
                                         });
                                     }
                                 }
