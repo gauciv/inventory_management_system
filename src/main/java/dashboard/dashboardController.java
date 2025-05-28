@@ -12,10 +12,12 @@ import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -70,7 +72,7 @@ public class dashboardController {
     @FXML private AnchorPane confirmationContainer;
     @FXML private VBox right_pane;
     @FXML public ComboBox<String> monthComboBox;
-    @FXML private LineChart<String, Number> forecastChart;
+    @FXML private AreaChart<String, Number> forecastChart;
     @FXML private ComboBox<String> forecastProductComboBox;
     @FXML private Label forecastAccuracyLabel;
     @FXML private Label forecastTrendLabel;
@@ -174,9 +176,108 @@ public class dashboardController {
             
             // Configure chart before passing to controller
             if (forecastChart != null) {
-                forecastChart.setAnimated(false); // Disable animations for better performance
+                forecastChart.setAnimated(false);
                 forecastChart.getXAxis().setLabel("Month");
                 forecastChart.getYAxis().setLabel("Sales Volume");
+                
+                // Style the chart
+                forecastChart.setCreateSymbols(true); // Enable data points
+                forecastChart.setLegendVisible(true);
+                
+                // Style the legend
+                Node legend = forecastChart.lookup(".chart-legend");
+                if (legend != null) {
+                    legend.setStyle("-fx-background-color: transparent;");
+                    
+                    // Style all legend items to have white text
+                    legend.lookupAll(".chart-legend-item")
+                         .forEach(item -> item.setStyle("-fx-text-fill: white !important;"));
+                }
+                
+                // Add CSS class for styling
+                forecastChart.getStyleClass().add("chart");
+                
+                // Configure the NumberAxis for better scale
+                NumberAxis yAxis = (NumberAxis) forecastChart.getYAxis();
+                yAxis.setAutoRanging(true);
+                yAxis.setForceZeroInRange(false);
+                yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis) {
+                    @Override
+                    public String toString(Number object) {
+                        String label = String.format("%,.0f", object.doubleValue());
+                        if (object.doubleValue() >= 1000) {
+                            label = String.format("%,.0fk", object.doubleValue() / 1000);
+                        }
+                        return label;
+                    }
+                });
+
+                // When data is added to the chart
+                forecastChart.getData().addListener((ListChangeListener<XYChart.Series<String, Number>>) c -> {
+                    while (c.next()) {
+                        if (c.wasAdded()) {
+                            for (XYChart.Series<String, Number> series : c.getAddedSubList()) {
+                                // Style each data point
+                                for (XYChart.Data<String, Number> data : series.getData()) {
+                                    if (data.getNode() != null) {
+                                        Node node = data.getNode();
+                                        String color = series.getName().contains("Historical") ? "#4CAF50" : "#FF3B30";
+                                        
+                                        // Create tooltip with formatted value
+                                        Tooltip tooltip = new Tooltip();
+                                        tooltip.setStyle(
+                                            "-fx-font-size: 12px; " +
+                                            "-fx-font-family: 'Arial'; " +
+                                            "-fx-font-weight: bold;"
+                                        );
+                                        
+                                        // Format the number with commas and add 'k' suffix if needed
+                                        String formattedValue;
+                                        double value = data.getYValue().doubleValue();
+                                        if (value >= 1000) {
+                                            formattedValue = String.format("%,.1fk", value / 1000);
+                                        } else {
+                                            formattedValue = String.format("%,.0f", value);
+                                        }
+                                        
+                                        tooltip.setText(
+                                            series.getName() + "\n" +
+                                            "Month: " + data.getXValue() + "\n" +
+                                            "Sales: " + formattedValue
+                                        );
+
+                                        // Set tooltip hide delay to 0
+                                        tooltip.setHideDelay(Duration.ZERO);
+                                        
+                                        // Add hover effects
+                                        node.setOnMouseEntered(e -> {
+                                            tooltip.show(node, e.getScreenX() + 5, e.getScreenY() - 15);
+                                        });
+                                        
+                                        node.setOnMouseExited(e -> {
+                                            tooltip.hide();
+                                        });
+
+                                        // Add mouse moved event to chart
+                                        forecastChart.setOnMouseMoved(e -> {
+                                            // Get the mouse coordinates relative to the node
+                                            Point2D mousePoint = node.sceneToLocal(e.getSceneX(), e.getSceneY());
+                                            // Check if mouse is outside the node's bounds
+                                            if (!node.getBoundsInLocal().contains(mousePoint)) {
+                                                tooltip.hide();
+                                            }
+                                        });
+
+                                        // Ensure tooltip is hidden when mouse exits the chart
+                                        forecastChart.setOnMouseExited(e -> {
+                                            tooltip.hide();
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
             
             // Initialize the forecasting controller with all UI components
@@ -194,7 +295,6 @@ public class dashboardController {
             System.err.println("Error initializing forecasting section: " + e.getMessage());
             e.printStackTrace();
             
-            // Show error in a dialog
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Initialization Error");
             alert.setHeaderText(null);
