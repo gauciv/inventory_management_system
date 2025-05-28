@@ -60,8 +60,6 @@ public class dashboardController {
     @FXML private AnchorPane forecastingpane;
     @FXML private Button salesbutton;
     @FXML private AnchorPane salespane;
-    @FXML private Button settingsbutton;
-    @FXML private AnchorPane settingspane;
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
@@ -259,7 +257,6 @@ public class dashboardController {
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
         TabSwitch(salesbutton, salespane);
-        TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
     }
     
@@ -359,7 +356,7 @@ public class dashboardController {
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
-                forecastingbutton, settingsbutton, helpbutton
+                forecastingbutton, helpbutton
         );
 
         if (!validButtons.contains(selectedButton)) {
