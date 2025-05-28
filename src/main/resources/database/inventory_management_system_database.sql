@@ -148,6 +148,31 @@ INSERT INTO `stock_onhand` VALUES (1144133,1746,633,13623,8413,7189,11446,35815,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `notifications_activities`
+--
+
+DROP TABLE IF EXISTS `notifications_activities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications_activities` (
+  `id` INT AUTO_INCREMENT,
+  `notifications` TEXT,
+  `activities` TEXT,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifications_activities`
+--
+
+LOCK TABLES `notifications_activities` WRITE;
+/*!40000 ALTER TABLE `notifications_activities` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications_activities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'inventory_management_system_database'
 --
 
