@@ -205,6 +205,17 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
+
+        // Configure column alignment
+        inventory_table.getColumns().forEach(column -> {
+            column.setStyle("-fx-alignment: CENTER;");
+        });
+
+        // Special styling for select column header
+        col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
+
+        // Make table responsive
+
         // Disable sorting for all columns to prevent alignment issues
         inventory_table.setSortPolicy(null);
         inventory_table.getColumns().forEach(column -> {
@@ -223,6 +234,31 @@ public class dashboardController {
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
+
+
+        // Add listener for window resize to adjust columns
+        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double tableWidth = newVal.doubleValue() * 0.98;
+            double totalMinWidth = 0;
+            
+            // Calculate total minimum width
+            for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                totalMinWidth += column.getMinWidth();
+            }
+            
+            // Only adjust if we have enough space
+            if (tableWidth > totalMinWidth) {
+                double extraSpace = tableWidth - totalMinWidth;
+                double ratio = extraSpace / totalMinWidth;
+                
+                // Distribute extra space proportionally
+                for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                    column.setPrefWidth(column.getMinWidth() * (1 + ratio));
+                }
+            }
+        });
+
+     
 
         // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
