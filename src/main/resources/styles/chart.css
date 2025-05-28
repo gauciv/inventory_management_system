@@ -1,0 +1,103 @@
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(255, 255, 255, 0.1);
+    -fx-stroke-dash-array: 2 4;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(255, 255, 255, 0.1);
+    -fx-stroke-dash-array: 2 4;
+}
+
+.axis {
+    -fx-tick-label-fill: rgba(255, 255, 255, 0.7);
+    -fx-tick-length: 10;
+    -fx-minor-tick-length: 5;
+}
+
+.axis-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2.5px;
+    -fx-effect: dropshadow(gaussian, rgba(46, 213, 115, 0.3), 10, 0, 0, 0);
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #2ed573;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+
+.chart-area-symbol {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+
+.default-color0.chart-series-area-line {
+    -fx-stroke: #2ed573;
+}
+
+.default-color0.chart-series-area-fill {
+    -fx-fill: linear-gradient(to bottom, 
+        rgba(46, 213, 115, 0.2) 0%, 
+        rgba(46, 213, 115, 0.1) 50%,
+        rgba(46, 213, 115, 0.05) 100%);
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 4px;
+    -fx-padding: 4px;
+    -fx-shape: "M0 0 H8 V8 H0 Z";
+}
+
+.default-color0.chart-legend-item-symbol {
+    -fx-background-color: #2ed573;
+}
+
+.chart-vertical-zero-line,
+.chart-horizontal-zero-line {
+    -fx-stroke: rgba(255, 255, 255, 0.2);
+}
+
+.axis-tick-mark {
+    -fx-stroke: rgba(255, 255, 255, 0.3);
+}
+
+.axis-minor-tick-mark {
+    -fx-stroke: rgba(255, 255, 255, 0.2);
+}
+
+/* Y-axis values styling */
+.axis .axis-tick-mark,
+.axis .axis-minor-tick-mark {
+    -fx-stroke: rgba(255, 255, 255, 0.2);
+}
+
+.axis .text {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 11px;
+} 
