@@ -1,11 +1,16 @@
 package dashboard;
 
+import java.awt.*;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import database.database_utility;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -32,6 +37,7 @@ import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
 import sold_stocks.soldStock;
+import javafx.scene.control.Hyperlink;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -52,8 +58,6 @@ public class dashboardController {
     @FXML private AnchorPane forecastingpane;
     @FXML private Button salesbutton;
     @FXML private AnchorPane salespane;
-    @FXML private Button settingsbutton;
-    @FXML private AnchorPane settingspane;
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
@@ -71,6 +75,12 @@ public class dashboardController {
     @FXML private Label dateTimeLabel;
     @FXML private Label salesDateLabel; // Add this field for sales date
     @FXML private Label salesTimeLabel; // Add this field for sales time
+    @FXML private Label githubLabel;
+    @FXML private Hyperlink linkVincent;
+    @FXML private Hyperlink linkMikaela;
+    @FXML private Hyperlink linkJonna;
+    @FXML private Hyperlink linkJonrheym;
+    @FXML private Hyperlink linkJoanne;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -84,23 +94,23 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-       try {
+        try {
             // Initialize table first since other components may depend on it
             inventory_management_table = FXCollections.observableArrayList();
             if (inventory_table != null) {
                 inventory_table.setItems(inventory_management_table);
             }
-            
+
             setupTableView();
             setupWindowControls();
             setupFormContainers();
             styleActiveButton(dashboardbutton);
             initializeForecastingSection();
             startClock(); // Initialize the clock
-            
+
             // Load initial data
             Platform.runLater(this::inventory_management_query);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
@@ -109,9 +119,51 @@ public class dashboardController {
         if (monthComboBox != null) {
             monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
             monthComboBox.setPromptText("Select a Month");
+        }
 
+        // 🔗 GitHub Links
+        if (linkVincent != null) {
+            linkVincent.setOnAction(e -> openLink("https://github.com/gauciv"));
+        }
+        if (linkMikaela != null) {
+            linkMikaela.setOnAction(e -> openLink("https://github.com/mikaelaMolina"));
+        }
+        if (linkJonna != null) {
+            linkJonna.setOnAction(e -> openLink("https://github.com/Boholjonna"));
+        }
+        if (linkJonrheym != null) {
+            linkJonrheym.setOnAction(e -> openLink("https://github.com/HumbaAdob0"));
+        }
+        if (linkJoanne != null) {
+            linkJoanne.setOnAction(e -> openLink("https://github.com/georfojoanne"));
+        }
+
+        // 🔠 Font resizing logic
+        if (helppane != null) {
+            helppane.widthProperty().addListener((obs, oldVal, newVal) -> {
+                double baseWidth = 800;
+                double scale = newVal.doubleValue() / baseWidth;
+                double fontSize = Math.max(12, scale * 16);
+
+                if (githubLabel != null) githubLabel.setStyle("-fx-font-size: " + fontSize + "px;");
+                if (linkVincent != null) linkVincent.setStyle("-fx-font-size: " + fontSize + "px;");
+                if (linkMikaela != null) linkMikaela.setStyle("-fx-font-size: " + fontSize + "px;");
+                if (linkJonna != null) linkJonna.setStyle("-fx-font-size: " + fontSize + "px;");
+                if (linkJonrheym != null) linkJonrheym.setStyle("-fx-font-size: " + fontSize + "px;");
+                if (linkJoanne != null) linkJoanne.setStyle("-fx-font-size: " + fontSize + "px;");
+            });
         }
     }
+
+    private void openLink(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Link Error", "Failed to open the link: " + url);
+        }
+    }
+
 
     private void initializeForecastingSection() {
         try {
@@ -230,7 +282,6 @@ public class dashboardController {
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
         TabSwitch(salesbutton, salespane);
-        TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
     }
     
@@ -330,7 +381,7 @@ public class dashboardController {
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
-                forecastingbutton, settingsbutton, helpbutton
+                forecastingbutton, helpbutton
         );
 
         if (!validButtons.contains(selectedButton)) {
