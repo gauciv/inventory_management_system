@@ -1208,30 +1208,9 @@ public class dashboardController {
                 return;
             }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
-            Parent editForm = loader.load();
-            
-            // Get the controller and set up the data
-            add_stocks.addproductController controller = loader.getController();
-            controller.setDashboardController(this);
-            controller.setItemToEdit(selectedItem);
-
-            Scene scene = new Scene(editForm);
-            scene.setFill(null);
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.setTitle("Edit Product");
-            stage.setScene(scene);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-            
-            // Center the stage on the inventory pane
-            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-            stage.show();
-            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
-            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
-            stage.setX(centerX);
-            stage.setY(centerY);
-            stage.toFront();
+            // Create and show the edit form using add-edit-product_form.fxml
+            add_edit_product.addeditproduct editForm = new add_edit_product.addeditproduct();
+            editForm.showPopup((Stage) right_pane.getScene().getWindow(), inventorypane, selectedItem, this);
 
         } catch (IOException e) {
             e.printStackTrace();
