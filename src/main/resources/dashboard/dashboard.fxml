@@ -675,13 +675,21 @@
 
                                        <!-- Product Selection Area -->
                                        <HBox alignment="CENTER_LEFT" spacing="20">
-                                           <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Select Product" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                           <VBox spacing="2">
+                                               <Label text="Product" style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" />
+                                               <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                           </VBox>
+                                           <VBox spacing="2">
+                                               <Label text="Forecast Formula" style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" />
+                                               <ComboBox fx:id="forecastFormulaComboBox" prefWidth="200" promptText="Choose a formula" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                           </VBox>
                                            <Label fx:id="forecastAccuracyLabel" style="-fx-text-fill: white;" text="Forecast Accuracy: N/A">
                                                <font>
                                                    <Font size="14" />
                                                </font>
                                            </Label>
                                        </HBox>
+                                       <Label fx:id="forecastPlaceholderLabel" text="Please select a product and formula to view the forecast." style="-fx-text-fill: #AEB9E1; -fx-font-size: 15px; -fx-font-style: italic; -fx-alignment: center;" alignment="CENTER" />
 
                                        <!-- Chart Area -->
                                        <VBox style="-fx-background-color: #081739;" VBox.vgrow="ALWAYS">
