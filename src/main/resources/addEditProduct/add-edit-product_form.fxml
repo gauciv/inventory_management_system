@@ -27,7 +27,7 @@
         <VBox layoutY="64.0" prefHeight="297.0" prefWidth="375.0" spacing="7.0">
             <children>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Product Descripton" wrappingWidth="125.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField fx:id="descriptionField" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
                     <effect>
                         <DropShadow>
                             <color>
@@ -37,7 +37,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField fx:id="volumeField" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
                     <effect>
                         <DropShadow>
                             <color>
@@ -47,7 +47,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField fx:id="categoryField" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
                     <effect>
                         <DropShadow>
                             <color>
@@ -57,7 +57,7 @@
                     </effect>
                 </TextField>
                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sales Offtake" wrappingWidth="93.63671875" />
-                <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                <TextField fx:id="salesOfftakeField" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
                     <effect>
                         <DropShadow>
                             <color>
@@ -66,16 +66,16 @@
                         </DropShadow>
                     </effect>
                 </TextField>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
-            <TextField minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
-               <effect>
-                  <DropShadow>
-                     <color>
-                        <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
-                     </color>
-                  </DropShadow>
-               </effect>
-            </TextField>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Stocks on Hand" wrappingWidth="93.63671875" />
+                <TextField fx:id="stocksOnHandField" minHeight="29.0" prefWidth="297.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #0A1196; -fx-border-radius: 20; -fx-background-radius: 20;">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color red="0.03921568766236305" green="0.06666667014360428" blue="0.5882353186607361" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </TextField>
             </children>
             <padding>
                 <Insets left="40.0" right="40.0" />
@@ -85,41 +85,41 @@
             <padding>
                 <Insets left="40.0" right="40.0" />
             </padding>
-         <children>
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: #06774A; -fx-background-radius: 20; -fx-border-radius: 20;" text="Cancel" textFill="WHITE">
-               <effect>
-                  <DropShadow>
-                     <color>
-                        <Color opacity="0.23003803193569183" />
-                     </color>
-                  </DropShadow>
-               </effect>
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Button>
-              <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
-                  <effect>
-                      <DropShadow>
-                          <color>
-                              <Color opacity="0.23003803193569183" />
-                          </color>
-                      </DropShadow>
-                  </effect>
-               <font>
-                  <Font size="15.0" />
-               </font>
-              </Button>
-         </children>
+            <children>
+                <Button fx:id="cancelButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: #06774A; -fx-background-radius: 20; -fx-border-radius: 20;" text="Cancel" textFill="WHITE">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color opacity="0.23003803193569183" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                    <font>
+                        <Font size="15.0" />
+                    </font>
+                </Button>
+                <Button fx:id="continueButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="109.0" style="-fx-background-color: rgba(10, 17, 150, 1); -fx-background-radius: 20; -fx-border-radius: 20;" text="Continue" textFill="WHITE">
+                    <effect>
+                        <DropShadow>
+                            <color>
+                                <Color opacity="0.23003803193569183" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                    <font>
+                        <Font size="15.0" />
+                    </font>
+                </Button>
+            </children>
         </HBox>
-      <Button layoutX="323.0" layoutY="3.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="52.0" style="-fx-background-color: transparent;">
-         <graphic>
-            <ImageView fitHeight="32.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/x_white.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
+        <Button fx:id="closeButton" layoutX="323.0" layoutY="3.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="52.0" style="-fx-background-color: transparent;">
+            <graphic>
+                <ImageView fitHeight="32.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/x_white.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
     </children>
 </Pane>
