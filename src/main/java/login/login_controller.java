@@ -114,7 +114,8 @@ public class login_controller {
     @FXML
     private void login_button_clicked() {
         String username = username_field.getText().trim();
-        String password_string = password.getText();
+        // Get password from the appropriate field based on visibility state
+        String password_string = isPasswordVisible ? visiblePassword.getText() : password.getText();
 
         if (username.isEmpty() || password_string.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Login Error", "Please enter both username and password.");
