@@ -859,6 +859,7 @@ public class dashboardController {
             if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
             if (topProductLabel != null) topProductLabel.setText("Error loading data");
         }
+    }
 
     /**
      * Adds a notification to the recent VBox for newly arrived stocks.
