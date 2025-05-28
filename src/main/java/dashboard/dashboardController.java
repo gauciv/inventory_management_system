@@ -231,7 +231,6 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
-
         // Configure column alignment
         inventory_table.getColumns().forEach(column -> {
             column.setStyle("-fx-alignment: CENTER;");
@@ -240,15 +239,34 @@ public class dashboardController {
         // Special styling for select column header
         col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
 
-        // Make table responsive
+        // Set fixed column widths
+        col_number.setPrefWidth(50);
+        col_select.setPrefWidth(50);
+        col_item_code.setPrefWidth(100);
+        col_item_des.setPrefWidth(300);
+        col_volume.setPrefWidth(100);
+        col_category.setPrefWidth(150);
+        col_soh.setPrefWidth(100);
+        col_sot.setPrefWidth(100);
 
-        // Disable sorting for all columns to prevent alignment issues
-        inventory_table.setSortPolicy(null);
+        // Set minimum widths to match preferred widths
+        col_number.setMinWidth(col_number.getPrefWidth());
+        col_select.setMinWidth(col_select.getPrefWidth());
+        col_item_code.setMinWidth(col_item_code.getPrefWidth());
+        col_item_des.setMinWidth(col_item_des.getPrefWidth());
+        col_volume.setMinWidth(col_volume.getPrefWidth());
+        col_category.setMinWidth(col_category.getPrefWidth());
+        col_soh.setMinWidth(col_soh.getPrefWidth());
+        col_sot.setMinWidth(col_sot.getPrefWidth());
+
+        // Prevent column resizing
         inventory_table.getColumns().forEach(column -> {
+            column.setResizable(false);
+            column.setReorderable(false);
             column.setSortable(false);
         });
 
-        // Make table responsive with fixed column widths
+        // Make table responsive
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Bind table width to parent width with padding
@@ -260,31 +278,6 @@ public class dashboardController {
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
-
-
-        // Add listener for window resize to adjust columns
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double tableWidth = newVal.doubleValue() * 0.98;
-            double totalMinWidth = 0;
-            
-            // Calculate total minimum width
-            for (TableColumn<?, ?> column : inventory_table.getColumns()) {
-                totalMinWidth += column.getMinWidth();
-            }
-            
-            // Only adjust if we have enough space
-            if (tableWidth > totalMinWidth) {
-                double extraSpace = tableWidth - totalMinWidth;
-                double ratio = extraSpace / totalMinWidth;
-                
-                // Distribute extra space proportionally
-                for (TableColumn<?, ?> column : inventory_table.getColumns()) {
-                    column.setPrefWidth(column.getMinWidth() * (1 + ratio));
-                }
-            }
-        });
-
-     
 
         // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
@@ -327,12 +320,6 @@ public class dashboardController {
                     setGraphic(checkBox);
                 }
             }
-        });
-
-        // Make columns not reorderable but resizable
-        inventory_table.getColumns().forEach(column -> {
-            column.setReorderable(false);
-            column.setResizable(true);
         });
 
         // Apply CSS styling

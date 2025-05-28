@@ -71,6 +71,9 @@
                            <font>
                               <Font size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                      </children>
                      <opaqueInsets>
@@ -97,6 +100,9 @@
                            <font>
                               <Font size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                      </children>
                      <opaqueInsets>
@@ -123,6 +129,9 @@
                            <font>
                               <Font size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                      </children>
                      <opaqueInsets>
@@ -149,6 +158,9 @@
                            <font>
                               <Font size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                      </children>
                      <opaqueInsets>
@@ -188,6 +200,9 @@
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                </children>
                <VBox.margin>
@@ -382,6 +397,9 @@
                                           <effect>
                                              <DropShadow />
                                           </effect>
+                                          <cursor>
+                                             <Cursor fx:constant="HAND" />
+                                          </cursor>
                                        </Button>
                                        <Button fx:id="soldButton" onAction="#handleSoldButton" prefHeight="52.0" prefWidth="99.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Sold" textFill="WHITE">
                                           <font>
@@ -390,6 +408,9 @@
                                           <effect>
                                              <DropShadow />
                                           </effect>
+                                          <cursor>
+                                             <Cursor fx:constant="HAND" />
+                                          </cursor>
                                        </Button>
                                        <Button fx:id="deleteButton" onAction="#handleConfirmationButton" prefHeight="52.0" prefWidth="99.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Delete" textFill="WHITE">
                                           <font>
@@ -398,6 +419,9 @@
                                           <effect>
                                              <DropShadow />
                                           </effect>
+                                          <cursor>
+                                             <Cursor fx:constant="HAND" />
+                                          </cursor>
                                        </Button>
                                     </HBox>
 
@@ -436,6 +460,9 @@
                                              <effect>
                                                 <DropShadow />
                                              </effect>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
                                           </Button>
                                        </children>
                                     </AnchorPane>
@@ -463,6 +490,9 @@
                                                           <Image url="@../images/export.png" />
                                                       </ImageView>
                                                   </graphic>
+                                                  <cursor>
+                                                      <Cursor fx:constant="HAND" />
+                                                  </cursor>
                                               </Button>
                                           </HBox>
 
@@ -615,6 +645,9 @@
                                                        <font>
                                                            <Font size="12" />
                                                        </font>
+                                                       <cursor>
+                                                           <Cursor fx:constant="HAND" />
+                                                       </cursor>
                                                    </Button>
                                                </HBox>
                                            </VBox>
