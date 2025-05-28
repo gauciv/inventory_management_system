@@ -31,6 +31,7 @@ public class addstocksController {
 
     private int itemCode = -1;
     private int currentSoh = 0;
+    private dashboard.dashboardController dashboardControllerRef;
 
     @FXML
     private void handleExit() {
@@ -50,6 +51,10 @@ public class addstocksController {
     public void setItemCodeAndSoh(int itemCode, int soh) {
         this.itemCode = itemCode;
         this.currentSoh = soh;
+    }
+
+    public void setDashboardController(dashboard.dashboardController controller) {
+        this.dashboardControllerRef = controller;
     }
 
     @FXML
@@ -73,7 +78,6 @@ public class addstocksController {
             return;
         }
         int updatedSoh = currentSoh + addStock;
-        // Update inventory_management table (if needed) and stock_onhand table
         Connection connect = null;
         try {
             Object[] result = database_utility.update(
@@ -83,8 +87,11 @@ public class addstocksController {
             if (result != null) {
                 connect = (Connection) result[0];
             }
-            // Optionally update the UI table if you have a reference
             showAlert("Success", "Stocks updated successfully.");
+            // Auto-refresh the table in dashboard
+            if (dashboardControllerRef != null) {
+                dashboardControllerRef.inventory_management_query();
+            }
             // Optionally close the window
             Stage stage = (Stage) continueButton.getScene().getWindow();
             stage.close();

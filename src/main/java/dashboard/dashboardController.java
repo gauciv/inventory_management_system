@@ -468,37 +468,31 @@ public class dashboardController {
                 // Load addstocks form if exactly one checkbox is checked
                 fxmlPath = "/addStocks/addstocks_form.fxml";
                 title = "Add Stocks Form";
-                
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent addForm = loader.load();                // Set the selected row data to the text fields in the addstocks form
-                
+                Parent addForm = loader.load();
                 add_stocks.addstocksController controller = loader.getController();
-                if (selectedItem != null && controller != null) {                    controller.text_field1.setText(String.valueOf(selectedItem.getVolume()));
+                if (selectedItem != null && controller != null) {
+                    controller.text_field1.setText(String.valueOf(selectedItem.getVolume()));
                     controller.textfield2.setText(selectedItem.getCategory());
-                    controller.text_field3.setText(String.valueOf(selectedItem.getSot())); // Sales Offtake
-                    controller.text_field4.setText(String.valueOf(selectedItem.getSoh())); // Stock on Hand
-
-                    controller.setSelectedItemDescription(selectedItem.getFormattedItemDesc()); // Set the formatted description in the form
-
-                    // Pass item code and current SOH for updating
+                    controller.text_field3.setText(String.valueOf(selectedItem.getSot()));
+                    controller.text_field4.setText(String.valueOf(selectedItem.getSoh()));
+                    controller.setSelectedItemDescription(selectedItem.getFormattedItemDesc());
                     controller.setItemCodeAndSoh(selectedItem.getItem_code(), selectedItem.getSoh());
+                    // Pass dashboardController reference for auto-refresh
+                    controller.setDashboardController(this);
                 }
                 Scene scene = new Scene(addForm);
-                scene.setFill(null); // Make scene background transparent
-                // Create and configure stage
+                scene.setFill(null);
                 Stage stage = new Stage();
                 stage.initStyle(StageStyle.TRANSPARENT);
                 stage.setTitle(title);
                 stage.setScene(scene);
                 stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-                // Get screen bounds of right_pane for centering
                 Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-                // Show stage to get its dimensions
                 stage.show();
-                // Center the stage on right_pane
                 double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
                 double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
-                // Set position and bring to front
                 stage.setX(centerX);
                 stage.setY(centerY);
                 stage.toFront();
@@ -740,7 +734,8 @@ public class dashboardController {
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
 
-    void inventory_management_query() {
+    // Make this method public so it can be called from addstocksController
+    public void inventory_management_query() {
         Connection connect = null;
         try {
             String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
