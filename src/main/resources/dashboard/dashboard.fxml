@@ -19,6 +19,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -30,11 +31,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-<?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.DatePicker?>
-<?import java.lang.String?>
-<?import javafx.scene.control.Hyperlink?>
-<?import javafx.scene.control.Tooltip?>
 
 
 <BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
@@ -307,14 +303,56 @@
                                                       <Insets top="70.0" />
                                                    </HBox.margin>
                                                    <children>
-                                                      <Label text="Notifications" textFill="#00b4ff">
+                                                      <HBox spacing="20.0">
                                                          <VBox.margin>
                                                             <Insets left="10.0" top="20.0" />
                                                          </VBox.margin>
-                                                         <font>
-                                                            <Font name="System Italic" size="15.0" />
-                                                         </font>
-                                                      </Label>
+                                                         <children>
+                                                            <Label text="Critical Stocks" textFill="#00b4ff">
+                                                               <font>
+                                                                  <Font name="System Italic" size="15.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <ComboBox fx:id="stocks" prefWidth="150.0" stylesheets="@../style.css">
+                                                                <items>
+                                                                    <FXCollections fx:factory="observableArrayList">
+                                                                        <String fx:value="1000" />
+                                                                        <String fx:value="10000" />
+                                                                        <String fx:value="20000" />
+                                                                        <String fx:value="30000" />
+                                                                        <String fx:value="40000" />
+                                                                        <String fx:value="50000" />
+                                                                        <String fx:value="60000" />
+                                                                        <String fx:value="70000" />
+                                                                        <String fx:value="80000" />
+                                                                        <String fx:value="90000" />
+                                                                        <String fx:value="100000" />
+                                                                    </FXCollections>
+                                                                </items>
+                                                            </ComboBox>
+                                                            <ComboBox fx:id="month" prefWidth="150.0" stylesheets="@../style.css">
+                                                                <items>
+                                                                    <FXCollections fx:factory="observableArrayList">
+                                                                        <String fx:value="January" />
+                                                                        <String fx:value="February" />
+                                                                        <String fx:value="March" />
+                                                                        <String fx:value="April" />
+                                                                        <String fx:value="May" />
+                                                                        <String fx:value="June" />
+                                                                        <String fx:value="July" />
+                                                                        <String fx:value="August" />
+                                                                        <String fx:value="September" />
+                                                                        <String fx:value="October" />
+                                                                        <String fx:value="November" />
+                                                                        <String fx:value="December" />
+                                                                    </FXCollections>
+                                                                </items>
+                                                            </ComboBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                      </HBox>
                                                       <ScrollPane fx:id="notifScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="265.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent1" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
@@ -365,6 +403,9 @@
                                                    </padding>
                                                 </VBox>
                                              </children>
+                                             <StackPane.margin>
+                                                <Insets />
+                                             </StackPane.margin>
                                           </HBox>
                                        </children>
                                     </StackPane>
@@ -456,25 +497,29 @@
                                     </AnchorPane>
                                     <AnchorPane fx:id="refreshButtonContainer" prefHeight="54.0" prefWidth="727.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <Button fx:id="refreshButton" alignment="CENTER" layoutX="228.06087709711744" layoutY="0.8347826363864612" onAction="#handleRefreshData" prefHeight="52.0" prefWidth="98.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE" AnchorPane.bottomAnchor="0.8347826363864641" AnchorPane.leftAnchor="228.06087709711744" AnchorPane.rightAnchor="400.5304481018878" AnchorPane.topAnchor="0.8347826363864612">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                             <effect>
-                                                <DropShadow />
-                                             </effect>
-                                          </Button>
-                                          <Button fx:id="editButton" onAction="#handleEditButton" alignment="CENTER" layoutX="415.88697028407125" layoutY="0.8347826363864612" prefHeight="52.0" prefWidth="100.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE" AnchorPane.bottomAnchor="0.8347826363864641" AnchorPane.leftAnchor="415.88697028407125" AnchorPane.rightAnchor="211.03478964216117" AnchorPane.topAnchor="0.8347826363864612">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                             <effect>
-                                                <DropShadow />
-                                             </effect>
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                          </Button>
+
+                                          <HBox alignment="CENTER" spacing="20" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+
+                                             <Button fx:id="refreshButton" alignment="CENTER" onAction="#handleRefreshData" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE">
+                                                <font>
+                                                   <Font size="14.0" />
+                                                </font>
+                                                <effect>
+                                                   <DropShadow />
+                                                </effect>
+                                             </Button>
+                                             <Button fx:id="editButton" onAction="#handleEditButton" alignment="CENTER" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE">
+                                                <font>
+                                                   <Font size="14.0" />
+                                                </font>
+                                                <effect>
+                                                   <DropShadow />
+                                                </effect>
+                                                <cursor>
+                                                   <Cursor fx:constant="HAND" />
+                                                </cursor>
+                                             </Button>
+                                          </HBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -513,8 +558,6 @@
                                               <Button fx:id="totalSalesButton" text="Show Total Sales" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;" onAction="#handleTotalSales" />
                                               <Button fx:id="compareButton" text="Compare Products" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;" onAction="#handleCompare" />
                                               <Region HBox.hgrow="ALWAYS" />
-                                              <DatePicker fx:id="startDate" promptText="Start Date" style="-fx-background-color: #081739; -fx-text-fill: white;" />
-                                              <DatePicker fx:id="endDate" promptText="End Date" style="-fx-background-color: #081739; -fx-text-fill: white;" />
                                           </HBox>
 
                                           <!-- Chart Section -->
@@ -690,29 +733,29 @@
                            <content>
                               <AnchorPane fx:id="helppane" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <VBox alignment="CENTER" spacing="30" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+                                    <VBox alignment="CENTER" spacing="30" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                                        <ImageView fitHeight="270.0" fitWidth="246.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
                                              <Image url="@../images/devilias_logo.png" />
                                           </image>
                                        </ImageView>
                                        
-                                       <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #081739; -fx-background-radius: 15;" maxWidth="500">
+                                       <VBox alignment="CENTER" maxWidth="500" spacing="5" style="-fx-background-color: #081739; -fx-background-radius: 15;">
                                           <padding>
-                                             <Insets top="20" bottom="20" left="30" right="30" />
+                                             <Insets bottom="20" left="30" right="30" top="20" />
                                           </padding>
                                           <effect>
                                              <DropShadow />
                                           </effect>
                                           
-                                          <Label text="Development Team" style="-fx-text-fill: #00b4ff; -fx-font-size: 20;">
+                                          <Label style="-fx-text-fill: #00b4ff; -fx-font-size: 20;" text="Development Team">
                                              <font>
                                                 <Font name="System Bold" size="20" />
                                              </font>
                                           </Label>
                                           
                                           <VBox alignment="CENTER" spacing="15">
-                                             <Label fx:id="augustoGithub" text="John Vincent D. Augusto" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                             <Label fx:id="augustoGithub" onMouseClicked="#handleGithubLink" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" text="John Vincent D. Augusto">
                                                 <tooltip>
                                                    <Tooltip text="github.com/gauciv" />
                                                 </tooltip>
@@ -723,7 +766,7 @@
                                                     <String fx:value="https://github.com/gauciv" />
                                                 </userData>
                                              </Label>
-                                             <Label fx:id="boholGithub" text="Jonna T. Bohol" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                             <Label fx:id="boholGithub" onMouseClicked="#handleGithubLink" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" text="Jonna T. Bohol">
                                                 <tooltip>
                                                    <Tooltip text="github.com/Boholjonna" />
                                                 </tooltip>
@@ -734,7 +777,7 @@
                                                     <String fx:value="https://github.com/Boholjonna" />
                                                 </userData>
                                              </Label>
-                                             <Label fx:id="molinaGithub" text="Mikaela Vianca G. Molina" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                             <Label fx:id="molinaGithub" onMouseClicked="#handleGithubLink" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" text="Mikaela Vianca G. Molina">
                                                 <tooltip>
                                                    <Tooltip text="github.com/mikaelaMolina" />
                                                 </tooltip>
@@ -745,7 +788,7 @@
                                                     <String fx:value="https://github.com/mikaelaMolina" />
                                                 </userData>
                                              </Label>
-                                             <Label fx:id="remegiaGithub" text="Jonrheym P. Remegia" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                             <Label fx:id="remegiaGithub" onMouseClicked="#handleGithubLink" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" text="Jonrheym P. Remegia">
                                                 <tooltip>
                                                    <Tooltip text="github.com/HumbaAdob0" />
                                                 </tooltip>
@@ -756,7 +799,7 @@
                                                     <String fx:value="https://github.com/HumbaAdob0" />
                                                 </userData>
                                              </Label>
-                                             <Label fx:id="georfoGithub" text="Joanne R. Georfo" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                             <Label fx:id="georfoGithub" onMouseClicked="#handleGithubLink" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" text="Joanne R. Georfo">
                                                 <tooltip>
                                                    <Tooltip text="github.com/georfojoanne" />
                                                 </tooltip>
@@ -770,7 +813,7 @@
                                           </VBox>
                                        </VBox>
                                        
-                                       <Label text="© 2025 Devilias. All Rights Reserved." style="-fx-text-fill: #AEB9E1; -fx-font-size: 14;">
+                                       <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 14;" text="© 2025 Devilias. All Rights Reserved.">
                                           <VBox.margin>
                                              <Insets top="10" />
                                           </VBox.margin>

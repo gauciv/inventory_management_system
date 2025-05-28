@@ -43,6 +43,7 @@ import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
 import sold_stocks.soldStock;
+import add_edit_product.addeditproductController;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -101,6 +102,8 @@ public class dashboardController {
     @FXML private Button totalSalesButton;
     @FXML private Button compareButton;
 
+    @FXML private ScrollPane notifScrollPane;
+    @FXML private VBox recent1;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -138,11 +141,43 @@ public class dashboardController {
             setupFormContainers();
             styleActiveButton(dashboardbutton);
             
+            // Get current month name
+            String currentMonth = java.time.LocalDate.now().getMonth().toString();
+            // Capitalize first letter only
+            currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
+            
+            // Set current month as default for monthComboBox
+            if (monthComboBox != null) {
+                monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
+                monthComboBox.setPromptText("Select a Month");
+                monthComboBox.setValue(currentMonth);
+                // Auto-refresh inventory table when month changes
+                monthComboBox.setOnAction(event -> {
+                    inventory_management_query();
+                    updateStockNotifications();
+                });
+            }
+            
+            // Set current month as default for the dashboard month ComboBox
+            ComboBox<String> dashboardMonthCombo = (ComboBox<String>) borderpane.lookup("#month");
+            if (dashboardMonthCombo != null) {
+                dashboardMonthCombo.setValue(currentMonth);
+                dashboardMonthCombo.setOnAction(event -> updateStockNotifications());
+            }
+            
+            // Set default value for stocks ComboBox
+            ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
+            if (stocksCombo != null) {
+                stocksCombo.setValue("1000");
+                stocksCombo.setOnAction(event -> updateStockNotifications());
+            }
+            
             // Initialize views after UI is set up
             Platform.runLater(() -> {
                 initializeForecastingSection();
                 initializeSalesSection();
                 loadNotificationsFromDatabase();
+                updateStockNotifications(); // Initial check of stock levels
             });
             startClock(); // Initialize the clock
             
@@ -159,13 +194,6 @@ public class dashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
-        }
-
-        if (monthComboBox != null) {
-            monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
-            monthComboBox.setPromptText("Select a Month");
-            // Auto-refresh inventory table when month changes
-            monthComboBox.setOnAction(event -> inventory_management_query());
         }
     }
 
@@ -1091,9 +1119,9 @@ public class dashboardController {
             System.out.println("Initializing sales section...");
             
             // Make sure components are loaded
-            if (salesChart == null || totalSalesLabel == null || 
+            if (salesChart == null || totalSalesLabel == null ||
                 topProductLabel == null || salesDateLabel == null ||
-                startDate == null || endDate == null || exportButton == null ||
+                exportButton == null ||
                 growthRateLabel == null || averageSalesLabel == null ||
                 totalSalesButton == null || compareButton == null) {
                 throw new RuntimeException("Sales components not found in FXML");
@@ -1112,12 +1140,10 @@ public class dashboardController {
             
             // Inject all components
             salesController.injectComponents(
-                salesChart, 
-                totalSalesLabel, 
-                topProductLabel, 
+                salesChart,
+                totalSalesLabel,
+                topProductLabel,
                 salesDateLabel,
-                startDate,
-                endDate,
                 exportButton,
                 growthRateLabel,
                 averageSalesLabel,
@@ -1308,11 +1334,12 @@ public class dashboardController {
                 return;
             }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
+            // Load and show the edit form
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addEditProduct/add-edit-product_form.fxml"));
             Parent editForm = loader.load();
             
             // Get the controller and set up the data
-            add_stocks.addproductController controller = loader.getController();
+            addeditproductController controller = loader.getController();
             controller.setDashboardController(this);
             controller.setItemToEdit(selectedItem);
 
@@ -1338,8 +1365,7 @@ public class dashboardController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("Failed to open edit form: " + e.getMessage());
-            alert.initStyle(StageStyle.UNDECORATED);
+            alert.setContentText("Error loading edit form: " + e.getMessage());
             alert.showAndWait();
         }
     }
@@ -1432,6 +1458,84 @@ public class dashboardController {
         }
     }
 
+
+    private void updateStockNotifications() {
+        ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
+        ComboBox<String> monthCombo = (ComboBox<String>) borderpane.lookup("#month");
+
+        if (stocksCombo == null || monthCombo == null || recent1 == null) {
+            return;
+        }
+
+        // Get the threshold value and month
+        int threshold;
+        try {
+            threshold = Integer.parseInt(stocksCombo.getValue());
+        } catch (NumberFormatException e) {
+            threshold = 1000; // Default value
+        }
+        String selectedMonth = monthCombo.getValue().toLowerCase().substring(0, 3);
+
+        // Clear existing notifications
+        recent1.getChildren().clear();
+
+        Connection connect = null;
+        try {
+            // Query to get stock levels for the selected month, joining with item descriptions
+            String sql = String.format(
+                "SELECT s.item_code, s.%s1 as stock_level, so.item_description, so.volume " +
+                "FROM stock_onhand s " +
+                "JOIN sale_offtake so ON s.item_code = so.item_code " +
+                "WHERE s.%s1 <= ? " +
+                "ORDER BY s.%s1 ASC",
+                selectedMonth, selectedMonth, selectedMonth
+            );
+
+            Object[] result = database_utility.query(sql, threshold);
+            if (result != null) {
+                connect = (Connection) result[0];
+                ResultSet rs = (ResultSet) result[1];
+
+                while (rs.next()) {
+                    int stockLevel = rs.getInt("stock_level");
+                    String description = rs.getString("item_description");
+                    int volume = rs.getInt("volume");
+
+                    // Create notification box
+                    VBox notificationBox = new VBox();
+                    notificationBox.setPrefHeight(30);
+                    notificationBox.setMinHeight(30);
+                    notificationBox.setMaxHeight(30);
+                    notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1;");
+
+                    HBox hBox = new HBox(8);
+                    hBox.setFillHeight(true);
+                    hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+
+                    ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
+                    imageView.setFitHeight(22);
+                    imageView.setFitWidth(22);
+                    imageView.setPreserveRatio(true);
+
+                    String notificationText = volume + " mL " + description + " has " + stockLevel + " stocks";
+                    Label label = new Label(notificationText);
+                    label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+                    hBox.getChildren().addAll(imageView, label);
+                    notificationBox.getChildren().add(hBox);
+
+                    // Add margin between notifications
+                    VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 5, 0));
+
+                    // Add to container
+                    recent1.getChildren().add(notificationBox);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void setupSearch() {
         // Set prompt text and style
         searchField.setPromptText("Search items...");
@@ -1505,10 +1609,20 @@ public class dashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Search Error", "Failed to perform search: " + e.getMessage());
+
         } finally {
             if (connect != null) {
                 database_utility.close(connect);
             }
+        }
+
+
+        // Configure scrolling
+        if (notifScrollPane != null) {
+            notifScrollPane.setFitToWidth(true);
+            notifScrollPane.setFitToHeight(false);
+            notifScrollPane.setPannable(true);
+            notifScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         }
     }
 }

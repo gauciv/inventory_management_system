@@ -29,8 +29,6 @@ public class SalesController {
     @FXML private Label salesDateLabel;
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
-    @FXML private DatePicker startDate;
-    @FXML private DatePicker endDate;
     @FXML private ComboBox<String> chartTypeComboBox;
     @FXML private ComboBox<String> compareProductComboBox;
     @FXML private Button exportButton;
@@ -55,13 +53,10 @@ public class SalesController {
     }
 
     private void setupControls() {
-        // Setup date pickers
-        startDate.setValue(LocalDate.now().minusMonths(12));
-        endDate.setValue(LocalDate.now());
+        // Setup date pickers with fixed start date and current end date
+        LocalDate fixedStartDate = LocalDate.of(2024, 5, 28); // May 28, 2024
+        LocalDate currentEndDate = LocalDate.now();
         
-        startDate.setOnAction(e -> updateTotalSales());
-        endDate.setOnAction(e -> updateTotalSales());
-
         // Setup export button
         exportButton.setOnAction(e -> exportData());
 
@@ -584,12 +579,10 @@ public class SalesController {
     }
 
     // Component injection method
-    public void injectComponents(LineChart<String, Number> salesChart, 
-                               Label totalSalesLabel, 
-                               Label topProductLabel, 
+    public void injectComponents(LineChart<String, Number> salesChart,
+                               Label totalSalesLabel,
+                               Label topProductLabel,
                                Label salesDateLabel,
-                               DatePicker startDate,
-                               DatePicker endDate,
                                Button exportButton,
                                Label growthRateLabel,
                                Label averageSalesLabel,
@@ -599,8 +592,6 @@ public class SalesController {
         this.totalSalesLabel = totalSalesLabel;
         this.topProductLabel = topProductLabel;
         this.salesDateLabel = salesDateLabel;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.exportButton = exportButton;
         this.growthRateLabel = growthRateLabel;
         this.averageSalesLabel = averageSalesLabel;
