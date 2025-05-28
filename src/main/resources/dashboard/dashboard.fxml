@@ -31,6 +31,8 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.DatePicker?>
 <?import java.lang.String?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Tooltip?>
 
 <BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
@@ -688,13 +690,92 @@
                            <content>
                               <AnchorPane fx:id="helppane" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <HBox alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0">
+                                    <VBox alignment="CENTER" spacing="30" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0">
                                        <ImageView fitHeight="270.0" fitWidth="246.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
                                              <Image url="@../images/devilias_logo.png" />
                                           </image>
                                        </ImageView>
-                                    </HBox>
+                                       
+                                       <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #081739; -fx-background-radius: 15;" maxWidth="500">
+                                          <padding>
+                                             <Insets top="20" bottom="20" left="30" right="30" />
+                                          </padding>
+                                          <effect>
+                                             <DropShadow />
+                                          </effect>
+                                          
+                                          <Label text="Development Team" style="-fx-text-fill: #00b4ff; -fx-font-size: 20;">
+                                             <font>
+                                                <Font name="System Bold" size="20" />
+                                             </font>
+                                          </Label>
+                                          
+                                          <VBox alignment="CENTER" spacing="15">
+                                             <Label fx:id="augustoGithub" text="John Vincent D. Augusto" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                                <tooltip>
+                                                   <Tooltip text="github.com/gauciv" />
+                                                </tooltip>
+                                                <styleClass>
+                                                    <String fx:value="github-link" />
+                                                </styleClass>
+                                                <userData>
+                                                    <String fx:value="https://github.com/gauciv" />
+                                                </userData>
+                                             </Label>
+                                             <Label fx:id="boholGithub" text="Jonna T. Bohol" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                                <tooltip>
+                                                   <Tooltip text="github.com/Boholjonna" />
+                                                </tooltip>
+                                                <styleClass>
+                                                    <String fx:value="github-link" />
+                                                </styleClass>
+                                                <userData>
+                                                    <String fx:value="https://github.com/Boholjonna" />
+                                                </userData>
+                                             </Label>
+                                             <Label fx:id="molinaGithub" text="Mikaela Vianca G. Molina" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                                <tooltip>
+                                                   <Tooltip text="github.com/mikaelaMolina" />
+                                                </tooltip>
+                                                <styleClass>
+                                                    <String fx:value="github-link" />
+                                                </styleClass>
+                                                <userData>
+                                                    <String fx:value="https://github.com/mikaelaMolina" />
+                                                </userData>
+                                             </Label>
+                                             <Label fx:id="remegiaGithub" text="Jonrheym P. Remegia" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                                <tooltip>
+                                                   <Tooltip text="github.com/HumbaAdob0" />
+                                                </tooltip>
+                                                <styleClass>
+                                                    <String fx:value="github-link" />
+                                                </styleClass>
+                                                <userData>
+                                                    <String fx:value="https://github.com/HumbaAdob0" />
+                                                </userData>
+                                             </Label>
+                                             <Label fx:id="georfoGithub" text="Joanne R. Georfo" style="-fx-text-fill: white; -fx-font-size: 16; -fx-cursor: hand;" onMouseClicked="#handleGithubLink">
+                                                <tooltip>
+                                                   <Tooltip text="github.com/georfojoanne" />
+                                                </tooltip>
+                                                <styleClass>
+                                                    <String fx:value="github-link" />
+                                                </styleClass>
+                                                <userData>
+                                                    <String fx:value="https://github.com/georfojoanne" />
+                                                </userData>
+                                             </Label>
+                                          </VBox>
+                                       </VBox>
+                                       
+                                       <Label text="© 2025 Devilias. All Rights Reserved." style="-fx-text-fill: #AEB9E1; -fx-font-size: 14;">
+                                          <VBox.margin>
+                                             <Insets top="10" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </VBox>
                                  </children>
                               </AnchorPane>
                            </content>

@@ -1119,4 +1119,15 @@ public class dashboardController {
             }
         });
     }
+
+    @FXML
+    private void handleGithubLink(MouseEvent event) {
+        Label clickedLabel = (Label) event.getSource();
+        String url = (String) clickedLabel.getUserData();
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
