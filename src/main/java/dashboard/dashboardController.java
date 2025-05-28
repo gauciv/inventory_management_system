@@ -1220,7 +1220,10 @@ public class dashboardController {
         } finally {
             if (connect != null) {
                 database_utility.close(connect);
-
+            }
+        }
+    }
+    
     @FXML
     private void handleGithubLink(MouseEvent event) {
         Label clickedLabel = (Label) event.getSource();
