@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
+            <version>24.1.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -90,7 +90,6 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-
                             <mainClass>login.login_app</mainClass>
                             <!-- include your lib/mysql-connector on the module-path -->
                             <modulePathElements>
@@ -102,14 +101,9 @@
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
-
-
                         </configuration>
                     </execution>
                 </executions>
-
-
-
             </plugin>
         </plugins>
     </build>
