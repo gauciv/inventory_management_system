@@ -163,29 +163,6 @@
                   <Insets top="60.0" />
                </VBox.margin>
             </Line>
-            <HBox prefHeight="30.0" prefWidth="170.0">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/settings_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="settingsbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Settings" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
             <HBox layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
                <children>
                   <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
@@ -721,11 +698,6 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                           </content>
-                        </Tab>
-                        <Tab text="Settings">
-                           <content>
-                              <AnchorPane fx:id="settingspane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: teal;" />
                            </content>
                         </Tab>
                         <Tab text="Contact Us">
