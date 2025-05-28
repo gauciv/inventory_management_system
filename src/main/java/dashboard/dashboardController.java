@@ -619,7 +619,7 @@ public class dashboardController {
                 stage.initStyle(StageStyle.TRANSPARENT);
                 stage.setTitle(title);
                 stage.setScene(scene);
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
                 Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
                 stage.show();
                 double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
@@ -653,7 +653,7 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(title);
             stage.setScene(scene);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
             // Get screen bounds of right_pane for centering
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -991,9 +991,9 @@ public class dashboardController {
             System.out.println("Initializing sales section...");
             
             // Make sure components are loaded
-            if (salesChart == null || totalSalesLabel == null || 
+            if (salesChart == null || totalSalesLabel == null ||
                 topProductLabel == null || salesDateLabel == null ||
-                startDate == null || endDate == null || exportButton == null ||
+                exportButton == null ||
                 growthRateLabel == null || averageSalesLabel == null ||
                 totalSalesButton == null || compareButton == null) {
                 throw new RuntimeException("Sales components not found in FXML");
@@ -1012,12 +1012,10 @@ public class dashboardController {
             
             // Inject all components
             salesController.injectComponents(
-                salesChart, 
-                totalSalesLabel, 
-                topProductLabel, 
+                salesChart,
+                totalSalesLabel,
+                topProductLabel,
                 salesDateLabel,
-                startDate,
-                endDate,
                 exportButton,
                 growthRateLabel,
                 averageSalesLabel,
@@ -1208,9 +1206,36 @@ public class dashboardController {
                 return;
             }
 
+
             // Create and show the edit form using add-edit-product_form.fxml
             add_edit_product.addeditproduct editForm = new add_edit_product.addeditproduct();
             editForm.showPopup((Stage) right_pane.getScene().getWindow(), inventorypane, selectedItem, this);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
+            Parent editForm = loader.load();
+            
+            // Get the controller and set up the data
+            add_stocks.addproductController controller = loader.getController();
+            controller.setDashboardController(this);
+            controller.setItemToEdit(selectedItem);
+
+            Scene scene = new Scene(editForm);
+            scene.setFill(null);
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.setTitle("Edit Product");
+            stage.setScene(scene);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
+            
+            // Center the stage on the inventory pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+            stage.show();
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+            stage.setX(centerX);
+            stage.setY(centerY);
+            stage.toFront();
+
 
         } catch (IOException e) {
             e.printStackTrace();
