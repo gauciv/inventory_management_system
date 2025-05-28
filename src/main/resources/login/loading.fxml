@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-           style="-fx-background-color: rgba(11,23,57,0.85);">
-    <VBox alignment="CENTER" spacing="20">
-        <ProgressIndicator fx:id="progressIndicator" style="-fx-progress-color: #3E4B64;" prefWidth="80" prefHeight="80" />
-        <Label text="Loading dashboard..."
-               style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import login.IVDripAnimation?>
+
+<StackPane prefHeight="217.0" prefWidth="370.0" stylesheets="@../styles/loading.css" 
+         xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+         fx:controller="login.loadingController">
+    
+    <!-- Background with multiple IV drips -->
+    <AnchorPane styleClass="background-pane">
+        <IVDripAnimation AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="0.0" />
+        <IVDripAnimation AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+    </AnchorPane>
+    
+    <!-- Loading content -->
+    <VBox alignment="CENTER" maxHeight="150" maxWidth="320" spacing="20" styleClass="content-box">
+        <StackPane fx:id="progressContainer" styleClass="progress-container">
+            <ProgressBar fx:id="progressBar" progress="0.0" styleClass="progress-bar" />
+            <Label fx:id="progressLabel" styleClass="progress-label" text="1/3" StackPane.alignment="TOP_CENTER">
+                <StackPane.margin>
+                    <Insets top="-20" />
+                </StackPane.margin>
+            </Label>
+        </StackPane>
+        
+        <VBox alignment="CENTER" spacing="8">
+            <Label fx:id="loadingText" styleClass="loading-text" text="Loading..." />
+            <Label fx:id="checkMark" styleClass="check-mark" text="✓" />
+        </VBox>
     </VBox>
-</StackPane> 
+    
+</StackPane>

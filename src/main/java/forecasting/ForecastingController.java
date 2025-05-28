@@ -7,8 +7,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import database.database_utility;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
+import javafx.scene.input.MouseEvent;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +32,7 @@ public class ForecastingController {
     private Label forecastRecommendationsLabel;
     private ComboBox<String> forecastFormulaComboBox;
     private Label forecastPlaceholderLabel;
+    private Button formulaHelpButton;
     
     private final ForecastingModel forecastingModel;
     
@@ -32,7 +41,8 @@ public class ForecastingController {
     }
     
     public void initialize(LineChart<String, Number> chart, ComboBox<String> productCombo,
-                         Label accuracyLabel, Label trendLabel, Label recommendationsLabel, ComboBox<String> formulaCombo, Label placeholderLabel) {
+                         Label accuracyLabel, Label trendLabel, Label recommendationsLabel, 
+                         ComboBox<String> formulaCombo, Label placeholderLabel, Button helpButton) {
         try {
             this.forecastChart = chart;
             this.forecastProductComboBox = productCombo;
@@ -41,6 +51,7 @@ public class ForecastingController {
             this.forecastRecommendationsLabel = recommendationsLabel;
             this.forecastFormulaComboBox = formulaCombo;
             this.forecastPlaceholderLabel = placeholderLabel;
+            this.formulaHelpButton = helpButton;
             
             System.out.println("Initializing ForecastingController...");
             
@@ -102,6 +113,11 @@ public class ForecastingController {
                     }
                     updateForecast();
                 });
+            }
+
+            // Configure help button
+            if (formulaHelpButton != null) {
+                formulaHelpButton.setOnAction(e -> showFormulaHelp());
             }
             
             // Show placeholder initially
@@ -368,5 +384,100 @@ public class ForecastingController {
         double[] forecast = new double[periodsAhead];
         Arrays.fill(forecast, avg);
         return forecast;
+    }
+
+    private void showFormulaHelp() {
+        try {
+            // Create a new stage for the popup
+            Stage helpStage = new Stage();
+            helpStage.initStyle(StageStyle.UNDECORATED);
+            
+            // Create the content
+            VBox content = new VBox(10);
+            content.setStyle("-fx-background-color: #081739; -fx-padding: 20; -fx-border-color: #AEB9E1; -fx-border-width: 1;");
+            content.setPrefWidth(400);
+            
+            // Add title
+            Label title = new Label("Forecasting Formulas");
+            title.setStyle("-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;");
+            
+            // Add formula descriptions
+            VBox formulasBox = new VBox(15);
+            
+            // Holt-Winters description
+            VBox hwBox = new VBox(5);
+            Label hwTitle = new Label("Holt-Winters Method");
+            hwTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+            Label hwDesc = new Label("Triple exponential smoothing that captures level, trend, and seasonality. Best for data with clear seasonal patterns.");
+            hwDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
+            hwBox.getChildren().addAll(hwTitle, hwDesc);
+            
+            // Moving Average description
+            VBox maBox = new VBox(5);
+            Label maTitle = new Label("Moving Average");
+            maTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+            Label maDesc = new Label("Averages a fixed number of recent periods to smooth out fluctuations. Good for stable data with minimal seasonality.");
+            maDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
+            maBox.getChildren().addAll(maTitle, maDesc);
+            
+            // Simple Average description
+            VBox saBox = new VBox(5);
+            Label saTitle = new Label("Simple Average");
+            saTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+            Label saDesc = new Label("Takes the mean of all historical data points. Best for very stable data with no clear trends or seasonality.");
+            saDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
+            saBox.getChildren().addAll(saTitle, saDesc);
+            
+            formulasBox.getChildren().addAll(hwBox, maBox, saBox);
+            
+            // Add close button
+            Button closeButton = new Button("Close");
+            closeButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5;");
+            closeButton.setOnAction(e -> helpStage.close());
+            
+            // Add window controls
+            HBox windowControls = new HBox(10);
+            windowControls.setAlignment(Pos.TOP_RIGHT);
+            
+            Button minimizeBtn = new Button("-");
+            minimizeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+            minimizeBtn.setOnAction(e -> helpStage.setIconified(true));
+            
+            Button closeBtn = new Button("×");
+            closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+            closeBtn.setOnAction(e -> helpStage.close());
+            
+            windowControls.getChildren().addAll(minimizeBtn, closeBtn);
+            
+            // Add all components
+            content.getChildren().addAll(windowControls, title, formulasBox, closeButton);
+            
+            // Make window draggable
+            final Delta dragDelta = new Delta();
+            content.setOnMousePressed(mouseEvent -> {
+                dragDelta.x = helpStage.getX() - mouseEvent.getScreenX();
+                dragDelta.y = helpStage.getY() - mouseEvent.getScreenY();
+            });
+            content.setOnMouseDragged(mouseEvent -> {
+                helpStage.setX(mouseEvent.getScreenX() + dragDelta.x);
+                helpStage.setY(mouseEvent.getScreenY() + dragDelta.y);
+            });
+            
+            // Show the popup
+            Scene scene = new Scene(content);
+            scene.setFill(null);
+            helpStage.setScene(scene);
+            helpStage.show();
+            
+        } catch (Exception e) {
+            System.err.println("Error showing formula help: " + e.getMessage());
+            e.printStackTrace();
+            showError("Help Error", "Failed to show formula help: " + e.getMessage());
+        }
+    }
+    
+    // Helper class for window dragging
+    private static class Delta {
+        double x, y;
     }
 }

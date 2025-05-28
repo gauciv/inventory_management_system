@@ -20,6 +20,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -79,13 +81,25 @@ public class dashboardController {
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
     @FXML private LineChart<String, Number> salesChart;
+    @FXML private BarChart<String, Number> salesBarChart;
+    @FXML private AreaChart<String, Number> salesAreaChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
-    @FXML private Label salesDateLabel; // Add this field for sales date
-    @FXML private Label salesTimeLabel; // Add this field for sales time
-    @FXML private VBox recent; // Add reference to recent VBox
+    @FXML private Label salesDateLabel;
+    @FXML private Label salesTimeLabel;
+    @FXML private VBox recent;
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
+    @FXML private Button formulaHelpButton;
+
+    @FXML private ComboBox<String> chartTypeComboBox;
+    @FXML private ComboBox<String> compareProductComboBox;
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
+    @FXML private Button exportButton;
+    @FXML private Label growthRateLabel;
+    @FXML private Label averageSalesLabel;
+
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -161,7 +175,8 @@ public class dashboardController {
                 forecastTrendLabel,
                 forecastRecommendationsLabel,
                 forecastFormulaComboBox,
-                forecastPlaceholderLabel
+                forecastPlaceholderLabel,
+                formulaHelpButton
             );
         } catch (Exception e) {
             System.err.println("Error initializing forecasting section: " + e.getMessage());
@@ -172,6 +187,7 @@ public class dashboardController {
             alert.setTitle("Initialization Error");
             alert.setHeaderText(null);
             alert.setContentText("Failed to initialize forecasting section: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
     }
@@ -206,6 +222,17 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
+
+        // Configure column alignment
+        inventory_table.getColumns().forEach(column -> {
+            column.setStyle("-fx-alignment: CENTER;");
+        });
+
+        // Special styling for select column header
+        col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
+
+        // Make table responsive
+
         // Disable sorting for all columns to prevent alignment issues
         inventory_table.setSortPolicy(null);
         inventory_table.getColumns().forEach(column -> {
@@ -224,6 +251,31 @@ public class dashboardController {
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
+
+
+        // Add listener for window resize to adjust columns
+        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double tableWidth = newVal.doubleValue() * 0.98;
+            double totalMinWidth = 0;
+            
+            // Calculate total minimum width
+            for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                totalMinWidth += column.getMinWidth();
+            }
+            
+            // Only adjust if we have enough space
+            if (tableWidth > totalMinWidth) {
+                double extraSpace = tableWidth - totalMinWidth;
+                double ratio = extraSpace / totalMinWidth;
+                
+                // Distribute extra space proportionally
+                for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                    column.setPrefWidth(column.getMinWidth() * (1 + ratio));
+                }
+            }
+        });
+
+     
 
         // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
@@ -582,7 +634,16 @@ public class dashboardController {
             }
 
             // Load the FXML and create scene
-            Parent addForm = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent addForm = loader.load();
+            
+            // Get the controller and pass dashboard reference
+            add_stocks.addproductController controller = loader.getController();
+            if (controller == null) {
+                throw new RuntimeException("Failed to get controller for add product form");
+            }
+            controller.setDashboardController(this);
+            
             Scene scene = new Scene(addForm);
             scene.setFill(null); // Make scene background transparent
             
@@ -615,6 +676,15 @@ public class dashboardController {
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("Failed to load form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // Show error alert if controller initialization fails
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
@@ -907,7 +977,11 @@ public class dashboardController {
             
             // Make sure components are loaded
             if (salesChart == null || totalSalesLabel == null || 
-                topProductLabel == null || salesDateLabel == null) {
+                topProductLabel == null || salesDateLabel == null ||
+                chartTypeComboBox == null || compareProductComboBox == null ||
+                startDate == null || endDate == null || exportButton == null ||
+                growthRateLabel == null || averageSalesLabel == null ||
+                salesBarChart == null || salesAreaChart == null) {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
@@ -919,12 +993,25 @@ public class dashboardController {
             // Initialize sales controller
             SalesController salesController = new SalesController();
             
-            // Initialize the sales controller with all UI components
-            salesController.injectComponents(salesChart, totalSalesLabel, 
-                                          topProductLabel, salesDateLabel);
-            
             // Initialize controller after injecting components
             salesController.initialize();
+            
+            // Inject all components
+            salesController.injectComponents(
+                salesChart, 
+                totalSalesLabel, 
+                topProductLabel, 
+                salesDateLabel,
+                chartTypeComboBox,
+                compareProductComboBox,
+                startDate,
+                endDate,
+                exportButton,
+                growthRateLabel,
+                averageSalesLabel,
+                salesBarChart,
+                salesAreaChart
+            );
             
             System.out.println("Sales section initialization complete.");
             
@@ -935,6 +1022,8 @@ public class dashboardController {
             // Show user-friendly error
             if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
             if (topProductLabel != null) topProductLabel.setText("Error loading data");
+            if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
+            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
         }
     }
 
@@ -949,11 +1038,14 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
 
             ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
             imageView.setFitHeight(22);
@@ -994,11 +1086,14 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
 
             ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
             imageView.setFitHeight(22);
