@@ -2,6 +2,47 @@
     -fx-text-fill: white;
 }
 
+/* Chart Styling */
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-title {
+    -fx-text-fill: white;
+}
+
+.axis-label {
+    -fx-text-fill: white;
+}
+
+.chart-legend {
+    -fx-text-fill: white;
+}
+
+.axis {
+    -fx-tick-label-fill: white;
+}
+
+.chart-content {
+    -fx-padding: 10px;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #3E4B64;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #3E4B64;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2px;
+}
+
 /* Custom ScrollPane scrollbar for dashboard recent notifications */
 #recentScrollPane {
     background: #0B1739;

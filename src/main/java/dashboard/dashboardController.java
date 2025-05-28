@@ -20,6 +20,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -30,6 +33,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.paint.Color;
+import javafx.scene.control.Tooltip;
 import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
@@ -38,6 +43,7 @@ import sold_stocks.soldStock;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class dashboardController {
@@ -71,9 +77,13 @@ public class dashboardController {
     @FXML private Label forecastRecommendationsLabel;
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
+    @FXML private LineChart<String, Number> salesChart;
+    @FXML private Label totalSalesLabel;
+    @FXML private Label topProductLabel;
     @FXML private Label salesDateLabel; // Add this field for sales date
     @FXML private Label salesTimeLabel; // Add this field for sales time
     @FXML private VBox recent; // Add reference to recent VBox
+
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -98,7 +108,12 @@ public class dashboardController {
             setupWindowControls();
             setupFormContainers();
             styleActiveButton(dashboardbutton);
-            initializeForecastingSection();
+            
+            // Initialize views after UI is set up
+            Platform.runLater(() -> {
+                initializeForecastingSection();
+                initializeSalesSection();
+            });
             startClock(); // Initialize the clock
             
             // Add change listener to monthComboBox
@@ -111,7 +126,9 @@ public class dashboardController {
             }
             
             // Load initial data
-            Platform.runLater(this::inventory_management_query);
+            Platform.runLater(() -> {
+                inventory_management_query();
+            });
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -423,27 +440,24 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-        button.setOnAction(e -> {
+        button.setOnAction(__ -> {
             styleActiveButton(button);
 
+            String tabText = button.getText().trim();
             for (Tab tab : tabpane.getTabs()) {
-                Node content = tab.getContent();
-
-                if (content == pane) {
+                if (tab.getText().equalsIgnoreCase(tabText) || 
+                    tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
                     tabpane.getSelectionModel().select(tab);
-                    return;
-                }
-
-                if (isDescendant(content, pane)) {
-                    tabpane.getSelectionModel().select(tab);
+                    if (pane != null) {
+                        pane.setVisible(true);
+                    }
                     return;
                 }
             }
-
-            System.out.println("No tab contains the given AnchorPane.");
+            System.out.println("No matching tab found for " + tabText);
         });
     }
-
+    
     private boolean isDescendant(Node parent, Node child) {
         if (parent instanceof Parent) {
             for (Node node : ((Parent) parent).getChildrenUnmodifiable()) {
@@ -652,10 +666,12 @@ public class dashboardController {
                     try {
                         Connection connect = null;
                         try {
-                            Object[] result = database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
+                            // First delete from stock_onhand (child table)
+                            Object[] result = database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
                             if (result != null) {
                                 connect = (Connection)result[0];
-                                database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
+                                // Then delete from sale_offtake (parent table)
+                                database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
                             }
                         } finally {
                             if (connect != null) {
@@ -803,10 +819,6 @@ public class dashboardController {
                 dateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
             }
             
-            // Update sales pane date and time
-            if (salesDateLabel != null) {
-                salesDateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
-            }
         }), new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
@@ -829,6 +841,43 @@ public class dashboardController {
         alert.setHeaderText(null);
         alert.setContentText("Data has been refreshed successfully!");
         alert.showAndWait();
+    }
+
+    private void initializeSalesSection() {
+        try {
+            System.out.println("Initializing sales section...");
+            
+            // Make sure components are loaded
+            if (salesChart == null || totalSalesLabel == null || 
+                topProductLabel == null || salesDateLabel == null) {
+                throw new RuntimeException("Sales components not found in FXML");
+            }
+            
+            // Configure chart axes
+            salesChart.setAnimated(false);
+            ((CategoryAxis) salesChart.getXAxis()).setLabel("Month");
+            ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
+            
+            // Initialize sales controller
+            SalesController salesController = new SalesController();
+            
+            // Initialize the sales controller with all UI components
+            salesController.injectComponents(salesChart, totalSalesLabel, 
+                                          topProductLabel, salesDateLabel);
+            
+            // Initialize controller after injecting components
+            salesController.initialize();
+            
+            System.out.println("Sales section initialization complete.");
+            
+        } catch (Exception e) {
+            System.err.println("Error initializing sales section: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show user-friendly error
+            if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
+            if (topProductLabel != null) topProductLabel.setText("Error loading data");
+        }
     }
 
     /**
@@ -868,7 +917,8 @@ public class dashboardController {
                 scrollPane.setFitToHeight(false);
                 scrollPane.setPannable(true);
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-            }        });
+            }       
+        });
     }
 
     /**
@@ -895,5 +945,6 @@ public class dashboardController {
             case "december": return "dec";
             default: return "jan";  // Default to January
         }
+          
     }
 }
