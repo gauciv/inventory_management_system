@@ -1432,7 +1432,9 @@ public class dashboardController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-
+        }
+    }
+    
     private void setupSearch() {
         // Set prompt text and style
         searchField.setPromptText("Search items...");
