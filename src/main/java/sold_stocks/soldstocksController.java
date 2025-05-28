@@ -22,6 +22,7 @@ public class soldstocksController {
 
     private int itemCode = -1;
     private int currentSoh = 0;
+    private dashboard.dashboardController dashboardControllerRef;
 
     @FXML
     private void Exit() {
@@ -52,38 +53,47 @@ public class soldstocksController {
             return;
         }
 
-        // Check if there are enough stocks to sell
         if (soldStocks > currentSoh) {
             showAlert("Error", "Not enough stocks available. Current stock on hand: " + currentSoh);
             return;
         }
 
-        // Calculate new stock on hand
         int updatedSoh = currentSoh - soldStocks;
-
-        // Update stock_onhand table
         Connection connect = null;
         try {
+            // Get the selected month from dashboardController
+            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
+            
+            // Update stock_onhand table with the correct month column
             Object[] result = database_utility.update(
-                "UPDATE stock_onhand SET dec1 = ? WHERE item_code = ?",
+                String.format("UPDATE stock_onhand SET %s1 = ? WHERE item_code = ?", selectedMonth),
                 updatedSoh, itemCode
             );
+            
             if (result != null) {
                 connect = (Connection) result[0];
-                // Update sale_offtake table
+                
+                // Update sale_offtake table with the correct month column
                 database_utility.update(
-                    "UPDATE sale_offtake SET dec = dec + ? WHERE item_code = ?",
+                    String.format("UPDATE sale_offtake SET %s = COALESCE(%s, 0) + ? WHERE item_code = ?", 
+                        selectedMonth, selectedMonth),
                     soldStocks, itemCode
                 );
+                
+                showAlert("Success", "Stock sold successfully and sales data updated.");
+                
+                // Refresh the inventory table
+                if (dashboardControllerRef != null) {
+                    dashboardControllerRef.inventory_management_query();
+                }
+                
+                // Close the form
+                Stage stage = (Stage) sold_pane.getScene().getWindow();
+                stage.close();
             }
-            showAlert("Success", "Stock sold successfully.");
-            
-            // Close the form
-            Stage stage = (Stage) sold_pane.getScene().getWindow();
-            stage.close();
-
         } catch (Exception e) {
-            showAlert("Database Error", "Failed to update stock: " + e.getMessage());
+            showAlert("Database Error", "Failed to update stock and sales data: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             if (connect != null) {
                 database_utility.close(connect);
@@ -103,6 +113,10 @@ public class soldstocksController {
         categoryField.setText(category);
         salesOfftakeField.setText(String.valueOf(salesOfftake));
         stocksOnHandField.setText(String.valueOf(stocksOnHand));
+    }
+
+    public void setDashboardController(dashboard.dashboardController controller) {
+        this.dashboardControllerRef = controller;
     }
 
     private void showAlert(String title, String content) {
