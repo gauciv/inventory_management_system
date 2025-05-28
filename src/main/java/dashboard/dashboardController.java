@@ -87,7 +87,7 @@ public class dashboardController {
 
     @FXML
     public void initialize() {
-       try {
+        try {
             // Initialize table first since other components may depend on it
             inventory_management_table = FXCollections.observableArrayList();
             if (inventory_table != null) {
@@ -101,18 +101,31 @@ public class dashboardController {
             initializeForecastingSection();
             startClock(); // Initialize the clock
             
+            // Add change listener to monthComboBox
+            if (monthComboBox != null) {
+                monthComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        inventory_management_query();
+                    }
+                });
+            }
+            
             // Load initial data
             Platform.runLater(this::inventory_management_query);
             
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
-        }
-
-        if (monthComboBox != null) {
+        }        if (monthComboBox != null) {
             monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
             monthComboBox.setPromptText("Select a Month");
-
+            
+            // Add listener to update the table when month selection changes
+            monthComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    inventory_management_query();
+                }
+            });
         }
     }
 
@@ -735,14 +748,18 @@ public class dashboardController {
    @FXML 
     private TableColumn<Inventory_management_bin, Boolean> col_select;
     private ObservableList<Inventory_management_bin> inventory_management_table;
-
-
     // Make this method public so it can be called from addstocksController
     public void inventory_management_query() {
         Connection connect = null;
         try {
-            String sql_query = "SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.dec, stock_onhand.dec1 " +
-                    "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code";
+            // Get the selected month from the combo box
+            String selectedMonth = monthComboBox.getValue();
+            String monthColumn = getMonthColumn(selectedMonth.toLowerCase());
+            String stockMonthColumn = monthColumn + "1";
+
+            String sql_query = String.format("SELECT sale_offtake.item_code, item_description, volume, category, sale_offtake.%s, stock_onhand.%s " +
+                    "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code", 
+                    monthColumn, stockMonthColumn);
 
             Object[] result_from_query = database_utility.query(sql_query);
             if (result_from_query != null) {
@@ -756,8 +773,8 @@ public class dashboardController {
                         result.getString("item_description"),
                         result.getInt("volume"),
                         result.getString("category"),
-                        result.getInt("dec"),
-                        result.getInt("dec1")
+                        result.getInt(monthColumn),
+                        result.getInt(stockMonthColumn)
                     ));
                 }
 
@@ -851,7 +868,32 @@ public class dashboardController {
                 scrollPane.setFitToHeight(false);
                 scrollPane.setPannable(true);
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-            }
-        });
+            }        });
+    }
+
+    /**
+     * Gets the monthComboBox control
+     * @return The ComboBox containing month selections
+     */
+    public ComboBox<String> getMonthComboBox() {
+        return monthComboBox;
+    }
+    
+    private String getMonthColumn(String month) {
+        switch (month) {
+            case "january": return "jan";
+            case "february": return "feb";
+            case "march": return "mar";
+            case "april": return "apr";
+            case "may": return "may";
+            case "june": return "jun";
+            case "july": return "jul";
+            case "august": return "aug";
+            case "september": return "sep";
+            case "october": return "oct";
+            case "november": return "nov";
+            case "december": return "dec";
+            default: return "jan";  // Default to January
+        }
     }
 }
