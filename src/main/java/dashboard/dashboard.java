@@ -17,7 +17,7 @@ public class dashboard extends Application {
         dashboardController controller = loader.getController();
         controller.setHostServices(getHostServices());
         
-        primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        primaryStage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm()));
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");

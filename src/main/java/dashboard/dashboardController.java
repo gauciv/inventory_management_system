@@ -619,7 +619,7 @@ public class dashboardController {
                 stage.initStyle(StageStyle.TRANSPARENT);
                 stage.setTitle(title);
                 stage.setScene(scene);
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
                 Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
                 stage.show();
                 double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
@@ -653,7 +653,7 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(title);
             stage.setScene(scene);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
             // Get screen bounds of right_pane for centering
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -1222,7 +1222,7 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle("Edit Product");
             stage.setScene(scene);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
             // Center the stage on the inventory pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
