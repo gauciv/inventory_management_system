@@ -4,14 +4,11 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.chart.AreaChart?>
-<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
@@ -31,7 +28,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-
 
 <BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
@@ -508,7 +504,7 @@
                                                    <DropShadow />
                                                 </effect>
                                              </Button>
-                                             <Button fx:id="editButton" onAction="#handleEditButton" alignment="CENTER" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE">
+                                             <Button fx:id="editButton" alignment="CENTER" onAction="#handleEditButton" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE">
                                                 <font>
                                                    <Font size="14.0" />
                                                 </font>
@@ -539,26 +535,29 @@
                                                   </font>
                                               </Label>
                                               <Region HBox.hgrow="ALWAYS" />
-                                              <!-- Export Controls -->
-                                              <Button fx:id="exportButton" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5;" text="Export Data">
-                                                  <graphic>
-                                                      <ImageView fitHeight="16" fitWidth="16">
-                                                          <Image url="@../images/export.png" />
-                                                      </ImageView>
-                                                  </graphic>
-                                                  <cursor>
-                                                      <Cursor fx:constant="HAND" />
-                                                  </cursor>
-                                              </Button>
                                           </HBox>
 
                                           <!-- Filter Controls -->
 
-                                          <HBox spacing="10" alignment="CENTER_LEFT">
-                                              <Button fx:id="totalSalesButton" text="Show Total Sales" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;" onAction="#handleTotalSales" />
-                                              <Button fx:id="compareButton" text="Compare Products" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;" onAction="#handleCompare" />
-                                              <Region HBox.hgrow="ALWAYS" />
-                                          </HBox>
+                                          <HBox spacing="10">
+                                              <children>
+                                                  <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                                      <children>
+                                                          <Region prefHeight="30.0" prefWidth="110.0" HBox.hgrow="ALWAYS" />
+                                                          <HBox alignment="CENTER" spacing="10">
+                                                              <Button fx:id="totalSalesButton" onAction="#handleTotalSales" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;" text="Show Total Sales" />
+                                                              <Button fx:id="compareButton" onAction="#handleCompare" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;" text="Compare Products" />
+                                                          </HBox>
+                                                          <Region HBox.hgrow="ALWAYS" />
+                                                      </children>
+                                                  </HBox>
+                                                  <Button fx:id="exportButton" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5;" text="Export Data">
+                                                       <cursor>
+                                                           <Cursor fx:constant="HAND" />
+                                                       </cursor>
+                                                  </Button>
+                                              </children>
+                                           </HBox>
 
                                           <!-- Chart Section -->
                                           <StackPane VBox.vgrow="ALWAYS">
@@ -570,7 +569,7 @@
                                                       <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
                                                   </yAxis>
                                               </LineChart>
-                                              <Label fx:id="salesChartPlaceholder" text="" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16;" visible="false" StackPane.alignment="CENTER" />
+                                              <Label fx:id="salesChartPlaceholder" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16;" text="" visible="false" StackPane.alignment="CENTER" />
                                           </StackPane>
                                           
                                           <!-- Sales Summary Section -->
