@@ -1,0 +1,72 @@
+.root {
+    -fx-background-color: #0B1739;
+}
+
+.background-pane {
+    -fx-background-color: transparent;
+}
+
+.content-box {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0, 0, 10),
+                innershadow(gaussian, rgba(135, 206, 235, 0.2), 10, 0, 0, 0),
+                glow(rgba(135, 206, 235, 0.3), 10);
+    -fx-border-color: rgba(135, 206, 235, 0.2);
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+}
+
+.progress-container {
+    -fx-padding: 15px;
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.progress-bar {
+    -fx-min-height: 6px;
+    -fx-pref-height: 6px;
+    -fx-max-height: 6px;
+    -fx-pref-width: 300px;
+}
+
+.progress-bar > .track {
+    -fx-background-color: rgba(135, 206, 235, 0.1);
+    -fx-background-radius: 20;
+    -fx-background-insets: 0;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(to right, #87CEEB, #4682B4);
+    -fx-background-radius: 20;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(135, 206, 235, 0.5), 10, 0, 0, 0);
+}
+
+.progress-label {
+    -fx-text-fill: #87CEEB;
+    -fx-font-size: 12px;
+    -fx-background-color: rgba(70, 130, 180, 0.3);
+    -fx-background-radius: 12;
+    -fx-padding: 4 8 4 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 2),
+                glow(rgba(135, 206, 235, 0.5), 8);
+}
+
+.loading-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #87CEEB;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: normal;
+    -fx-opacity: 0.9;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 1);
+}
+
+.check-mark {
+    -fx-font-size: 24px;
+    -fx-text-fill: #87CEEB;
+    -fx-opacity: 0;
+    -fx-effect: glow(rgba(135, 206, 235, 0.5), 10);
+} 

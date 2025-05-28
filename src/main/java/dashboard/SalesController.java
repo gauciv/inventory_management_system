@@ -224,6 +224,7 @@ public class SalesController {
         salesChart.setAnimated(false);
         salesChart.setCreateSymbols(true);
         salesChart.setTitle("Monthly Sales Overview");
+        salesChart.lookup(".chart-title").setStyle("-fx-text-fill: white;");
         
         // Style for dark theme
         String chartStyle = "-fx-background-color: transparent;";
@@ -231,11 +232,42 @@ public class SalesController {
         salesBarChart.setStyle(chartStyle);
         salesAreaChart.setStyle(chartStyle);
         
+
         // Initialize labels
         if (totalSalesLabel != null) totalSalesLabel.setText("Loading...");
         if (topProductLabel != null) topProductLabel.setText("Loading...");
         if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: Loading...");
         if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: Loading...");
+
+        // Style axis
+        CategoryAxis xAxis = (CategoryAxis) salesChart.getXAxis();
+        NumberAxis yAxis = (NumberAxis) salesChart.getYAxis();
+        
+        xAxis.setLabel("Month");
+        yAxis.setLabel("Sales Volume (Units)");
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
+        xAxis.setStyle("-fx-text-fill: white;");
+        yAxis.setStyle("-fx-text-fill: white;");
+        
+        // Additional styling for axis labels
+        xAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
+        yAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
+        
+        // Add some padding to axis ranges for better visualization
+        yAxis.setAutoRanging(true);
+        yAxis.setMinorTickCount(2);
+        
+        // Initialize labels with loading state
+        if (totalSalesLabel != null) {
+            totalSalesLabel.setText("Loading...");
+            totalSalesLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24;");
+        }
+        if (topProductLabel != null) {
+            topProductLabel.setText("Loading...");
+            topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
+        }
+
     }
 
     private void setupClock() {
