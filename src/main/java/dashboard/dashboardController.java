@@ -1119,4 +1119,74 @@ public class dashboardController {
             }
         });
     }
+
+    @FXML
+    private void handleEditButton() {
+        try {
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to edit.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            } else if (checkedCount > 1) {
+                // Show error alert if multiple checkboxes are checked
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select only one item to edit.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
+            Parent editForm = loader.load();
+            
+            // Get the controller and set up the data
+            add_stocks.addproductController controller = loader.getController();
+            controller.setDashboardController(this);
+            controller.setItemToEdit(selectedItem);
+
+            Scene scene = new Scene(editForm);
+            scene.setFill(null);
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.setTitle("Edit Product");
+            stage.setScene(scene);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            
+            // Center the stage on the inventory pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+            stage.show();
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+            stage.setX(centerX);
+            stage.setY(centerY);
+            stage.toFront();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to open edit form: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait();
+        }
+    }
 }
