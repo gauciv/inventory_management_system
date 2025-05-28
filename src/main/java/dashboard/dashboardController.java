@@ -83,7 +83,8 @@ public class dashboardController {
     @FXML private Label salesDateLabel; // Add this field for sales date
     @FXML private Label salesTimeLabel; // Add this field for sales time
     @FXML private VBox recent; // Add reference to recent VBox
-
+    @FXML private ComboBox<String> forecastFormulaComboBox;
+    @FXML private Label forecastPlaceholderLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -155,7 +156,9 @@ public class dashboardController {
                 forecastProductComboBox,
                 forecastAccuracyLabel,
                 forecastTrendLabel,
-                forecastRecommendationsLabel
+                forecastRecommendationsLabel,
+                forecastFormulaComboBox,
+                forecastPlaceholderLabel
             );
         } catch (Exception e) {
             System.err.println("Error initializing forecasting section: " + e.getMessage());
