@@ -51,6 +51,7 @@ public class SalesController {
         salesChart.setAnimated(false); // Disable animations for better performance
         salesChart.setCreateSymbols(true);
         salesChart.setTitle("Monthly Sales Overview");
+        salesChart.lookup(".chart-title").setStyle("-fx-text-fill: white;");
         
         // Style for dark theme
         salesChart.setStyle("-fx-background-color: transparent;");
@@ -68,6 +69,10 @@ public class SalesController {
         yAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
         xAxis.setStyle("-fx-text-fill: white;");
         yAxis.setStyle("-fx-text-fill: white;");
+        
+        // Additional styling for axis labels
+        xAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
+        yAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
         
         // Add some padding to axis ranges for better visualization
         yAxis.setAutoRanging(true);

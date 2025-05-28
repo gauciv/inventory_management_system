@@ -51,27 +51,82 @@
     -fx-background-color: #081739;
     border-color: transparent;
     -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 #recentScrollPane .viewport {
     background-color: #081739;
     -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 #recentScrollPane .scroll-bar:vertical {
     background-color: #081739;
     -fx-background-color: #081739;
+    -fx-background-radius: 0 10 10 0;
+    -fx-border-radius: 0 10 10 0;
 }
 #recentScrollPane .thumb {
     /* Gradient: from #3A8DFF (lighter blue) to #0E1D47 (dark blue) */
     background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
     -fx-background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 #recentScrollPane .track {
     background-color: #081739;
     -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 #recentScrollPane .increment-button, #recentScrollPane .decrement-button {
     background-color: #081739;
     -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+/* Custom ScrollPane scrollbar for dashboard notifications */
+#notifScrollPane {
+    background: #081739;
+    -fx-background: #081739;
+    background-color: #081739;
+    -fx-background-color: #081739;
+    border-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+#notifScrollPane .viewport {
+    background-color: #081739;
+    -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+#notifScrollPane .scroll-bar:vertical {
+    background-color: #081739;
+    -fx-background-color: #081739;
+    -fx-background-radius: 0 10 10 0;
+    -fx-border-radius: 0 10 10 0;
+}
+#notifScrollPane .thumb {
+    /* Gradient: from #3A8DFF (lighter blue) to #0E1D47 (dark blue) */
+    background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
+    -fx-background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+#notifScrollPane .track {
+    background-color: #081739;
+    -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+#notifScrollPane .increment-button, #notifScrollPane .decrement-button {
+    background-color: #081739;
+    -fx-background-color: #081739;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 
 /* Gradient style for ComboBox */

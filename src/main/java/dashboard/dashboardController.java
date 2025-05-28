@@ -60,8 +60,6 @@ public class dashboardController {
     @FXML private AnchorPane forecastingpane;
     @FXML private Button salesbutton;
     @FXML private AnchorPane salespane;
-    @FXML private Button settingsbutton;
-    @FXML private AnchorPane settingspane;
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
@@ -85,6 +83,7 @@ public class dashboardController {
     @FXML private VBox recent; // Add reference to recent VBox
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
+    @FXML private Button formulaHelpButton;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -160,7 +159,8 @@ public class dashboardController {
                 forecastTrendLabel,
                 forecastRecommendationsLabel,
                 forecastFormulaComboBox,
-                forecastPlaceholderLabel
+                forecastPlaceholderLabel,
+                formulaHelpButton
             );
         } catch (Exception e) {
             System.err.println("Error initializing forecasting section: " + e.getMessage());
@@ -205,6 +205,7 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
+
         // Configure column alignment
         inventory_table.getColumns().forEach(column -> {
             column.setStyle("-fx-alignment: CENTER;");
@@ -214,6 +215,14 @@ public class dashboardController {
         col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
 
         // Make table responsive
+
+        // Disable sorting for all columns to prevent alignment issues
+        inventory_table.setSortPolicy(null);
+        inventory_table.getColumns().forEach(column -> {
+            column.setSortable(false);
+        });
+
+        // Make table responsive with fixed column widths
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Bind table width to parent width with padding
@@ -225,6 +234,7 @@ public class dashboardController {
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
+
 
         // Add listener for window resize to adjust columns
         inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -248,7 +258,9 @@ public class dashboardController {
             }
         });
 
-        // Initialize table columns
+     
+
+        // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
                 () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
@@ -306,6 +318,11 @@ public class dashboardController {
         
         // Load the inventory data
         inventory_management_query();
+
+        // Force layout pass to ensure proper alignment
+        Platform.runLater(() -> {
+            inventory_table.refresh();
+        });
     }
     
     private void setupWindowControls() {
@@ -330,7 +347,6 @@ public class dashboardController {
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
         TabSwitch(salesbutton, salespane);
-        TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
     }
     
@@ -430,7 +446,7 @@ public class dashboardController {
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
-                forecastingbutton, settingsbutton, helpbutton
+                forecastingbutton, helpbutton
         );
 
         if (!validButtons.contains(selectedButton)) {
@@ -968,18 +984,25 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
 
             ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
             imageView.setFitHeight(22);
             imageView.setFitWidth(22);
             imageView.setPreserveRatio(true);
 
-            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility as of " + formattedDate);
             label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
             hBox.getChildren().addAll(imageView, label);
@@ -996,6 +1019,53 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
         });
+    }
 
+    /**
+     * Adds a notification to the recent VBox for sold stocks.
+     * @param stockCount The number of stocks sold.
+     * @param description The item description.
+     */
+    public void addSoldStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+            String formattedDate = currentTime.format(dateFormatter);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has been sold as of " + formattedDate);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
     }
 }
