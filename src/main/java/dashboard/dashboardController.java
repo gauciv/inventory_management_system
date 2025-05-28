@@ -946,11 +946,14 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
 
             ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
             imageView.setFitHeight(22);
@@ -991,11 +994,14 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            // Add margins using layout constraints
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
 
             ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
             imageView.setFitHeight(22);
