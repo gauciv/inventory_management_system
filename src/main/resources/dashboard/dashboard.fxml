@@ -456,25 +456,27 @@
                                     </AnchorPane>
                                     <AnchorPane fx:id="refreshButtonContainer" prefHeight="54.0" prefWidth="727.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <Button fx:id="refreshButton" alignment="CENTER" layoutX="228.06087709711744" layoutY="0.8347826363864612" onAction="#handleRefreshData" prefHeight="52.0" prefWidth="98.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE" AnchorPane.bottomAnchor="0.8347826363864641" AnchorPane.leftAnchor="228.06087709711744" AnchorPane.rightAnchor="400.5304481018878" AnchorPane.topAnchor="0.8347826363864612">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                             <effect>
-                                                <DropShadow />
-                                             </effect>
-                                          </Button>
-                                          <Button fx:id="editButton" onAction="#handleEditButton" alignment="CENTER" layoutX="415.88697028407125" layoutY="0.8347826363864612" prefHeight="52.0" prefWidth="100.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE" AnchorPane.bottomAnchor="0.8347826363864641" AnchorPane.leftAnchor="415.88697028407125" AnchorPane.rightAnchor="211.03478964216117" AnchorPane.topAnchor="0.8347826363864612">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                             <effect>
-                                                <DropShadow />
-                                             </effect>
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                          </Button>
+                                          <HBox alignment="CENTER" spacing="20" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+                                             <Button fx:id="refreshButton" alignment="CENTER" onAction="#handleRefreshData" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Refresh Data" textFill="WHITE">
+                                                <font>
+                                                   <Font size="14.0" />
+                                                </font>
+                                                <effect>
+                                                   <DropShadow />
+                                                </effect>
+                                             </Button>
+                                             <Button fx:id="editButton" onAction="#handleEditButton" alignment="CENTER" prefHeight="52.0" prefWidth="120.0" style="-fx-background-color: #0A1196; -fx-background-radius: 30;" text="Edit" textFill="WHITE">
+                                                <font>
+                                                   <Font size="14.0" />
+                                                </font>
+                                                <effect>
+                                                   <DropShadow />
+                                                </effect>
+                                                <cursor>
+                                                   <Cursor fx:constant="HAND" />
+                                                </cursor>
+                                             </Button>
+                                          </HBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
