@@ -45,30 +45,31 @@
 
 /* Custom ScrollPane scrollbar for dashboard recent notifications */
 #recentScrollPane {
-    background: #0B1739;
-    -fx-background: #0B1739;
-    background-color: #0B1739;
-    -fx-background-color: #0B1739;
+    background: #081739;
+    -fx-background: #081739;
+    background-color: #081739;
+    -fx-background-color: #081739;
     border-color: transparent;
     -fx-border-color: transparent;
 }
 #recentScrollPane .viewport {
-    background-color: #0B1739;
-    -fx-background-color: #0B1739;
+    background-color: #081739;
+    -fx-background-color: #081739;
 }
 #recentScrollPane .scroll-bar:vertical {
-    background-color: #0B1739;
-    -fx-background-color: #0B1739;
+    background-color: #081739;
+    -fx-background-color: #081739;
 }
 #recentScrollPane .thumb {
-    background-color: #0E1D47;
-    -fx-background-color: #0E1D47;
+    /* Gradient: from #3A8DFF (lighter blue) to #0E1D47 (dark blue) */
+    background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
+    -fx-background-color: linear-gradient(to bottom, #3A8DFF, #0E1D47);
 }
 #recentScrollPane .track {
-    background-color: #0B1739;
-    -fx-background-color: #0B1739;
+    background-color: #081739;
+    -fx-background-color: #081739;
 }
 #recentScrollPane .increment-button, #recentScrollPane .decrement-button {
-    background-color: #0B1739;
-    -fx-background-color: #0B1739;
+    background-color: #081739;
+    -fx-background-color: #081739;
 }
