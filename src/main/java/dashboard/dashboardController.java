@@ -41,10 +41,13 @@ import confirmation.confirmationController;
 import sold_stocks.soldStock;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.awt.Desktop;
 
 public class dashboardController {
     @FXML private Button minimizeButton;
@@ -1023,5 +1026,16 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
         });
+    }
+
+    @FXML
+    private void openGithubLink(ActionEvent event) {
+        Hyperlink link = (Hyperlink) event.getSource();
+        String url = (String) link.getUserData();
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

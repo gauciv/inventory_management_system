@@ -7,6 +7,7 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
@@ -704,13 +705,47 @@
                            <content>
                               <AnchorPane fx:id="helppane" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #081028;">
                                  <children>
-                                    <HBox alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0">
+                                    <VBox alignment="CENTER" spacing="30" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0">
                                        <ImageView fitHeight="270.0" fitWidth="246.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
                                              <Image url="@../images/devilias_logo.png" />
                                           </image>
                                        </ImageView>
-                                    </HBox>
+                                       
+                                       <VBox alignment="CENTER" maxWidth="500" prefHeight="298.0" prefWidth="500.0" spacing="15" style="-fx-background-color: #081739; -fx-background-radius: 15;">
+                                          <padding>
+                                             <Insets left="30.0" right="30.0" top="10.0" />
+                                          </padding>
+                                          <effect>
+                                             <DropShadow>
+                                                <color>
+                                                   <Color opacity="0.25" />
+                                                </color>
+                                             </DropShadow>
+                                          </effect>
+                                          
+                                          <Label style="-fx-font-size: 20;" text="Development Team" textFill="WHITE">
+                                             <font>
+                                                <Font name="System Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                          
+                                          <Hyperlink onAction="#openGithubLink" style="-fx-font-size: 16;" text="John Vincent D. Augusto" textFill="#aeb9e1" userData="https://github.com/gauciv" />
+                                          <Hyperlink onAction="#openGithubLink" style="-fx-font-size: 16;" text="Jonna T. Bohol" textFill="#aeb9e1" userData="https://github.com/Boholjonna" />
+                                          <Hyperlink onAction="#openGithubLink" style="-fx-font-size: 16;" text="Mikaela Vianca G. Molina" textFill="#aeb9e1" userData="https://github.com/mikaelaMolina" />
+                                          <Hyperlink onAction="#openGithubLink" style="-fx-font-size: 16;" text="Jonrheym P. Remegia" textFill="#aeb9e1" userData="https://github.com/HumbaAdob0" />
+                                          <Hyperlink onAction="#openGithubLink" style="-fx-font-size: 16;" text="Joanne R. Georfo" textFill="#aeb9e1" userData="https://github.com/georfojoanne" />
+                                          <VBox.margin>
+                                             <Insets top="-30.0" />
+                                          </VBox.margin>
+                                       </VBox>
+                                       
+                                       <Label style="-fx-font-size: 14;" text="© 2025 Devilias. All Rights Reserved." textFill="#656484">
+                                          <VBox.margin>
+                                             <Insets bottom="20" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </VBox>
                                  </children>
                               </AnchorPane>
                            </content>
