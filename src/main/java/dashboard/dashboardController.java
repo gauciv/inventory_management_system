@@ -101,8 +101,12 @@ public class dashboardController {
             setupWindowControls();
             setupFormContainers();
             styleActiveButton(dashboardbutton);
-            initializeForecastingSection();
-            initializeSalesSection();
+            
+            // Initialize views after UI is set up
+            Platform.runLater(() -> {
+                initializeForecastingSection();
+                initializeSalesSection();
+            });
             startClock(); // Initialize the clock
             
             // Load initial data
@@ -705,17 +709,38 @@ public class dashboardController {
 
     private void initializeSalesSection() {
         try {
-            // Create and initialize the sales controller
+            System.out.println("Initializing sales section...");
+            
+            // Make sure components are loaded
+            if (salesChart == null || totalSalesLabel == null || 
+                topProductLabel == null || salesDateLabel == null) {
+                throw new RuntimeException("Sales components not found in FXML");
+            }
+            
+            // Configure chart axes
+            salesChart.setAnimated(false);
+            ((CategoryAxis) salesChart.getXAxis()).setLabel("Month");
+            ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
+            
+            // Initialize sales controller
             SalesController salesController = new SalesController();
             
-            // Inject the FXML components from dashboardController
-            salesController.injectComponents(salesChart, totalSalesLabel, topProductLabel, salesDateLabel);
+            // Initialize the sales controller with all UI components
+            salesController.injectComponents(salesChart, totalSalesLabel, 
+                                          topProductLabel, salesDateLabel);
             
-            // Initialize the sales controller
+            // Initialize controller after injecting components
             salesController.initialize();
+            
+            System.out.println("Sales section initialization complete.");
+            
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("Error initializing sales section: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show user-friendly error
+            if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
+            if (topProductLabel != null) topProductLabel.setText("Error loading data");
         }
     }
 }

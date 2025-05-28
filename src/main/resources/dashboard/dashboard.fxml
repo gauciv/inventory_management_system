@@ -588,19 +588,25 @@
                                               <LineChart fx:id="salesChart" 
                                                         createSymbols="true" 
                                                         legendVisible="true" 
-                                                        style="-fx-background-color: transparent;"
-                                                        title="Monthly Sales Overview">
+                                                        animated="false"
+                                                        style="-fx-background-color: transparent; -fx-text-fill: white;"
+                                                        title="Monthly Sales Overview"
+                                                        VBox.vgrow="ALWAYS">
                                                   <xAxis>
-                                                      <CategoryAxis label="Month" 
+                                                      <CategoryAxis fx:id="salesChartXAxis"
+                                                                  label="Month" 
                                                                   side="BOTTOM" 
                                                                   tickLabelFill="white"
                                                                   style="-fx-tick-label-fill: white; -fx-text-fill: white;" />
                                                   </xAxis>
                                                   <yAxis>
-                                                      <NumberAxis label="Sales Volume" 
+                                                      <NumberAxis fx:id="salesChartYAxis"
+                                                                label="Sales Volume" 
                                                                 side="LEFT" 
                                                                 tickLabelFill="white"
-                                                                style="-fx-tick-label-fill: white; -fx-text-fill: white;" />
+                                                                style="-fx-tick-label-fill: white; -fx-text-fill: white;"
+                                                                autoRanging="true"
+                                                                minorTickCount="2" />
                                                   </yAxis>
                                               </LineChart>
                                           </VBox>
