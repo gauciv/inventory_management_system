@@ -991,9 +991,9 @@ public class dashboardController {
             System.out.println("Initializing sales section...");
             
             // Make sure components are loaded
-            if (salesChart == null || totalSalesLabel == null || 
+            if (salesChart == null || totalSalesLabel == null ||
                 topProductLabel == null || salesDateLabel == null ||
-                startDate == null || endDate == null || exportButton == null ||
+                exportButton == null ||
                 growthRateLabel == null || averageSalesLabel == null ||
                 totalSalesButton == null || compareButton == null) {
                 throw new RuntimeException("Sales components not found in FXML");
@@ -1012,12 +1012,10 @@ public class dashboardController {
             
             // Inject all components
             salesController.injectComponents(
-                salesChart, 
-                totalSalesLabel, 
-                topProductLabel, 
+                salesChart,
+                totalSalesLabel,
+                topProductLabel,
                 salesDateLabel,
-                startDate,
-                endDate,
                 exportButton,
                 growthRateLabel,
                 averageSalesLabel,
