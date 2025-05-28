@@ -20,6 +20,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -76,14 +78,25 @@ public class dashboardController {
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
     @FXML private LineChart<String, Number> salesChart;
+    @FXML private BarChart<String, Number> salesBarChart;
+    @FXML private AreaChart<String, Number> salesAreaChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
-    @FXML private Label salesDateLabel; // Add this field for sales date
-    @FXML private Label salesTimeLabel; // Add this field for sales time
-    @FXML private VBox recent; // Add reference to recent VBox
+    @FXML private Label salesDateLabel;
+    @FXML private Label salesTimeLabel;
+    @FXML private VBox recent;
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
     @FXML private Button formulaHelpButton;
+
+    @FXML private ComboBox<String> chartTypeComboBox;
+    @FXML private ComboBox<String> compareProductComboBox;
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
+    @FXML private Button exportButton;
+    @FXML private Label growthRateLabel;
+    @FXML private Label averageSalesLabel;
+
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -171,6 +184,7 @@ public class dashboardController {
             alert.setTitle("Initialization Error");
             alert.setHeaderText(null);
             alert.setContentText("Failed to initialize forecasting section: " + e.getMessage());
+            alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
     }
@@ -942,7 +956,11 @@ public class dashboardController {
             
             // Make sure components are loaded
             if (salesChart == null || totalSalesLabel == null || 
-                topProductLabel == null || salesDateLabel == null) {
+                topProductLabel == null || salesDateLabel == null ||
+                chartTypeComboBox == null || compareProductComboBox == null ||
+                startDate == null || endDate == null || exportButton == null ||
+                growthRateLabel == null || averageSalesLabel == null ||
+                salesBarChart == null || salesAreaChart == null) {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
@@ -954,12 +972,25 @@ public class dashboardController {
             // Initialize sales controller
             SalesController salesController = new SalesController();
             
-            // Initialize the sales controller with all UI components
-            salesController.injectComponents(salesChart, totalSalesLabel, 
-                                          topProductLabel, salesDateLabel);
-            
             // Initialize controller after injecting components
             salesController.initialize();
+            
+            // Inject all components
+            salesController.injectComponents(
+                salesChart, 
+                totalSalesLabel, 
+                topProductLabel, 
+                salesDateLabel,
+                chartTypeComboBox,
+                compareProductComboBox,
+                startDate,
+                endDate,
+                exportButton,
+                growthRateLabel,
+                averageSalesLabel,
+                salesBarChart,
+                salesAreaChart
+            );
             
             System.out.println("Sales section initialization complete.");
             
@@ -970,6 +1001,8 @@ public class dashboardController {
             // Show user-friendly error
             if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
             if (topProductLabel != null) topProductLabel.setText("Error loading data");
+            if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
+            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
         }
     }
 

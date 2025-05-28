@@ -5,6 +5,8 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -22,8 +24,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.DatePicker?>
+<?import java.lang.String?>
 
 <BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
@@ -439,11 +446,53 @@
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="580.0" prefWidth="726.0" style="-fx-background-color: #081028;">
                                   <children>
                                       <VBox spacing="20" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="15.0">
-                                          <Label fx:id="salesDateLabel" textFill="WHITE">
-                                              <font>
-                                                  <Font name="Arial" size="16.0" />
-                                              </font>
-                                          </Label>
+                                          <!-- Header Section with Date and Controls -->
+                                          <HBox spacing="20" alignment="CENTER_LEFT">
+                                              <Label fx:id="salesDateLabel" textFill="WHITE">
+                                                  <font>
+                                                      <Font name="Arial" size="16.0" />
+                                                  </font>
+                                              </Label>
+                                              <Region HBox.hgrow="ALWAYS" />
+                                              <!-- Export Controls -->
+                                              <Button fx:id="exportButton" text="Export Data" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5;">
+                                                  <graphic>
+                                                      <ImageView fitHeight="16" fitWidth="16">
+                                                          <Image url="@../images/export.png" />
+                                                      </ImageView>
+                                                  </graphic>
+                                              </Button>
+                                          </HBox>
+
+                                          <!-- Filter Controls -->
+                                          <HBox spacing="20" alignment="CENTER_LEFT">
+                                              <!-- Date Range Filter -->
+                                              <VBox spacing="5">
+                                                  <Label text="Date Range" style="-fx-text-fill: #AEB9E1;" />
+                                                  <HBox spacing="10">
+                                                      <DatePicker fx:id="startDate" promptText="Start Date" style="-fx-background-color: white;" />
+                                                      <DatePicker fx:id="endDate" promptText="End Date" style="-fx-background-color: white;" />
+                                                  </HBox>
+                                              </VBox>
+                                              <!-- Chart Type Selector -->
+                                              <VBox spacing="5">
+                                                  <Label text="Chart Type" style="-fx-text-fill: #AEB9E1;" />
+                                                  <ComboBox fx:id="chartTypeComboBox" prefWidth="150" promptText="Select Chart" style="-fx-background-color: white;">
+                                                      <items>
+                                                          <FXCollections fx:factory="observableArrayList">
+                                                              <String fx:value="Line Chart" />
+                                                              <String fx:value="Bar Chart" />
+                                                              <String fx:value="Area Chart" />
+                                                          </FXCollections>
+                                                      </items>
+                                                  </ComboBox>
+                                              </VBox>
+                                              <!-- Compare Products -->
+                                              <VBox spacing="5">
+                                                  <Label text="Compare Products" style="-fx-text-fill: #AEB9E1;" />
+                                                  <ComboBox fx:id="compareProductComboBox" prefWidth="200" promptText="Select Product" style="-fx-background-color: white;" />
+                                              </VBox>
+                                          </HBox>
                                           
                                           <!-- Chart Area -->
                                           <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" VBox.vgrow="ALWAYS">
@@ -454,14 +503,32 @@
                                                   <DropShadow />
                                               </effect>
                                               
-                                              <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" VBox.vgrow="ALWAYS">
-                                                  <xAxis>
-                                                      <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                  </xAxis>
-                                                  <yAxis>
-                                                      <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                  </yAxis>
-                                              </LineChart>
+                                              <StackPane VBox.vgrow="ALWAYS">
+                                                  <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview">
+                                                      <xAxis>
+                                                          <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </xAxis>
+                                                      <yAxis>
+                                                          <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </yAxis>
+                                                  </LineChart>
+                                                  <BarChart fx:id="salesBarChart" animated="false" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" visible="false">
+                                                      <xAxis>
+                                                          <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </xAxis>
+                                                      <yAxis>
+                                                          <NumberAxis autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </yAxis>
+                                                  </BarChart>
+                                                  <AreaChart fx:id="salesAreaChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" visible="false">
+                                                      <xAxis>
+                                                          <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </xAxis>
+                                                      <yAxis>
+                                                          <NumberAxis autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      </yAxis>
+                                                  </AreaChart>
+                                              </StackPane>
                                           </VBox>
                                           
                                           <!-- Sales Summary Section -->
@@ -498,6 +565,26 @@
                                                   </Label>
                                                   <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" text="Product with highest sales volume" />
                                                   <Label fx:id="topProductLabel" style="-fx-text-fill: white; -fx-font-size: 16;" wrapText="true" />
+                                              </VBox>
+
+                                              <!-- Sales Analytics Card -->
+                                              <VBox maxWidth="300" minWidth="250" style="-fx-background-color: #081739; -fx-background-radius: 15;">
+                                                  <padding>
+                                                      <Insets bottom="10" left="15" right="15" top="10" />
+                                                  </padding>
+                                                  <effect>
+                                                      <DropShadow />
+                                                  </effect>
+                                                  <Label style="-fx-text-fill: white;" text="Sales Analytics">
+                                                      <font>
+                                                          <Font name="System Bold" size="14" />
+                                                      </font>
+                                                  </Label>
+                                                  <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" text="Key performance metrics" />
+                                                  <VBox spacing="5">
+                                                      <Label fx:id="growthRateLabel" style="-fx-text-fill: white; -fx-font-size: 14;" text="Growth Rate: N/A" />
+                                                      <Label fx:id="averageSalesLabel" style="-fx-text-fill: white; -fx-font-size: 14;" text="Avg. Monthly Sales: N/A" />
+                                                  </VBox>
                                               </VBox>
                                           </HBox>
                                       </VBox>
