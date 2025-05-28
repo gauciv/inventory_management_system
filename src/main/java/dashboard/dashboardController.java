@@ -1212,7 +1212,7 @@ public class dashboardController {
             editForm.showPopup((Stage) right_pane.getScene().getWindow(), inventorypane, selectedItem, this);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/addStocks/addproduct.fxml"));
-            Parent editForm = loader.load();
+            
             
             // Get the controller and set up the data
             add_stocks.addproductController controller = loader.getController();
