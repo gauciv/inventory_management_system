@@ -1,0 +1,250 @@
+.table-view {
+    -fx-background-color: #081739;
+    -fx-background-radius: 15;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 0);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #0E1D47;
+    -fx-background-radius: 15 15 0 0;
+    -fx-padding: 8 0 8 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+}
+
+.table-view .column-header,
+.table-view .column-header-background .filler {
+    -fx-background-color: #0E1D47;
+    -fx-stroke: transparent;
+    -fx-size: 60px;
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-wrap-text: true;
+    -fx-padding: 5 0 5 0;
+}
+
+/* Remove sort arrows */
+.table-view .column-header .arrow,
+.table-view .column-header .sort-order-dot {
+    -fx-opacity: 0;
+}
+
+/* Ensure consistent header alignment */
+.table-view .column-header {
+    -fx-alignment: CENTER;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+/* Special styling for SOH and SOT headers */
+.table-view .table-column.col-soh .label,
+.table-view .table-column.col-sot .label {
+    -fx-font-size: 13px;
+    -fx-padding: 5 5 5 5;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-content-display: CENTER;
+}
+
+/* Special styling for select column header */
+.table-view .table-column.col-select .label {
+    -fx-font-size: 16px;
+    -fx-padding: 5 0 5 0;
+    -fx-text-fill: white;
+}
+
+/* Make select column checkbox more visible */
+.table-view .table-column.col-select .check-box {
+    -fx-background-color: transparent;
+    -fx-padding: 3px;
+}
+
+.table-view .table-column.col-select .check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px;
+}
+
+.table-view .table-column.col-select .check-box:selected .box {
+    -fx-background-color: #2D3C72;
+}
+
+.table-view .table-column.col-select .check-box:selected .mark {
+    -fx-background-color: white;
+    -fx-padding: 7px;
+}
+
+/* Table cell styling */
+.table-view .table-cell {
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-padding: 12 0 12 0;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-border-color: transparent;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #081739;
+    -fx-border-color: transparent;
+    -fx-cell-size: 45px;
+    -fx-min-height: 45px;
+    -fx-pref-height: 45px;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #2D3C72;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #2D3C72;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+/* Remove vertical grid lines */
+.table-view .table-column {
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/* Customize scrollbars */
+.table-view .virtual-flow .scroll-bar:vertical,
+.table-view .virtual-flow .scroll-bar:horizontal {
+    -fx-background-color: #081739;
+}
+
+.table-view .virtual-flow .scroll-bar:vertical .thumb,
+.table-view .virtual-flow .scroll-bar:horizontal .thumb {
+    -fx-background-color: #2D3C72;
+    -fx-background-radius: 8em;
+}
+
+.table-view .virtual-flow .scroll-bar .increment-button,
+.table-view .virtual-flow .scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 2;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Checkbox styling */
+.table-view .check-box {
+    -fx-background-color: transparent;
+}
+
+.table-view .check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-radius: 4px;
+    -fx-border-width: 2px;
+    -fx-padding: 3px;
+}
+
+.table-view .check-box:selected .mark {
+    -fx-background-color: white;
+    -fx-padding: 7px;
+}
+
+.table-view .check-box:selected .box {
+    -fx-background-color: #2D3C72;
+}
+
+/* Add subtle alternating row colors */
+.table-view .table-row-cell:odd {
+    -fx-background-color: #0A1B41;
+}
+
+/* Add animation for row selection and hover */
+.table-view .table-row-cell {
+    -fx-transition: background-color 0.2s ease-in-out;
+}
+
+/* Column specific widths */
+.table-view .table-column.col-number {
+    -fx-pref-width: 60px;
+    -fx-min-width: 60px;
+    -fx-max-width: 80px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-select {
+    -fx-pref-width: 50px;
+    -fx-min-width: 50px;
+    -fx-max-width: 70px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-item-code {
+    -fx-pref-width: 120px;
+    -fx-min-width: 120px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-item-des {
+    -fx-pref-width: 300px;
+    -fx-min-width: 250px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-volume {
+    -fx-pref-width: 100px;
+    -fx-min-width: 100px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-category {
+    -fx-pref-width: 120px;
+    -fx-min-width: 120px;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-column.col-soh,
+.table-view .table-column.col-sot {
+    -fx-pref-width: 120px;
+    -fx-min-width: 120px;
+    -fx-alignment: CENTER;
+}
+
+/* Make sure headers are not movable */
+.table-view .column-header .label {
+    -fx-cursor: default;
+}
+
+/* Style for checkbox column */
+.table-view .check-box {
+    -fx-background-color: transparent;
+}
+
+.table-view .check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-radius: 3px;
+}
+
+.table-view .check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.table-view .check-box:selected .box {
+    -fx-background-color: #2D3C72;
+} 
