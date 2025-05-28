@@ -247,4 +247,161 @@
 
 .table-view .check-box:selected .box {
     -fx-background-color: #2D3C72;
+}
+
+/* Chart styling */
+.chart {
+    -fx-padding: 15px;
+    -fx-background-color: #0B1739;
+    -fx-background-radius: 5;
+}
+
+.chart-content {
+    -fx-padding: 20px;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(26, 40, 68, 0.5);
+    -fx-stroke-width: 1px;
+    -fx-stroke-dash-array: 3 3;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(26, 40, 68, 0.5);
+    -fx-stroke-width: 1px;
+    -fx-stroke-dash-array: 3 3;
+}
+
+/* Line Chart Specific Styling */
+.chart-series-line {
+    -fx-stroke-width: 2.5px;
+}
+
+/* Data points styling */
+.chart-line-symbol {
+    -fx-background-color: #2ed573, white;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.chart-line-symbol:hover {
+    -fx-background-color: white, #2ed573;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 6px;
+}
+
+/* Area Fill Styling */
+.default-color0.chart-series-area-fill {
+    -fx-fill: linear-gradient(to bottom,
+        rgba(46, 213, 115, 0.3) 0%,
+        rgba(46, 213, 115, 0.25) 10%,
+        rgba(46, 213, 115, 0.2) 20%,
+        rgba(46, 213, 115, 0.15) 30%,
+        rgba(46, 213, 115, 0.1) 40%,
+        rgba(46, 213, 115, 0.05) 60%,
+        rgba(46, 213, 115, 0.02) 80%,
+        transparent 100%
+    );
+}
+
+.chart-series-area-line {
+    -fx-stroke: #2ed573;
+    -fx-stroke-width: 2.5px;
+}
+
+/* Make sure area fill is visible */
+.chart-series-area-fill {
+    visibility: visible !important;
+    -fx-opacity: 1 !important;
+}
+
+/* Axis styling */
+.axis {
+    -fx-tick-label-fill: rgba(255, 255, 255, 0.7);
+    -fx-tick-length: 10;
+    -fx-minor-tick-length: 5;
+    -fx-tick-label-font-family: "Arial";
+    -fx-tick-label-font-size: 11px;
+}
+
+.axis-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+
+/* Hide axis lines but keep ticks */
+.axis-line {
+    -fx-stroke: transparent;
+}
+
+.axis .axis-tick-mark {
+    -fx-stroke: rgba(26, 40, 68, 0.8);
+    -fx-stroke-width: 1px;
+}
+
+/* Legend styling */
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 16px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: white !important;
+}
+
+.chart-legend-item .label {
+    -fx-text-fill: white !important;
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-min-width: 25;
+    -fx-pref-width: 25;
+    -fx-max-width: 25;
+    -fx-min-height: 3;
+    -fx-max-height: 3;
+    -fx-shape: "M0,0 H25 V3 H0 Z";
+}
+
+/* Series colors */
+.default-color0.chart-legend-item-symbol {
+    -fx-background-color: #2ed573;
+}
+
+.default-color1.chart-legend-item-symbol {
+    -fx-background-color: #ff7675;
+}
+
+/* Chart title */
+.chart-title {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial";
+    -fx-padding: 10px;
+}
+
+/* Tooltip styling */
+.tooltip {
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
 } 

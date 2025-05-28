@@ -1,7 +1,7 @@
 package forecasting;
 
 import javafx.application.Platform;
-import javafx.scene.chart.LineChart;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class ForecastingController {
-    private LineChart<String, Number> forecastChart;
+    private AreaChart<String, Number> forecastChart;
     private ComboBox<String> forecastProductComboBox;
     private Label forecastAccuracyLabel;
     private Label forecastTrendLabel;
@@ -40,7 +40,7 @@ public class ForecastingController {
         this.forecastingModel = new ForecastingModel(0.2, 0.1, 0.3); // Smoothing factors for trend, seasonal, and random components
     }
     
-    public void initialize(LineChart<String, Number> chart, ComboBox<String> productCombo,
+    public void initialize(AreaChart<String, Number> chart, ComboBox<String> productCombo,
                          Label accuracyLabel, Label trendLabel, Label recommendationsLabel, 
                          ComboBox<String> formulaCombo, Label placeholderLabel, Button helpButton) {
         try {
@@ -301,10 +301,6 @@ public class ForecastingController {
         
         forecastChart.getData().add(historicalSeries);
         forecastChart.getData().add(forecastSeries);
-        
-        // Style the chart series
-        historicalSeries.getNode().setStyle("-fx-stroke: #4CAF50;"); // Green for historical
-        forecastSeries.getNode().setStyle("-fx-stroke: #2196F3;"); // Blue for forecast
     }
     
     private void updateTrendAnalysis(double[] historical, double[] forecast) {
