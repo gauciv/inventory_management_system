@@ -6,6 +6,8 @@ import database.database_utility;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -71,6 +73,7 @@ public class dashboardController {
     @FXML private Label dateTimeLabel;
     @FXML private Label salesDateLabel; // Add this field for sales date
     @FXML private Label salesTimeLabel; // Add this field for sales time
+    @FXML private VBox recent; // Add reference to recent VBox
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -809,5 +812,46 @@ public class dashboardController {
         alert.setHeaderText(null);
         alert.setContentText("Data has been refreshed successfully!");
         alert.showAndWait();
+    }
+
+    /**
+     * Adds a notification to the recent VBox for newly arrived stocks.
+     * @param stockCount The number of stocks added.
+     * @param description The item description.
+     */
+    public void addRecentStockNotification(int stockCount, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 2 10 2 10;");
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility");
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+        });
     }
 }
