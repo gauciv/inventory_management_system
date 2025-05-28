@@ -34,8 +34,14 @@ public class SalesController {
     @FXML private ComboBox<String> chartTypeComboBox;
     @FXML private ComboBox<String> compareProductComboBox;
     @FXML private Button exportButton;
+    @FXML private Button totalSalesButton;
+    @FXML private Button compareButton;
 
     private List<XYChart.Series<String, Number>> currentData = new ArrayList<>();
+    private static final String[] CHART_COLORS = {
+        "#4CAF50", "#2196F3", "#FFC107", "#E91E63", "#9C27B0",
+        "#00BCD4", "#FF5722", "#795548", "#607D8B", "#3F51B5"
+    };
 
     public void initialize() {
         System.out.println("Initializing SalesController...");
@@ -43,15 +49,8 @@ public class SalesController {
             setupControls();
             setupSalesChart();
             setupClock();
-            updateSalesData();
+            updateTotalSales(); // Show total sales by default
             System.out.println("SalesController initialization complete.");
-            
-            // Schedule periodic updates for sales data
-            javafx.animation.Timeline updateTimeline = new javafx.animation.Timeline(
-                new javafx.animation.KeyFrame(javafx.util.Duration.minutes(5), e -> updateSalesData())
-            );
-            updateTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-            updateTimeline.play();
         });
     }
 
@@ -60,28 +59,17 @@ public class SalesController {
         startDate.setValue(LocalDate.now().minusMonths(12));
         endDate.setValue(LocalDate.now());
         
-        startDate.setOnAction(e -> updateSalesData());
-        endDate.setOnAction(e -> updateSalesData());
-
-        // Setup chart type combo box
-        chartTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                updateChartType(newVal);
-            }
-        });
-        chartTypeComboBox.getSelectionModel().select("Line Chart");
-
-        // Setup compare products combo box
-        loadProducts();
-        compareProductComboBox.setOnAction(e -> {
-            String selectedProduct = compareProductComboBox.getValue();
-            if (selectedProduct != null) {
-                addComparisonSeries(selectedProduct);
-            }
-        });
+        startDate.setOnAction(e -> updateTotalSales());
+        endDate.setOnAction(e -> updateTotalSales());
 
         // Setup export button
         exportButton.setOnAction(e -> exportData());
+
+        // Setup total sales button
+        totalSalesButton.setOnAction(e -> updateTotalSales());
+
+        // Setup compare button
+        compareButton.setOnAction(e -> showProductSelectionDialog());
     }
 
     private void loadProducts() {
@@ -125,13 +113,8 @@ public class SalesController {
 
     private void updateChartData(List<XYChart.Series<String, Number>> data) {
         salesChart.getData().clear();
-        salesBarChart.getData().clear();
-        salesAreaChart.getData().clear();
-
         for (XYChart.Series<String, Number> series : data) {
             salesChart.getData().add(series);
-            salesBarChart.getData().add(series);
-            salesAreaChart.getData().add(series);
         }
     }
 
@@ -229,10 +212,7 @@ public class SalesController {
         // Style for dark theme
         String chartStyle = "-fx-background-color: transparent;";
         salesChart.setStyle(chartStyle);
-        salesBarChart.setStyle(chartStyle);
-        salesAreaChart.setStyle(chartStyle);
         
-
         // Initialize labels
         if (totalSalesLabel != null) totalSalesLabel.setText("Loading...");
         if (topProductLabel != null) topProductLabel.setText("Loading...");
@@ -267,7 +247,6 @@ public class SalesController {
             topProductLabel.setText("Loading...");
             topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
         }
-
     }
 
     private void setupClock() {
@@ -285,11 +264,10 @@ public class SalesController {
         }
     }
 
-    private void updateSalesData() {
-        System.out.println("Updating sales data...");
+    public void updateTotalSales() {
+        System.out.println("Updating total sales data...");
         Connection conn = null;
         try {
-            // Get total monthly sales
             String monthlySalesQuery = "SELECT " +
                 "SUM(jan) as Jan, SUM(feb) as Feb, SUM(mar) as Mar, " +
                 "SUM(apr) as Apr, SUM(may) as May, SUM(jun) as Jun, " +
@@ -303,7 +281,6 @@ public class SalesController {
                 ResultSet rs = (ResultSet) result[1];
 
                 if (rs.next()) {
-                    System.out.println("Processing monthly sales data...");
                     XYChart.Series<String, Number> series = new XYChart.Series<>();
                     series.setName("Total Sales Volume");
 
@@ -313,13 +290,16 @@ public class SalesController {
                     double previousMonth = 0;
                     double totalSales = 0;
                     int monthCount = 0;
-                    
+                    boolean hasData = false;
+
                     for (String month : months) {
                         double value = rs.getDouble(month);
+                        if (!rs.wasNull()) {
+                            hasData = true;
+                        }
                         annualTotal += value;
                         totalSales += value;
                         monthCount++;
-                        
                         // Calculate growth rate
                         if (previousMonth > 0) {
                             double growthRate = ((value - previousMonth) / previousMonth) * 100;
@@ -328,33 +308,46 @@ public class SalesController {
                             );
                         }
                         previousMonth = value;
-                        
                         series.getData().add(new XYChart.Data<>(month, value));
                     }
 
-                    // Calculate average monthly sales
-                    double averageSales = totalSales / monthCount;
-                    
+                    double averageSales = monthCount > 0 ? totalSales / monthCount : 0;
                     final int finalAnnualTotal = annualTotal;
                     final double finalAverageSales = averageSales;
-                    
+                    final boolean finalHasData = hasData;
+
                     Platform.runLater(() -> {
                         currentData.clear();
-                        currentData.add(series);
-                        updateChartData(currentData);
-                        
-                        if (totalSalesLabel != null) {
-                            totalSalesLabel.setText(String.format("%,d units", finalAnnualTotal));
+                        if (finalHasData) {
+                            currentData.add(series);
+                            updateChartData(currentData);
+                            if (totalSalesLabel != null) {
+                                totalSalesLabel.setText(String.format("%,d units", finalAnnualTotal));
+                            }
+                            if (averageSalesLabel != null) {
+                                averageSalesLabel.setText(String.format("Avg. Monthly Sales: %,.0f units", finalAverageSales));
+                            }
+                        } else {
+                            updateChartData(new ArrayList<>());
+                            if (totalSalesLabel != null) totalSalesLabel.setText("No sales data available");
+                            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
                         }
-                        if (averageSalesLabel != null) {
-                            averageSalesLabel.setText(String.format("Avg. Monthly Sales: %,.0f units", finalAverageSales));
-                        }
-                        
-                        // Style the series
                         styleChartSeries();
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        updateChartData(new ArrayList<>());
+                        if (totalSalesLabel != null) totalSalesLabel.setText("No sales data available");
+                        if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
                     });
                 }
                 rs.close();
+            } else {
+                Platform.runLater(() -> {
+                    updateChartData(new ArrayList<>());
+                    if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data (no result)");
+                    if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
+                });
             }
 
             // Get top product
@@ -375,13 +368,22 @@ public class SalesController {
                             topProductLabel.setText(String.format("%s\nAnnual Volume: %,d units", topProduct, topSales));
                         }
                     });
+                } else {
+                    Platform.runLater(() -> {
+                        if (topProductLabel != null) topProductLabel.setText("No top product data");
+                    });
                 }
                 rs.close();
+            } else {
+                Platform.runLater(() -> {
+                    if (topProductLabel != null) topProductLabel.setText("Error loading top product");
+                });
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             Platform.runLater(() -> {
+                updateChartData(new ArrayList<>());
                 showError("Data Error", "Failed to load sales data: " + e.getMessage());
                 if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
                 if (topProductLabel != null) topProductLabel.setText("Error loading data");
@@ -395,12 +397,70 @@ public class SalesController {
         }
     }
 
+    public void showProductSelectionDialog() {
+        // Use a custom FXML dialog for product selection with checkboxes (max 10)
+        showProductSelectionDialogFXML();
+    }
+
+    // Placeholder for the new FXML-based dialog
+    private void showProductSelectionDialogFXML() {
+        // TODO: Implement FXML-based dialog for product selection
+        // This dialog should display all products with checkboxes, allow up to 10 selections,
+        // and return the selected products to updateComparisonChart(selectedProducts)
+        // For now, show an error message
+        showError("Not Implemented", "Product selection dialog is being upgraded. Please wait for the next update.");
+    }
+
+    private void updateComparisonChart(List<String> products) {
+        Connection conn = null;
+        try {
+            currentData.clear();
+            String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+            for (int i = 0; i < products.size(); i++) {
+                String product = products.get(i);
+                String query = "SELECT jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec` " +
+                             "FROM sale_offtake WHERE item_description = ?";
+                
+                Object[] result = database_utility.query(query, product);
+                if (result != null && result.length == 2) {
+                    ResultSet rs = (ResultSet) result[1];
+                    if (rs.next()) {
+                        XYChart.Series<String, Number> series = new XYChart.Series<>();
+                        series.setName(product);
+
+                        for (String month : months) {
+                            series.getData().add(new XYChart.Data<>(month, rs.getInt(month.toLowerCase())));
+                        }
+
+                        currentData.add(series);
+                    }
+                    rs.close();
+                }
+            }
+
+            Platform.runLater(() -> {
+                updateChartData(currentData);
+                styleChartSeries();
+                
+                // Update labels for comparison mode
+                if (totalSalesLabel != null) totalSalesLabel.setText("Comparison Mode");
+                if (averageSalesLabel != null) averageSalesLabel.setText("Select products to compare");
+                if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
+            });
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Error", "Failed to load comparison data: " + e.getMessage());
+        }
+    }
+
     private void styleChartSeries() {
-        String[] colors = {"#4CAF50", "#2196F3", "#FFC107", "#E91E63"}; // Green, Blue, Amber, Pink
-        int colorIndex = 0;
-        
-        for (XYChart.Series<String, Number> series : currentData) {
-            String color = colors[colorIndex % colors.length];
+        for (int i = 0; i < currentData.size(); i++) {
+            XYChart.Series<String, Number> series = currentData.get(i);
+            String color = CHART_COLORS[i % CHART_COLORS.length];
+            
             series.getNode().setStyle("-fx-stroke: " + color + ";");
             
             for (XYChart.Data<String, Number> data : series.getData()) {
@@ -424,7 +484,6 @@ public class SalesController {
                     Tooltip.install(node, tooltip);
                 }
             }
-            colorIndex++;
         }
     }
 
@@ -448,36 +507,34 @@ public class SalesController {
         });
     }
 
-    // Component injection methods
-    public void injectComponents(LineChart<String, Number> salesChart, Label totalSalesLabel, 
-                               Label topProductLabel, Label salesDateLabel,
-                               ComboBox<String> chartTypeComboBox,
-                               ComboBox<String> compareProductComboBox,
+    // Component injection method
+    public void injectComponents(LineChart<String, Number> salesChart, 
+                               Label totalSalesLabel, 
+                               Label topProductLabel, 
+                               Label salesDateLabel,
                                DatePicker startDate,
                                DatePicker endDate,
                                Button exportButton,
                                Label growthRateLabel,
                                Label averageSalesLabel,
-                               BarChart<String, Number> salesBarChart,
-                               AreaChart<String, Number> salesAreaChart) {
+                               Button totalSalesButton,
+                               Button compareButton) {
         this.salesChart = salesChart;
         this.totalSalesLabel = totalSalesLabel;
         this.topProductLabel = topProductLabel;
         this.salesDateLabel = salesDateLabel;
-        this.chartTypeComboBox = chartTypeComboBox;
-        this.compareProductComboBox = compareProductComboBox;
         this.startDate = startDate;
         this.endDate = endDate;
         this.exportButton = exportButton;
         this.growthRateLabel = growthRateLabel;
         this.averageSalesLabel = averageSalesLabel;
-        this.salesBarChart = salesBarChart;
-        this.salesAreaChart = salesAreaChart;
+        this.totalSalesButton = totalSalesButton;
+        this.compareButton = compareButton;
         
         // After injecting components, set up the controls
         setupControls();
         setupSalesChart();
         setupClock();
-        updateSalesData();
+        updateTotalSales();
     }
 }

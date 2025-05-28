@@ -96,6 +96,8 @@ public class dashboardController {
     @FXML private Button exportButton;
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
+    @FXML private Button totalSalesButton;
+    @FXML private Button compareButton;
 
 
     private double xOffset = 0;
@@ -107,6 +109,7 @@ public class dashboardController {
 
     private ForecastingController forecastingController;
     private Timeline clockTimeline;
+    private SalesController salesController;
 
     @FXML
     public void initialize() {
@@ -230,11 +233,7 @@ public class dashboardController {
 
         // Make table responsive
 
-        // Disable sorting for all columns to prevent alignment issues
-        inventory_table.setSortPolicy(null);
-        inventory_table.getColumns().forEach(column -> {
-            column.setSortable(false);
-        });
+        
 
         // Make table responsive with fixed column widths
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -950,6 +949,20 @@ public class dashboardController {
         alert.showAndWait();
     }
 
+    @FXML
+    private void handleTotalSales() {
+        if (salesController != null) {
+            salesController.updateTotalSales();
+        }
+    }
+
+    @FXML
+    private void handleCompare() {
+        if (salesController != null) {
+            salesController.showProductSelectionDialog();
+        }
+    }
+
     private void initializeSalesSection() {
         try {
             System.out.println("Initializing sales section...");
@@ -957,10 +970,9 @@ public class dashboardController {
             // Make sure components are loaded
             if (salesChart == null || totalSalesLabel == null || 
                 topProductLabel == null || salesDateLabel == null ||
-                chartTypeComboBox == null || compareProductComboBox == null ||
                 startDate == null || endDate == null || exportButton == null ||
                 growthRateLabel == null || averageSalesLabel == null ||
-                salesBarChart == null || salesAreaChart == null) {
+                totalSalesButton == null || compareButton == null) {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
@@ -970,7 +982,7 @@ public class dashboardController {
             ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
             
             // Initialize sales controller
-            SalesController salesController = new SalesController();
+            salesController = new SalesController();
             
             // Initialize controller after injecting components
             salesController.initialize();
@@ -981,15 +993,13 @@ public class dashboardController {
                 totalSalesLabel, 
                 topProductLabel, 
                 salesDateLabel,
-                chartTypeComboBox,
-                compareProductComboBox,
                 startDate,
                 endDate,
                 exportButton,
                 growthRateLabel,
                 averageSalesLabel,
-                salesBarChart,
-                salesAreaChart
+                totalSalesButton,
+                compareButton
             );
             
             System.out.println("Sales section initialization complete.");

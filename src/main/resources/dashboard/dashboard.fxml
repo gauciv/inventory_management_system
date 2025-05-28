@@ -465,71 +465,26 @@
                                           </HBox>
 
                                           <!-- Filter Controls -->
-                                          <HBox spacing="20" alignment="CENTER_LEFT">
-                                              <!-- Date Range Filter -->
-                                              <VBox spacing="5">
-                                                  <Label text="Date Range" style="-fx-text-fill: #AEB9E1;" />
-                                                  <HBox spacing="10">
-                                                      <DatePicker fx:id="startDate" promptText="Start Date" style="-fx-background-color: white;" />
-                                                      <DatePicker fx:id="endDate" promptText="End Date" style="-fx-background-color: white;" />
-                                                  </HBox>
-                                              </VBox>
-                                              <!-- Chart Type Selector -->
-                                              <VBox spacing="5">
-                                                  <Label text="Chart Type" style="-fx-text-fill: #AEB9E1;" />
-                                                  <ComboBox fx:id="chartTypeComboBox" prefWidth="150" promptText="Select Chart" style="-fx-background-color: white;">
-                                                      <items>
-                                                          <FXCollections fx:factory="observableArrayList">
-                                                              <String fx:value="Line Chart" />
-                                                              <String fx:value="Bar Chart" />
-                                                              <String fx:value="Area Chart" />
-                                                          </FXCollections>
-                                                      </items>
-                                                  </ComboBox>
-                                              </VBox>
-                                              <!-- Compare Products -->
-                                              <VBox spacing="5">
-                                                  <Label text="Compare Products" style="-fx-text-fill: #AEB9E1;" />
-                                                  <ComboBox fx:id="compareProductComboBox" prefWidth="200" promptText="Select Product" style="-fx-background-color: white;" />
-                                              </VBox>
+                                          <HBox spacing="10" alignment="CENTER_LEFT">
+                                              <Button fx:id="totalSalesButton" text="Total Sales" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;" onAction="#handleTotalSales" />
+                                              <Button fx:id="compareButton" text="Compare" style="-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;" onAction="#handleCompare" />
+                                              <Region HBox.hgrow="ALWAYS" />
+                                              <DatePicker fx:id="startDate" promptText="Start Date" style="-fx-background-color: #081739; -fx-text-fill: white;" />
+                                              <DatePicker fx:id="endDate" promptText="End Date" style="-fx-background-color: #081739; -fx-text-fill: white;" />
                                           </HBox>
-                                          
-                                          <!-- Chart Area -->
-                                          <VBox style="-fx-background-color: #081739; -fx-background-radius: 15;" VBox.vgrow="ALWAYS">
-                                              <padding>
-                                                  <Insets bottom="20" left="20" right="20" top="20" />
-                                              </padding>
-                                              <effect>
-                                                  <DropShadow />
-                                              </effect>
-                                              
-                                              <StackPane VBox.vgrow="ALWAYS">
-                                                  <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview">
-                                                      <xAxis>
-                                                          <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </xAxis>
-                                                      <yAxis>
-                                                          <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </yAxis>
-                                                  </LineChart>
-                                                  <BarChart fx:id="salesBarChart" animated="false" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" visible="false">
-                                                      <xAxis>
-                                                          <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </xAxis>
-                                                      <yAxis>
-                                                          <NumberAxis autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </yAxis>
-                                                  </BarChart>
-                                                  <AreaChart fx:id="salesAreaChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview" visible="false">
-                                                      <xAxis>
-                                                          <CategoryAxis label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </xAxis>
-                                                      <yAxis>
-                                                          <NumberAxis autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
-                                                      </yAxis>
-                                                  </AreaChart>
-                                              </StackPane>
-                                          </VBox>
+
+                                          <!-- Chart Section -->
+                                          <StackPane VBox.vgrow="ALWAYS">
+                                              <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview">
+                                                  <xAxis>
+                                                      <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                      <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                  </yAxis>
+                                              </LineChart>
+                                              <Label fx:id="salesChartPlaceholder" text="" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16;" visible="false" StackPane.alignment="CENTER" />
+                                          </StackPane>
                                           
                                           <!-- Sales Summary Section -->
                                           <HBox alignment="CENTER" spacing="20">
