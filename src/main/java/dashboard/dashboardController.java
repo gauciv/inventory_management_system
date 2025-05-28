@@ -60,8 +60,6 @@ public class dashboardController {
     @FXML private AnchorPane forecastingpane;
     @FXML private Button salesbutton;
     @FXML private AnchorPane salespane;
-    @FXML private Button settingsbutton;
-    @FXML private AnchorPane settingspane;
     @FXML private Button helpbutton;
     @FXML private AnchorPane helppane;
     @FXML private Button activeButton;
@@ -185,7 +183,46 @@ public class dashboardController {
     }
 
     private void setupTableView() {
-        // Initialize table columns
+        // Add style classes to columns
+        col_number.getStyleClass().add("col-number");
+        col_select.getStyleClass().add("col-select");
+        col_item_code.getStyleClass().add("col-item-code");
+        col_item_des.getStyleClass().add("col-item-des");
+        col_volume.getStyleClass().add("col-volume");
+        col_category.getStyleClass().add("col-category");
+        col_soh.getStyleClass().add("col-soh");
+        col_sot.getStyleClass().add("col-sot");
+
+        // Set column headers
+        col_number.setText("#");
+        col_select.setText("☐");  // Square box symbol
+        col_item_code.setText("Item Code");
+        col_item_des.setText("Product\nDescription");
+        col_volume.setText("Volume");
+        col_category.setText("Category");
+        col_soh.setText("Stocks on\nHand");
+        col_sot.setText("Sales\nOfftake");
+
+        // Disable sorting for all columns to prevent alignment issues
+        inventory_table.setSortPolicy(null);
+        inventory_table.getColumns().forEach(column -> {
+            column.setSortable(false);
+        });
+
+        // Make table responsive with fixed column widths
+        inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
+        // Bind table width to parent width with padding
+        inventory_table.prefWidthProperty().bind(
+            inventorypane.widthProperty().multiply(0.98)
+        );
+        
+        // Bind table height to parent height with padding for other controls
+        inventory_table.prefHeightProperty().bind(
+            inventorypane.heightProperty().multiply(0.85)
+        );
+
+        // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
                 () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
@@ -205,7 +242,6 @@ public class dashboardController {
         col_select.setCellFactory(column -> new TableCell<>() {
             private final CheckBox checkBox = new CheckBox();
             {
-                // Add action handler to checkbox
                 checkBox.setOnAction((ActionEvent _event) -> {
                     Inventory_management_bin bin = getTableRow() != null ? getTableRow().getItem() : null;
                     if (bin != null) {
@@ -229,12 +265,26 @@ public class dashboardController {
             }
         });
 
+        // Make columns not reorderable but resizable
+        inventory_table.getColumns().forEach(column -> {
+            column.setReorderable(false);
+            column.setResizable(true);
+        });
+
+        // Apply CSS styling
+        inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+
         // Initialize data list and set it to table
         inventory_management_table = FXCollections.observableArrayList();
         inventory_table.setItems(inventory_management_table);
         
         // Load the inventory data
         inventory_management_query();
+
+        // Force layout pass to ensure proper alignment
+        Platform.runLater(() -> {
+            inventory_table.refresh();
+        });
     }
     
     private void setupWindowControls() {
@@ -259,7 +309,6 @@ public class dashboardController {
         TabSwitch(inventorybutton, inventorypane);
         TabSwitch(forecastingbutton, forecastingpane);
         TabSwitch(salesbutton, salespane);
-        TabSwitch(settingsbutton, settingspane);
         TabSwitch(helpbutton, helppane);
     }
     
@@ -359,7 +408,7 @@ public class dashboardController {
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
-                forecastingbutton, settingsbutton, helpbutton
+                forecastingbutton, helpbutton
         );
 
         if (!validButtons.contains(selectedButton)) {

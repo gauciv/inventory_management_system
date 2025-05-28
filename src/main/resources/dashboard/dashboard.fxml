@@ -162,29 +162,6 @@
                   <Insets top="60.0" />
                </VBox.margin>
             </Line>
-            <HBox prefHeight="30.0" prefWidth="170.0">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/settings_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="settingsbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Settings" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
             <HBox layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
                <children>
                   <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
@@ -418,7 +395,7 @@
                                     <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       
                                       <TableView fx:id="inventory_table" editable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>                                             
-                                            <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="Select" />
+                                            <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="□" />
                                              <TableColumn fx:id="col_number" prefWidth="50.0" style="-fx-alignment: CENTER;" text="No." />
                                              <TableColumn fx:id="col_item_code" style="-fx-alignment: CENTER;" text="Item Code" />
                                              <TableColumn fx:id="col_item_des" style="-fx-alignment: CENTER;" text="Description" />
@@ -611,11 +588,6 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                           </content>
-                        </Tab>
-                        <Tab text="Settings">
-                           <content>
-                              <AnchorPane fx:id="settingspane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: teal;" />
                            </content>
                         </Tab>
                         <Tab text="Contact Us">
