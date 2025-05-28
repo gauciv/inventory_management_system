@@ -205,13 +205,15 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
-        // Disable sorting for all columns to prevent alignment issues
-        inventory_table.setSortPolicy(null);
+        // Configure column alignment
         inventory_table.getColumns().forEach(column -> {
-            column.setSortable(false);
+            column.setStyle("-fx-alignment: CENTER;");
         });
 
-        // Make table responsive with fixed column widths
+        // Special styling for select column header
+        col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
+
+        // Make table responsive
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Bind table width to parent width with padding
@@ -224,7 +226,29 @@ public class dashboardController {
             inventorypane.heightProperty().multiply(0.85)
         );
 
-        // Initialize table columns with proper alignment
+        // Add listener for window resize to adjust columns
+        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double tableWidth = newVal.doubleValue() * 0.98;
+            double totalMinWidth = 0;
+            
+            // Calculate total minimum width
+            for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                totalMinWidth += column.getMinWidth();
+            }
+            
+            // Only adjust if we have enough space
+            if (tableWidth > totalMinWidth) {
+                double extraSpace = tableWidth - totalMinWidth;
+                double ratio = extraSpace / totalMinWidth;
+                
+                // Distribute extra space proportionally
+                for (TableColumn<?, ?> column : inventory_table.getColumns()) {
+                    column.setPrefWidth(column.getMinWidth() * (1 + ratio));
+                }
+            }
+        });
+
+        // Initialize table columns
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
                 () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
@@ -282,11 +306,6 @@ public class dashboardController {
         
         // Load the inventory data
         inventory_management_query();
-
-        // Force layout pass to ensure proper alignment
-        Platform.runLater(() -> {
-            inventory_table.refresh();
-        });
     }
     
     private void setupWindowControls() {
