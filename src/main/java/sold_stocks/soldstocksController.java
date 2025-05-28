@@ -80,6 +80,11 @@ public class soldstocksController {
                     soldStocks, itemCode
                 );
                 
+                // Add notification to dashboard
+                if (dashboardControllerRef != null) {
+                    dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
+                }
+                
                 showAlert("Success", "Stock sold successfully and sales data updated.");
                 
                 // Refresh the inventory table

@@ -22,7 +22,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
@@ -163,29 +162,6 @@
                   <Insets top="60.0" />
                </VBox.margin>
             </Line>
-            <HBox prefHeight="30.0" prefWidth="170.0">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/settings_gray.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="settingsbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Settings" textFill="#aeb9e1">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets left="30.0" right="15.0" top="20.0" />
-               </VBox.margin>
-            </HBox>
             <HBox layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
                <children>
                   <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
@@ -271,7 +247,7 @@
                            <content>
                               <AnchorPane fx:id="dashboardpane" prefHeight="588.0" prefWidth="726.0">
                                  <children>
-                                    <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <StackPane prefWidth="726.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <Label text="Welcome back, Admin" textFill="WHITE" StackPane.alignment="TOP_LEFT">
                                              <font>
@@ -297,173 +273,64 @@
                                                 <Font size="16.0" />
                                              </font>
                                           </Label>
-                                          <HBox prefHeight="158.0" prefWidth="727.0">
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="459.0" prefWidth="727.0">
                                              <children>
-                                                <StackPane maxHeight="130.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="130.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                                                <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="519.0" prefWidth="727.0" spacing="5.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
-                                                      <Insets bottom="20.0" left="20.0" right="20.0" top="90.0" />
+                                                      <Insets top="70.0" />
                                                    </HBox.margin>
-                                                   <effect>
-                                                      <DropShadow>
-                                                         <color>
-                                                            <Color opacity="0.25" />
-                                                         </color></DropShadow>
-                                                   </effect>
                                                    <children>
-                                                      <HBox spacing="10.0">
-                                                         <children>
-                                                            <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                               <image>
-                                                                  <Image url="@../images/stocks.png" />
-                                                               </image>
-                                                            </ImageView>
-                                                            <Label text="Total Stocks" textFill="#656484">
-                                                               <font>
-                                                                  <Font size="16.0" />
-                                                               </font>
-                                                            </Label>
-                                                         </children>
-                                                         <StackPane.margin>
-                                                            <Insets left="20.0" top="15.0" />
-                                                         </StackPane.margin>
-                                                      </HBox>
-                                                      <HBox alignment="CENTER" prefHeight="62.0" prefWidth="215.0" spacing="10.0">
-                                                         <StackPane.margin>
-                                                            <Insets top="20.0" />
-                                                         </StackPane.margin>
-                                                         <children>
-                                                            <Label text="50.89K" textFill="WHITE">
-                                                               <font>
-                                                                  <Font name="System Bold" size="38.0" />
-                                                               </font>
-                                                            </Label>
-                                                            <Label contentDisplay="RIGHT" style="-fx-background-color: #61D2456B; -fx-background-radius: 5;" text="20.1%" textFill="#0fd42d">
-                                                               <font>
-                                                                  <Font size="15.0" />
-                                                               </font>
+                                                      <Label text="Notifications" textFill="#00b4ff">
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" top="20.0" />
+                                                         </VBox.margin>
+                                                         <font>
+                                                            <Font name="System Italic" size="15.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <ScrollPane fx:id="notifScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="265.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS">
+                                                         <content>
+                                                            <VBox fx:id="recent1" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="20.0" left="10.0" right="20.0" />
+                                                               </VBox.margin>
                                                                <padding>
-                                                                  <Insets left="5.0" right="5.0" />
+                                                                  <Insets bottom="20.0" left="10.0" right="10.0" />
                                                                </padding>
-                                                               <graphic>
-                                                                  <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                                     <image>
-                                                                        <Image url="@../images/increase.png" />
-                                                                     </image>
-                                                                  </ImageView>
-                                                               </graphic>
-                                                               <HBox.margin>
-                                                                  <Insets left="10.0" />
-                                                               </HBox.margin>
-                                                            </Label>
-                                                         </children>
-                                                      </HBox>
-                                                   </children>
-                                                </StackPane>
-                                                <StackPane layoutX="10.0" layoutY="10.0" maxHeight="130.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="130.0" style="-fx-background-color: #081739; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
-                                                   <effect>
-                                                      <DropShadow>
-                                                         <color>
-                                                            <Color opacity="0.25" />
-                                                         </color></DropShadow>
-                                                   </effect>
-                                                   <HBox.margin>
-                                                      <Insets bottom="20.0" left="10.0" right="20.0" top="90.0" />
-                                                   </HBox.margin>
-                                                   <children>
-                                                      <HBox prefHeight="114.0" prefWidth="318.0" spacing="10.0">
-                                                         <children>
-                                                            <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                               <image>
-                                                                  <Image url="@../images/peso.png" />
-                                                               </image>
-                                                               <HBox.margin>
-                                                                  <Insets top="3.0" />
-                                                               </HBox.margin>
-                                                            </ImageView>
-                                                            <Label text="Total Stocks" textFill="#656484">
-                                                               <font>
-                                                                  <Font size="16.0" />
-                                                               </font>
-                                                            </Label>
-                                                         </children>
-                                                         <StackPane.margin>
-                                                            <Insets left="20.0" top="15.0" />
-                                                         </StackPane.margin>
-                                                      </HBox>
-                                                      <HBox alignment="CENTER" prefHeight="78.0" prefWidth="329.0" spacing="10.0">
-                                                         <children>
-                                                            <Label text="50.89K" textFill="WHITE">
-                                                               <font>
-                                                                  <Font name="System Bold" size="38.0" />
-                                                               </font>
-                                                            </Label>
-                                                            <Label contentDisplay="RIGHT" style="-fx-background-color: #61D2456B; -fx-background-radius: 5;" text="20.1%" textFill="#0fd42d">
-                                                               <font>
-                                                                  <Font size="15.0" />
-                                                               </font>
-                                                               <padding>
-                                                                  <Insets left="5.0" right="5.0" />
-                                                               </padding>
-                                                               <graphic>
-                                                                  <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                                     <image>
-                                                                        <Image url="@../images/increase.png" />
-                                                                     </image>
-                                                                  </ImageView>
-                                                               </graphic>
-                                                               <HBox.margin>
-                                                                  <Insets left="10.0" />
-                                                               </HBox.margin>
-                                                            </Label>
-                                                         </children>
-                                                         <StackPane.margin>
-                                                            <Insets top="20.0" />
-                                                         </StackPane.margin>
-                                                      </HBox>
-                                                   </children>
-                                                </StackPane>
-                                             </children>
-                                          </HBox>
-                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
-                                             <children>
-                                                <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="274.0" prefWidth="690.0" style="-fx-background-radius: 15 0 0 0;" HBox.hgrow="ALWAYS">
-                                                   <HBox.margin>
-                                                      <Insets top="240.0" />
-                                                   </HBox.margin>
-                                                   <children>
-                                                      <VBox id="recentScrollPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="687.0" style="-fx-background-color: #081739; -fx-background-radius: 15 15 0 0;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
+                                                            </VBox>
+                                                         </content>
                                                          <VBox.margin>
                                                             <Insets left="10.0" right="20.0" />
                                                          </VBox.margin>
-                                                         <effect>
-                                                            <DropShadow offsetY="-4.0" spread="0.5">
-                                                               <color>
-                                                                  <Color opacity="0.13593155145645142" />
-                                                               </color>
-                                                            </DropShadow>
-                                                         </effect>
-                                                      </VBox>
-                                                      <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="172.0" prefWidth="677.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                      </ScrollPane>
+                                                      <Label text="Recent Activities" textFill="#00b4ff">
+                                                         <font>
+                                                            <Font name="System Italic" size="15.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </VBox.margin>
+                                                      </Label>
+                                                      <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="302.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
                                                                <VBox.margin>
                                                                   <Insets bottom="20.0" left="10.0" right="20.0" />
                                                                </VBox.margin>
                                                                <padding>
-                                                                  <Insets bottom="10.0" left="10.0" right="10.0" />
+                                                                  <Insets bottom="20.0" left="10.0" right="10.0" />
                                                                </padding>
-                                                               <effect>
-                                                                  <DropShadow>
-                                                                     <color>
-                                                                        <Color opacity="0.25" />
-                                                                     </color>
-                                                                  </DropShadow>
-                                                               </effect>
                                                             </VBox>
                                                          </content>
                                                          <VBox.margin>
                                                             <Insets left="10.0" right="20.0" />
                                                          </VBox.margin>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </padding>
                                                       </ScrollPane>
                                                    </children>
                                                    <padding>
@@ -528,7 +395,7 @@
                                     <AnchorPane prefHeight="442.0" prefWidth="698.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="73.0">                                       
                                       <TableView fx:id="inventory_table" editable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           <columns>                                             
-                                            <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="Select" />
+                                            <TableColumn fx:id="col_select" prefWidth="40.0" style="-fx-alignment: CENTER;" text="□" />
                                              <TableColumn fx:id="col_number" prefWidth="50.0" style="-fx-alignment: CENTER;" text="No." />
                                              <TableColumn fx:id="col_item_code" style="-fx-alignment: CENTER;" text="Item Code" />
                                              <TableColumn fx:id="col_item_des" style="-fx-alignment: CENTER;" text="Description" />
@@ -648,7 +515,7 @@
                                        <!-- Product Selection Area -->
                                        <HBox alignment="CENTER_LEFT" spacing="20">
                                            <VBox spacing="2">
-                                               <Label text="Product" style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" />
+                                               <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Product" />
                                                <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
                                            </VBox>
                                            <VBox spacing="2">
@@ -668,7 +535,7 @@
                                                </font>
                                            </Label>
                                        </HBox>
-                                       <Label fx:id="forecastPlaceholderLabel" text="Please select a product and formula to view the forecast." style="-fx-text-fill: #AEB9E1; -fx-font-size: 15px; -fx-font-style: italic; -fx-alignment: center;" alignment="CENTER" />
+                                       <Label fx:id="forecastPlaceholderLabel" alignment="CENTER" style="-fx-text-fill: #AEB9E1; -fx-font-size: 15px; -fx-font-style: italic; -fx-alignment: center;" text="Please select a product and formula to view the forecast." />
 
                                        <!-- Chart Area -->
                                        <VBox style="-fx-background-color: #081739;" VBox.vgrow="ALWAYS">
@@ -728,11 +595,6 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                           </content>
-                        </Tab>
-                        <Tab text="Settings">
-                           <content>
-                              <AnchorPane fx:id="settingspane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: teal;" />
                            </content>
                         </Tab>
                         <Tab text="Contact Us">

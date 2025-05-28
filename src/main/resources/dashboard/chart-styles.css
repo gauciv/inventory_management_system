@@ -4,6 +4,7 @@
 
 .chart-title {
     -fx-text-fill: white;
+    -fx-font-size: 14px;
 }
 
 .axis-label {
@@ -11,11 +12,11 @@
 }
 
 .chart-legend {
-    -fx-text-fill: black;
+    -fx-background-color: transparent;
 }
 
 .chart-legend-item {
-    -fx-text-fill: black;
+    -fx-text-fill: white;
 }
 
 .chart-legend-item-symbol {
@@ -23,7 +24,7 @@
 }
 
 .chart-legend-item-text {
-    -fx-fill: black;
+    -fx-fill: white;
 }
 
 .axis {
