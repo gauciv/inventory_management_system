@@ -55,10 +55,18 @@ public class SalesController {
     }
 
     private void setupControls() {
-        // Setup date pickers
-        startDate.setValue(LocalDate.now().minusMonths(12));
-        endDate.setValue(LocalDate.now());
+        // Setup date pickers with fixed start date and current end date
+        LocalDate fixedStartDate = LocalDate.of(2024, 5, 28); // May 28, 2024
+        LocalDate currentEndDate = LocalDate.now();
         
+        startDate.setValue(fixedStartDate);
+        endDate.setValue(currentEndDate);
+        
+        // Disable date pickers to prevent user modification
+        startDate.setDisable(true);
+        endDate.setDisable(true);
+        
+        // Update sales data when dates change (though they won't since they're disabled)
         startDate.setOnAction(e -> updateTotalSales());
         endDate.setOnAction(e -> updateTotalSales());
 
