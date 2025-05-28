@@ -404,17 +404,54 @@ public class SalesController {
 
     // Placeholder for the new FXML-based dialog
     private void showProductSelectionDialogFXML() {
-        // TODO: Implement FXML-based dialog for product selection
-        // This dialog should display all products with checkboxes, allow up to 10 selections,
-        // and return the selected products to updateComparisonChart(selectedProducts)
-        // For now, show an error message
-        showError("Not Implemented", "Product selection dialog is being upgraded. Please wait for the next update.");
+        try {
+            // Get list of products
+            String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
+            Object[] result = database_utility.query(query);
+            if (result == null || result.length != 2) {
+                showError("Error", "Failed to load products");
+                return;
+            }
+            ResultSet rs = (ResultSet) result[1];
+            List<String> products = new ArrayList<>();
+            while (rs.next()) {
+                products.add(rs.getString("item_description"));
+            }
+            rs.close();
+            if (products.isEmpty()) {
+                showError("Error", "No products found");
+                return;
+            }
+            // Load FXML dialog
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/dashboard/product_compare_dialog.fxml"));
+            javafx.scene.Parent root = loader.load();
+            ProductCompareDialogController controller = loader.getController();
+            controller.setProducts(products);
+            javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+            dialogStage.initOwner(salesChart.getScene().getWindow());
+            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Compare Products");
+            controller.setDialogStage(dialogStage);
+            controller.setOnConfirm(selectedProducts -> {
+                updateComparisonChart(selectedProducts);
+                // Set button states: compare active, total inactive
+                totalSalesButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
+                compareButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
+            });
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Dialog Error", "Failed to open product selection dialog: " + e.getMessage());
+        }
     }
 
     private void updateComparisonChart(List<String> products) {
         Connection conn = null;
         try {
-            currentData.clear();
+            currentData.clear(); // Always clear previous comparison data
             String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
