@@ -137,6 +137,7 @@ public class dashboardController {
             Platform.runLater(() -> {
                 initializeForecastingSection();
                 initializeSalesSection();
+                loadNotificationsFromDatabase();
             });
             startClock(); // Initialize the clock
             
@@ -1059,7 +1060,8 @@ public class dashboardController {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
             String formattedDate = currentTime.format(dateFormatter);
 
-            Label label = new Label(stockCount + " stocks of " + description + " has arrived at the facility as of " + formattedDate);
+            String notificationText = stockCount + " stocks of " + description + " has arrived at the facility as of " + formattedDate;
+            Label label = new Label(notificationText);
             label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
             hBox.getChildren().addAll(imageView, label);
@@ -1074,6 +1076,24 @@ public class dashboardController {
                 scrollPane.setFitToHeight(false);
                 scrollPane.setPannable(true);
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+
+            // Save to database
+            Connection connect = null;
+            try {
+                Object[] result = database_utility.update(
+                    "INSERT INTO notifications_activities (activities) VALUES (?)",
+                    notificationText
+                );
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
             }
         });
     }
@@ -1107,7 +1127,8 @@ public class dashboardController {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
             String formattedDate = currentTime.format(dateFormatter);
 
-            Label label = new Label(stockCount + " stocks of " + description + " has been sold as of " + formattedDate);
+            String notificationText = stockCount + " stocks of " + description + " has been sold as of " + formattedDate;
+            Label label = new Label(notificationText);
             label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
             hBox.getChildren().addAll(imageView, label);
@@ -1123,9 +1144,86 @@ public class dashboardController {
                 scrollPane.setPannable(true);
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
+
+            // Save to database
+            Connection connect = null;
+            try {
+                Object[] result = database_utility.update(
+                    "INSERT INTO notifications_activities (activities) VALUES (?)",
+                    notificationText
+                );
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
+            }
         });
     }
 
+
+    private void loadNotificationsFromDatabase() {
+        Connection connect = null;
+        try {
+            Object[] result = database_utility.query(
+                "SELECT activities, timestamp FROM notifications_activities ORDER BY timestamp DESC"
+            );
+            if (result != null) {
+                connect = (Connection) result[0];
+                ResultSet rs = (ResultSet) result[1];
+
+                while (rs.next()) {
+                    String activity = rs.getString("activities");
+                    
+                    VBox notificationBox = new VBox();
+                    notificationBox.setPrefHeight(30);
+                    notificationBox.setMinHeight(30);
+                    notificationBox.setMaxHeight(30);
+                    notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+                    VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
+
+                    HBox hBox = new HBox(8);
+                    hBox.setFillHeight(true);
+                    hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+
+                    // Choose icon based on notification content
+                    String imagePath = activity.contains("has been sold") ? "/images/peso.png" : "/images/stocks.png";
+                    ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
+                    imageView.setFitHeight(22);
+                    imageView.setFitWidth(22);
+                    imageView.setPreserveRatio(true);
+
+                    Label label = new Label(activity);
+                    label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+                    hBox.getChildren().addAll(imageView, label);
+                    notificationBox.getChildren().add(hBox);
+
+                    recent.getChildren().add(notificationBox);
+                }
+
+                // Configure scrolling if needed
+                if (recent.getParent() instanceof ScrollPane scrollPane) {
+                    scrollPane.setFitToWidth(true);
+                    scrollPane.setFitToHeight(false);
+                    scrollPane.setPannable(true);
+                    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
+            }
+        }
+    }
+    
     @FXML
     private void handleGithubLink(MouseEvent event) {
         Label clickedLabel = (Label) event.getSource();
