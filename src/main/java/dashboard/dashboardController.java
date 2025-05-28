@@ -41,6 +41,7 @@ import forecasting.ForecastingController;
 import forecasting.ForecastingModel;
 import confirmation.confirmationController;
 import sold_stocks.soldStock;
+import add_edit_product.addeditproductController;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -96,6 +97,8 @@ public class dashboardController {
     @FXML private Button exportButton;
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
+    @FXML private Button totalSalesButton;
+    @FXML private Button compareButton;
 
     @FXML private ScrollPane notifScrollPane;
     @FXML private VBox recent1;
@@ -109,6 +112,7 @@ public class dashboardController {
 
     private ForecastingController forecastingController;
     private Timeline clockTimeline;
+    private SalesController salesController;
 
     private javafx.application.HostServices hostServices;
 
@@ -179,6 +183,11 @@ public class dashboardController {
             Platform.runLater(() -> {
                 inventory_management_query();
             });
+            
+            // Initialize search functionality
+            if (searchField != null) {
+                setupSearch();
+            }
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -253,7 +262,6 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
-
         // Configure column alignment
         inventory_table.getColumns().forEach(column -> {
             column.setStyle("-fx-alignment: CENTER;");
@@ -262,15 +270,36 @@ public class dashboardController {
         // Special styling for select column header
         col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
 
-        // Make table responsive
 
-        // Disable sorting for all columns to prevent alignment issues
-        inventory_table.setSortPolicy(null);
+        // Set fixed column widths
+        col_number.setPrefWidth(50);
+        col_select.setPrefWidth(50);
+        col_item_code.setPrefWidth(100);
+        col_item_des.setPrefWidth(300);
+        col_volume.setPrefWidth(100);
+        col_category.setPrefWidth(150);
+        col_soh.setPrefWidth(100);
+        col_sot.setPrefWidth(100);
+
+        // Set minimum widths to match preferred widths
+        col_number.setMinWidth(col_number.getPrefWidth());
+        col_select.setMinWidth(col_select.getPrefWidth());
+        col_item_code.setMinWidth(col_item_code.getPrefWidth());
+        col_item_des.setMinWidth(col_item_des.getPrefWidth());
+        col_volume.setMinWidth(col_volume.getPrefWidth());
+        col_category.setMinWidth(col_category.getPrefWidth());
+        col_soh.setMinWidth(col_soh.getPrefWidth());
+        col_sot.setMinWidth(col_sot.getPrefWidth());
+
+        // Prevent column resizing
         inventory_table.getColumns().forEach(column -> {
+            column.setResizable(false);
+            column.setReorderable(false);
             column.setSortable(false);
         });
 
-        // Make table responsive with fixed column widths
+
+        // Make table responsive
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         // Bind table width to parent width with padding
@@ -282,31 +311,6 @@ public class dashboardController {
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
-
-
-        // Add listener for window resize to adjust columns
-        inventorypane.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double tableWidth = newVal.doubleValue() * 0.98;
-            double totalMinWidth = 0;
-            
-            // Calculate total minimum width
-            for (TableColumn<?, ?> column : inventory_table.getColumns()) {
-                totalMinWidth += column.getMinWidth();
-            }
-            
-            // Only adjust if we have enough space
-            if (tableWidth > totalMinWidth) {
-                double extraSpace = tableWidth - totalMinWidth;
-                double ratio = extraSpace / totalMinWidth;
-                
-                // Distribute extra space proportionally
-                for (TableColumn<?, ?> column : inventory_table.getColumns()) {
-                    column.setPrefWidth(column.getMinWidth() * (1 + ratio));
-                }
-            }
-        });
-
-     
 
         // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
@@ -349,12 +353,6 @@ public class dashboardController {
                     setGraphic(checkBox);
                 }
             }
-        });
-
-        // Make columns not reorderable but resizable
-        inventory_table.getColumns().forEach(column -> {
-            column.setReorderable(false);
-            column.setResizable(true);
         });
 
         // Apply CSS styling
@@ -649,7 +647,7 @@ public class dashboardController {
                 stage.initStyle(StageStyle.TRANSPARENT);
                 stage.setTitle(title);
                 stage.setScene(scene);
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
                 Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
                 stage.show();
                 double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
@@ -683,7 +681,7 @@ public class dashboardController {
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(title);
             stage.setScene(scene);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
             // Get screen bounds of right_pane for centering
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
@@ -1002,17 +1000,30 @@ public class dashboardController {
         alert.showAndWait();
     }
 
+    @FXML
+    private void handleTotalSales() {
+        if (salesController != null) {
+            salesController.updateTotalSales();
+        }
+    }
+
+    @FXML
+    private void handleCompare() {
+        if (salesController != null) {
+            salesController.showProductSelectionDialog();
+        }
+    }
+
     private void initializeSalesSection() {
         try {
             System.out.println("Initializing sales section...");
             
             // Make sure components are loaded
-            if (salesChart == null || totalSalesLabel == null || 
+            if (salesChart == null || totalSalesLabel == null ||
                 topProductLabel == null || salesDateLabel == null ||
-                chartTypeComboBox == null || compareProductComboBox == null ||
-                startDate == null || endDate == null || exportButton == null ||
+                exportButton == null ||
                 growthRateLabel == null || averageSalesLabel == null ||
-                salesBarChart == null || salesAreaChart == null) {
+                totalSalesButton == null || compareButton == null) {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
@@ -1022,26 +1033,22 @@ public class dashboardController {
             ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
             
             // Initialize sales controller
-            SalesController salesController = new SalesController();
+            salesController = new SalesController();
             
             // Initialize controller after injecting components
             salesController.initialize();
             
             // Inject all components
             salesController.injectComponents(
-                salesChart, 
-                totalSalesLabel, 
-                topProductLabel, 
+                salesChart,
+                totalSalesLabel,
+                topProductLabel,
                 salesDateLabel,
-                chartTypeComboBox,
-                compareProductComboBox,
-                startDate,
-                endDate,
                 exportButton,
                 growthRateLabel,
                 averageSalesLabel,
-                salesBarChart,
-                salesAreaChart
+                totalSalesButton,
+                compareButton
             );
             
             System.out.println("Sales section initialization complete.");
@@ -1193,6 +1200,75 @@ public class dashboardController {
     }
 
 
+    @FXML
+    private void handleEditButton() {
+        try {
+            // Count checked checkboxes in inventory table
+            int checkedCount = 0;
+            Inventory_management_bin selectedItem = null;
+            
+            for (Inventory_management_bin item : inventory_table.getItems()) {
+                if (item.getSelected()) {
+                    checkedCount++;
+                    selectedItem = item;
+                }
+            }
+            
+            if (checkedCount == 0) {
+                // Show error if no item is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select an item to edit.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            } else if (checkedCount > 1) {
+                // Show error alert if multiple checkboxes are checked
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Selection Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select only one item to edit.");
+                alert.initStyle(StageStyle.UNDECORATED);
+                alert.showAndWait();
+                return;
+            }
+
+            // Load and show the edit form
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addEditProduct/add-edit-product_form.fxml"));
+            Parent editForm = loader.load();
+            
+            // Get the controller and set up the data
+            addeditproductController controller = loader.getController();
+            controller.setDashboardController(this);
+            controller.setItemToEdit(selectedItem);
+
+            Scene scene = new Scene(editForm);
+            scene.setFill(null);
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.setTitle("Edit Product");
+            stage.setScene(scene);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
+            
+            // Center the stage on the inventory pane
+            Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
+            stage.show();
+            double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
+            double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
+            stage.setX(centerX);
+            stage.setY(centerY);
+            stage.toFront();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error loading edit form: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
     private void loadNotificationsFromDatabase() {
         Connection connect = null;
         try {
@@ -1282,6 +1358,7 @@ public class dashboardController {
         }
     }
 
+
     private void updateStockNotifications() {
         ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
         ComboBox<String> monthCombo = (ComboBox<String>) borderpane.lookup("#month");
@@ -1356,11 +1433,89 @@ public class dashboardController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    private void setupSearch() {
+        // Set prompt text and style
+        searchField.setPromptText("Search items...");
+        searchField.setStyle("-fx-background-color: #081739; -fx-background-radius: 30; " +
+                           "-fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.5);");
+
+        // Add listener for real-time search
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                // If search field is empty, show all items
+                inventory_management_query();
+            } else {
+                // Perform search with the new text
+                performSearch(newValue);
+            }
+        });
+    }
+
+    private void performSearch(String searchTerm) {
+        Connection connect = null;
+        try {
+            String selectedMonth = getSelectedMonthColumn();
+            String sql_query = String.format(
+                "SELECT sale_offtake.item_code, item_description, volume, category, " +
+                "sale_offtake.%s as sot, stock_onhand.%s1 as soh " +
+                "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code " +
+                "WHERE LOWER(item_description) LIKE LOWER(?) OR " +
+                "sale_offtake.item_code LIKE ? OR " +
+                "LOWER(category) LIKE LOWER(?)",
+                selectedMonth, selectedMonth
+            );
+
+            Object[] result_from_query = database_utility.query(sql_query, 
+                "%" + searchTerm + "%",
+                "%" + searchTerm + "%",
+                "%" + searchTerm + "%"
+            );
+
+            if (result_from_query != null) {
+                connect = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+
+                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
+                while (result.next()) {
+                    items.add(new Inventory_management_bin(
+                        result.getInt("item_code"),
+                        result.getString("item_description"),
+                        result.getInt("volume"),
+                        result.getString("category"),
+                        result.getInt("sot"),
+                        result.getInt("soh")
+                    ));
+                }
+
+                inventory_management_table.setAll(items);
+                inventory_table.refresh();
+
+                // Show search results count
+                String resultText = items.size() + " item" + (items.size() != 1 ? "s" : "") + " found";
+                Tooltip tooltip = new Tooltip(resultText);
+                searchField.setTooltip(tooltip);
+                tooltip.show(searchField, 
+                    searchField.localToScreen(searchField.getBoundsInLocal()).getMinX(),
+                    searchField.localToScreen(searchField.getBoundsInLocal()).getMaxY());
+                
+                // Hide tooltip after 2 seconds
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), 
+                    ae -> tooltip.hide()));
+                timeline.play();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Search Error", "Failed to perform search: " + e.getMessage());
+
         } finally {
             if (connect != null) {
                 database_utility.close(connect);
             }
         }
+
 
         // Configure scrolling
         if (notifScrollPane != null) {

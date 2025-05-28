@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox fx:id="root" spacing="18" alignment="CENTER" style="-fx-background-color: #081028; -fx-background-radius: 12; -fx-padding: 24;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.ProductCompareDialogController">
+    <Label text="Select products to compare (2-10):" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16; -fx-font-weight: bold;" />
+    <Label fx:id="trackerLabel" text="Checked: 0 / 10" style="-fx-text-fill: #00b4ff; -fx-font-size: 13; -fx-font-weight: bold;" />
+    <ScrollPane fitToWidth="true" maxHeight="300" style="-fx-background: #081028;">
+        <content>
+            <VBox fx:id="productListVBox" spacing="8" style="-fx-background-color: #081028;" />
+        </content>
+    </ScrollPane>
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #E91E63; -fx-font-size: 13;" visible="false" />
+    <HBox spacing="16" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="Cancel" style="-fx-background-color: #181739; -fx-text-fill: #AEB9E1; -fx-background-radius: 7; -fx-font-size: 14;" />
+        <Button fx:id="confirmButton" text="Confirm" style="-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 7; -fx-font-size: 14;" />
+    </HBox>
+</VBox> 
