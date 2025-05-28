@@ -6,6 +6,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Tooltip;
+import javafx.scene.paint.Color;
 import database.database_utility;
 
 import java.sql.Connection;
@@ -20,6 +22,8 @@ public class ForecastingController {
     private Label forecastAccuracyLabel;
     private Label forecastTrendLabel;
     private Label forecastRecommendationsLabel;
+    private ComboBox<String> forecastFormulaComboBox;
+    private Label forecastPlaceholderLabel;
     
     private final ForecastingModel forecastingModel;
     
@@ -28,13 +32,15 @@ public class ForecastingController {
     }
     
     public void initialize(LineChart<String, Number> chart, ComboBox<String> productCombo,
-                         Label accuracyLabel, Label trendLabel, Label recommendationsLabel) {
+                         Label accuracyLabel, Label trendLabel, Label recommendationsLabel, ComboBox<String> formulaCombo, Label placeholderLabel) {
         try {
             this.forecastChart = chart;
             this.forecastProductComboBox = productCombo;
             this.forecastAccuracyLabel = accuracyLabel;
             this.forecastTrendLabel = trendLabel;
             this.forecastRecommendationsLabel = recommendationsLabel;
+            this.forecastFormulaComboBox = formulaCombo;
+            this.forecastPlaceholderLabel = placeholderLabel;
             
             System.out.println("Initializing ForecastingController...");
             
@@ -64,14 +70,43 @@ public class ForecastingController {
             
             // Configure product combo box
             if (forecastProductComboBox != null) {
-                forecastProductComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
-                forecastProductComboBox.setPromptText("Select a product");
-                
-                // Set up event handler for product selection
-                forecastProductComboBox.setOnAction(e -> updateForecast());
-                
-                // Load initial product data
+                forecastProductComboBox.setTooltip(new Tooltip("Select the product to forecast sales for."));
+                forecastProductComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
+                forecastProductComboBox.setPromptText("Choose a product");
+                forecastProductComboBox.setOnAction(e -> {
+                    boolean hasProduct = forecastProductComboBox.getValue() != null;
+                    if (forecastFormulaComboBox != null) {
+                        forecastFormulaComboBox.setDisable(!hasProduct);
+                    }
+                    updateForecast();
+                });
                 loadProducts();
+            }
+            
+            // Configure formula combo box
+            if (forecastFormulaComboBox != null) {
+                forecastFormulaComboBox.setTooltip(new Tooltip("Select the forecasting formula to use."));
+                forecastFormulaComboBox.getItems().clear();
+                forecastFormulaComboBox.getItems().addAll("Holt-Winters", "Moving Average", "Simple Average");
+                forecastFormulaComboBox.setValue(null);
+                forecastFormulaComboBox.setPromptText("Choose a formula");
+                forecastFormulaComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
+                forecastFormulaComboBox.setDisable(true);
+                forecastFormulaComboBox.setOnAction(e -> {
+                    String selectedProduct = forecastProductComboBox != null ? forecastProductComboBox.getValue() : null;
+                    if (selectedProduct == null) {
+                        showWarning("Selection Required", "Please select a product first before choosing a formula.");
+                        forecastFormulaComboBox.setValue(null);
+                        forecastFormulaComboBox.setDisable(true);
+                        return;
+                    }
+                    updateForecast();
+                });
+            }
+            
+            // Show placeholder initially
+            if (forecastPlaceholderLabel != null) {
+                forecastPlaceholderLabel.setVisible(true);
             }
             
             System.out.println("ForecastingController initialization complete.");
@@ -93,6 +128,7 @@ public class ForecastingController {
             // Clear existing items
             if (forecastProductComboBox != null) {
                 forecastProductComboBox.getItems().clear();
+                forecastProductComboBox.setValue(null); // Show prompt
             }
             
             String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
@@ -102,16 +138,15 @@ public class ForecastingController {
                 int count = 0;
                 while (rs.next()) {
                     String product = rs.getString("item_description");
-                    forecastProductComboBox.getItems().add(product);
-                    count++;
-                    System.out.println("Added product: " + product);
+                    if (product != null) {
+                        forecastProductComboBox.getItems().add(product);
+                        count++;
+                        System.out.println("Added product: " + product);
+                    }
                 }
                 System.out.println("Loaded " + count + " products");
                 
-                if (count > 0) {
-                    forecastProductComboBox.setValue(forecastProductComboBox.getItems().get(0));
-                    updateForecast(); // Load initial forecast
-                } else {
+                if (count == 0) {
                     showWarning("No Products", "No products found in the database.");
                 }
             }
@@ -122,8 +157,13 @@ public class ForecastingController {
     }
     
     private void updateForecast() {
-        String selectedProduct = forecastProductComboBox.getValue();
-        if (selectedProduct == null) return;
+        String selectedProduct = forecastProductComboBox != null ? forecastProductComboBox.getValue() : null;
+        String selectedFormula = forecastFormulaComboBox != null ? forecastFormulaComboBox.getValue() : null;
+        boolean ready = selectedProduct != null && selectedFormula != null;
+        if (forecastPlaceholderLabel != null) {
+            forecastPlaceholderLabel.setVisible(!ready);
+        }
+        if (!ready) return;
         
         try (Connection conn = database_utility.connect()) {
             if (conn == null) {
@@ -159,8 +199,12 @@ public class ForecastingController {
                         }
 
                         try {
-                            // Generate 6-month forecast
-                            double[] forecast = forecastingModel.forecast(historicalData, 6);
+                            double[] forecast;
+                            switch (selectedFormula) {
+                                case "Moving Average" -> forecast = movingAverageForecast(historicalData, 6, 3); // window=3
+                                case "Simple Average" -> forecast = simpleAverageForecast(historicalData, 6);
+                                default -> forecast = forecastingModel.forecast(historicalData, 6); // Holt-Winters
+                            }
                             
                             // Update chart and analysis
                             Platform.runLater(() -> {
@@ -307,5 +351,22 @@ public class ForecastingController {
             alert.setContentText(content);
             alert.showAndWait();
         });
+    }
+    
+    // --- Additional Forecasting Methods ---
+    private double[] movingAverageForecast(double[] data, int periodsAhead, int window) {
+        double[] forecast = new double[periodsAhead];
+        double sum = 0;
+        int n = data.length;
+        for (int i = n - window; i < n; i++) sum += data[i];
+        double avg = sum / window;
+        Arrays.fill(forecast, avg);
+        return forecast;
+    }
+    private double[] simpleAverageForecast(double[] data, int periodsAhead) {
+        double avg = Arrays.stream(data).average().orElse(0);
+        double[] forecast = new double[periodsAhead];
+        Arrays.fill(forecast, avg);
+        return forecast;
     }
 }
