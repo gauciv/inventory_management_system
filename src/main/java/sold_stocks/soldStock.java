@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -11,8 +12,8 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-
-public class soldStock {    public void showPopup(Stage owner, AnchorPane inventoryPane, int itemCode, String description, int volume, String category, int salesOfftake, int stocksOnHand) throws IOException {
+public class soldStock {
+    public void showPopup(Stage owner, AnchorPane inventoryPane, int itemCode, String description, int volume, String category, int salesOfftake, int stocksOnHand) throws IOException {
         Stage stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.WINDOW_MODAL);
@@ -24,6 +25,13 @@ public class soldStock {    public void showPopup(Stage owner, AnchorPane invent
         // Get the controller and set the item data
         soldstocksController controller = loader.getController();
         controller.setItemData(itemCode, volume, category, salesOfftake, stocksOnHand);
+        
+        // Set the dashboard controller reference
+        if (owner.getScene() != null && owner.getScene().getRoot() instanceof BorderPane) {
+            BorderPane root = (BorderPane) owner.getScene().getRoot();
+            dashboard.dashboardController dashboardController = (dashboard.dashboardController) root.getUserData();
+            controller.setDashboardController(dashboardController);
+        }
         
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
