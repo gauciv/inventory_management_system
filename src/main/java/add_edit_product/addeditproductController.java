@@ -134,6 +134,11 @@ public class addeditproductController {
                 if (stockResult != null) {
                     showAlert("Success", "Product updated successfully");
                     
+                    // Add notification for the edit action
+                    if (dashboardControllerRef != null) {
+                        dashboardControllerRef.addInventoryActionNotification("edit", description);
+                    }
+                    
                     // Refresh the main table
                     if (dashboardControllerRef != null) {
                         dashboardControllerRef.inventory_management_query();

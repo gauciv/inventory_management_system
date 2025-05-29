@@ -376,6 +376,17 @@
                                                             <Insets left="10.0" />
                                                          </VBox.margin>
                                                       </Label>
+                                                      <Button fx:id="clearActivitiesButton" onAction="#handleClearActivities" style="-fx-background-color: #0A1196; -fx-background-radius: 5; -fx-text-fill: white;" text="Clear Activities">
+                                                         <font>
+                                                            <Font size="12.0" />
+                                                         </font>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </VBox.margin>
+                                                      </Button>
                                                       <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="302.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
@@ -650,7 +661,17 @@
                                        <HBox alignment="CENTER_LEFT" spacing="20">
                                            <VBox spacing="2">
                                                <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Product" />
-                                               <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                               <HBox spacing="5">
+                                                   <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                                   <Button fx:id="forecastRefreshButton" mnemonicParsing="false" prefHeight="25" prefWidth="25" style="-fx-background-color: transparent; -fx-text-fill: #0A1196; -fx-font-size: 16;" text="⟳">
+                                                       <tooltip>
+                                                           <Tooltip text="Refresh product list" />
+                                                       </tooltip>
+                                                       <cursor>
+                                                           <Cursor fx:constant="HAND" />
+                                                       </cursor>
+                                                   </Button>
+                                               </HBox>
                                            </VBox>
                                            <VBox spacing="2">
                                                <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Forecast Formula" />

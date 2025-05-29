@@ -94,6 +94,7 @@ public class dashboardController {
     @FXML private Label averageSalesLabel;
     @FXML private Button totalSalesButton;
     @FXML private Button compareButton;
+    @FXML private Button forecastRefreshButton;
 
     @FXML private ScrollPane notifScrollPane;
     @FXML private VBox recent1;
@@ -182,6 +183,14 @@ public class dashboardController {
             // Initialize search functionality
             if (searchField != null) {
                 setupSearch();
+            }
+            
+            if (forecastRefreshButton != null) {
+                forecastRefreshButton.setOnAction(e -> {
+                    if (forecastingController != null) {
+                        forecastingController.refreshProductList();
+                    }
+                });
             }
             
         } catch (Exception e) {
@@ -937,6 +946,9 @@ public class dashboardController {
                         // Refresh table data
                         inventory_management_query();
                         
+                        // Add notification for the delete action
+                        addInventoryActionNotification("delete", itemToDelete.getItem_des());
+                        
                     } catch (Exception e) {
                         e.printStackTrace();
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1626,5 +1638,146 @@ public class dashboardController {
             notifScrollPane.setPannable(true);
             notifScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         }
+    }
+
+    /**
+     * Adds a notification for inventory actions (add, edit, delete)
+     * @param action The action performed (add, edit, delete)
+     * @param description The item description
+     */
+    public void addInventoryActionNotification(String action, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            
+            // Choose icon and color based on action
+            String imagePath;
+            String notificationText;
+            String backgroundColor;
+            switch (action.toLowerCase()) {
+                case "add":
+                    imagePath = "/images/plus.png";
+                    notificationText = "New product added: " + description;
+                    backgroundColor = "#0E1D47"; // Reverted to dark blue
+                    break;
+                case "edit":
+                    imagePath = "/images/edit.png";
+                    notificationText = "Product updated: " + description;
+                    backgroundColor = "#0E1D47"; // Reverted to dark blue
+                    break;
+                case "delete":
+                    imagePath = "/images/trash.png";
+                    notificationText = "Product deleted: " + description;
+                    backgroundColor = "#0E1D47"; // Dark blue
+                    break;
+                default:
+                    imagePath = "/images/stocks.png";
+                    notificationText = "Inventory action: " + description;
+                    backgroundColor = "#0E1D47"; // Default dark blue
+            }
+            
+            notificationBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            Label label = new Label(notificationText);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+
+            // Save to database
+            Connection connect = null;
+            try {
+                Object[] result = database_utility.update(
+                    "INSERT INTO notifications_activities (activities) VALUES (?)",
+                    notificationText
+                );
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
+            }
+
+            // Refresh forecasting product list
+            if (forecastingController != null) {
+                forecastingController.refreshProductList();
+            }
+        });
+    }
+
+    @FXML
+    private void handleClearActivities() {
+        // Show confirmation dialog
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Clear Activities");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to clear all recent activities?");
+        alert.initStyle(StageStyle.UNDECORATED);
+
+        // Customize the buttons
+        ButtonType buttonTypeYes = new ButtonType("Yes");
+        ButtonType buttonTypeNo = new ButtonType("No");
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        // Show the dialog and wait for user response
+        alert.showAndWait().ifPresent(response -> {
+            if (response == buttonTypeYes) {
+                // Only clear the 'recent' VBox (Recent Activities)
+                if (recent != null) {
+                    recent.getChildren().clear();
+                }
+                // Do NOT clear recent1 (Critical Stocks)
+
+                // Only clear activity notifications from the database
+                Connection connect = null;
+                try {
+                    Object[] result = database_utility.update("DELETE FROM notifications_activities");
+                    if (result != null) {
+                        connect = (Connection) result[0];
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Show error alert
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("Failed to clear activities: " + e.getMessage());
+                    errorAlert.initStyle(StageStyle.UNDECORATED);
+                    errorAlert.showAndWait();
+                } finally {
+                    if (connect != null) {
+                        database_utility.close(connect);
+                    }
+                }
+            }
+        });
     }
 }
