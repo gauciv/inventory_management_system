@@ -21,16 +21,12 @@ import java.util.List;
 import database.database_utility;
 
 public class SalesController {
-    @FXML private LineChart<String, Number> salesChart;
-    @FXML private BarChart<String, Number> salesBarChart;
-    @FXML private AreaChart<String, Number> salesAreaChart;
+    @FXML private AreaChart<String, Number> salesChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
     @FXML private Label salesDateLabel;
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
-    @FXML private ComboBox<String> chartTypeComboBox;
-    @FXML private ComboBox<String> compareProductComboBox;
     @FXML private Button exportButton;
     @FXML private Button totalSalesButton;
     @FXML private Button compareButton;
@@ -73,9 +69,9 @@ public class SalesController {
             Object[] result = database_utility.query(query);
             if (result != null && result.length == 2) {
                 ResultSet rs = (ResultSet) result[1];
-                compareProductComboBox.getItems().clear();
+                List<String> products = new ArrayList<>();
                 while (rs.next()) {
-                    compareProductComboBox.getItems().add(rs.getString("item_description"));
+                    products.add(rs.getString("item_description"));
                 }
                 rs.close();
             }
@@ -83,27 +79,6 @@ public class SalesController {
             e.printStackTrace();
             showError("Error", "Failed to load products: " + e.getMessage());
         }
-    }
-
-    private void updateChartType(String chartType) {
-        salesChart.setVisible(false);
-        salesBarChart.setVisible(false);
-        salesAreaChart.setVisible(false);
-
-        switch (chartType) {
-            case "Line Chart":
-                salesChart.setVisible(true);
-                break;
-            case "Bar Chart":
-                salesBarChart.setVisible(true);
-                break;
-            case "Area Chart":
-                salesAreaChart.setVisible(true);
-                break;
-        }
-        
-        // Update data for the selected chart type
-        updateChartData(currentData);
     }
 
     private void updateChartData(List<XYChart.Series<String, Number>> data) {
@@ -579,7 +554,7 @@ public class SalesController {
     }
 
     // Component injection method
-    public void injectComponents(LineChart<String, Number> salesChart,
+    public void injectComponents(AreaChart<String, Number> salesChart,
                                Label totalSalesLabel,
                                Label topProductLabel,
                                Label salesDateLabel,
