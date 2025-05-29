@@ -305,6 +305,8 @@ public class addproductController {
                             showAlert("Success", "Product added successfully");
                             if (dashboardControllerRef != null) {
                                 dashboardControllerRef.inventory_management_query();
+                                // Add notification for new product
+                                dashboardControllerRef.addInventoryActionNotification("add", description);
                             }
                             handleCancel();
                         } else {

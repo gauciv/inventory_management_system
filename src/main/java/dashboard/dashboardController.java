@@ -937,6 +937,9 @@ public class dashboardController {
                         // Refresh table data
                         inventory_management_query();
                         
+                        // Add notification for the delete action
+                        addInventoryActionNotification("delete", itemToDelete.getItem_des());
+                        
                     } catch (Exception e) {
                         e.printStackTrace();
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1626,5 +1629,87 @@ public class dashboardController {
             notifScrollPane.setPannable(true);
             notifScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         }
+    }
+
+    /**
+     * Adds a notification for inventory actions (add, edit, delete)
+     * @param action The action performed (add, edit, delete)
+     * @param description The item description
+     */
+    public void addInventoryActionNotification(String action, String description) {
+        Platform.runLater(() -> {
+            VBox notificationBox = new VBox();
+            notificationBox.setPrefHeight(30);
+            notificationBox.setMinHeight(30);
+            notificationBox.setMaxHeight(30);
+            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+
+            // Choose icon based on action
+            String imagePath;
+            String notificationText;
+            switch (action.toLowerCase()) {
+                case "add":
+                    imagePath = "/images/plus.png";
+                    notificationText = "New product added: " + description;
+                    break;
+                case "edit":
+                    imagePath = "/images/edit.png";
+                    notificationText = "Product updated: " + description;
+                    break;
+                case "delete":
+                    imagePath = "/images/trash.png";
+                    notificationText = "Product deleted: " + description;
+                    break;
+                default:
+                    imagePath = "/images/stocks.png";
+                    notificationText = "Inventory action: " + description;
+            }
+
+            ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
+            imageView.setFitHeight(22);
+            imageView.setFitWidth(22);
+            imageView.setPreserveRatio(true);
+
+            Label label = new Label(notificationText);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            // Add to the top of the VBox (most recent first)
+            recent.getChildren().add(0, notificationBox);
+
+            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+
+            // Save to database
+            Connection connect = null;
+            try {
+                Object[] result = database_utility.update(
+                    "INSERT INTO notifications_activities (activities) VALUES (?)",
+                    notificationText
+                );
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
+            }
+        });
     }
 }
