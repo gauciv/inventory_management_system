@@ -1736,15 +1736,13 @@ public class dashboardController {
         // Show the dialog and wait for user response
         alert.showAndWait().ifPresent(response -> {
             if (response == buttonTypeYes) {
-                // Clear UI
+                // Only clear the 'recent' VBox (Recent Activities)
                 if (recent != null) {
                     recent.getChildren().clear();
                 }
-                if (recent1 != null) {
-                    recent1.getChildren().clear();
-                }
+                // Do NOT clear recent1 (Critical Stocks)
 
-                // Clear database
+                // Only clear activity notifications from the database
                 Connection connect = null;
                 try {
                     Object[] result = database_utility.update("DELETE FROM notifications_activities");
