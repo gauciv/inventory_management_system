@@ -32,28 +32,32 @@
 }
 
 .chart-series-line {
-    -fx-stroke-width: 2.5px;
+    -fx-stroke-width: 3px;
     -fx-effect: dropshadow(gaussian, rgba(0, 122, 255, 0.3), 10, 0, 0, 0);
 }
 
 .chart-line-symbol {
-    -fx-background-insets: -7, -7 !important;
-    -fx-padding: 7px !important;
-    -fx-background-radius: 5px !important;
+    -fx-background-insets: -12, -12 !important;
+    -fx-padding: 12px !important;
+    -fx-background-radius: 12px !important;
+    -fx-shape: "M -15 0 A 15 15 0 1 1 15 0 A 15 15 0 1 1 -15 0" !important;
+    -fx-scale-x: 1 !important;
+    -fx-scale-y: 1 !important;
+    -fx-snap-to-pixel: false !important;
 }
 
 /* Historical Line (First Series) */
 .chart .default-color0.chart-series-line {
     -fx-stroke: #4CAF50;
-    -fx-stroke-width: 2.5px;
+    -fx-stroke-width: 3px;
     -fx-view-order: -1 !important;
     -fx-z-index: 1 !important;
 }
 
 .chart .default-color0.chart-line-symbol {
     -fx-background-color: #4CAF50;
-    -fx-background-radius: 5px;
-    -fx-padding: 7px !important;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px !important;
 }
 
 .default-color0.chart-series-area-line {
@@ -71,15 +75,15 @@
 /* Forecast Line (Second Series) */
 .chart .default-color1.chart-series-line {
     -fx-stroke: #FF3B30;
-    -fx-stroke-width: 2.5px;
+    -fx-stroke-width: 3px;
     -fx-view-order: 1 !important;
     -fx-z-index: -1 !important;
 }
 
 .chart .default-color1.chart-line-symbol {
     -fx-background-color: #FF3B30;
-    -fx-background-radius: 5px;
-    -fx-padding: 7px !important;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px !important;
 }
 
 .default-color1.chart-series-area-line {
@@ -95,7 +99,7 @@
 }
 
 .chart-series-area-line {
-    -fx-stroke-width: 2px;
+    -fx-stroke-width: 3px;
 }
 
 .chart-legend {
@@ -144,4 +148,13 @@
 .axis .text {
     -fx-font-family: "Segoe UI";
     -fx-font-size: 11px;
+}
+
+/* Hover effect for data points */
+.chart-line-symbol:hover {
+    -fx-background-insets: -15, -15 !important;
+    -fx-padding: 15px !important;
+    -fx-background-radius: 15px !important;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 20, 0, 0, 0) !important;
+    -fx-cursor: hand !important;
 } 
