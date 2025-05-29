@@ -1,7 +1,8 @@
 .help-popup {
-    -fx-background-color: #081739;
+    -fx-background-color: #081028;
     -fx-background-radius: 15;
-    -fx-border-color: #AEB9E1;
+    -fx-border-color: #4c5574;
+
     -fx-border-width: 1;
     -fx-border-radius: 15;
     -fx-padding: 25;
@@ -14,7 +15,8 @@
 }
 
 .control-button {
-    -fx-background-color: #2A3C65;
+
+    -fx-background-color: #081739;
     -fx-text-fill: white;
     -fx-min-width: 35px;
     -fx-min-height: 35px;
@@ -35,7 +37,8 @@
 }
 
 .minimize-button:hover {
-    -fx-background-color: #3A4C75;
+
+    -fx-background-color: #0A1196;
 }
 
 .close-button {
@@ -48,12 +51,14 @@
 
 .title-box {
     -fx-spacing: 15;
-    -fx-padding: 0 0 10 0;
+
+    -fx-padding: 0 0 20 0;
 }
 
 .title-icon {
     -fx-font-size: 24;
-    -fx-text-fill: white;
+    -fx-text-fill: #00b4ff;
+
 }
 
 .title-text {
@@ -68,18 +73,20 @@
 }
 
 .formula-card {
-    -fx-background-color: #1E2B4D;
+
+    -fx-background-color: #081739;
     -fx-background-radius: 10;
-    -fx-padding: 15;
+    -fx-padding: 20;
     -fx-spacing: 10;
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
     -fx-transition: all 0.3s ease;
 }
 
 .formula-card:hover {
-    -fx-background-color: #2A3C65;
-    -fx-effect: dropshadow(gaussian, rgba(174, 185, 225, 0.4), 15, 0, 0, 0),
-                innershadow(gaussian, rgba(174, 185, 225, 0.15), 10, 0, 0, 0);
+
+    -fx-background-color: #0A1196;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 255, 0.2), 15, 0, 0, 0),
+                innershadow(gaussian, rgba(0, 180, 255, 0.1), 10, 0, 0, 0);
     -fx-translate-y: -2;
 }
 
@@ -90,7 +97,7 @@
 
 .formula-icon {
     -fx-font-size: 18;
-    -fx-text-fill: white;
+    -fx-text-fill: #00b4ff;
 }
 
 .formula-title {
@@ -101,7 +108,7 @@
 
 .formula-description {
     -fx-font-size: 14;
-    -fx-text-fill: #AEB9E1;
+    -fx-text-fill: #aeb9e1;
     -fx-wrap-text: true;
     -fx-opacity: 0.85;
 }
