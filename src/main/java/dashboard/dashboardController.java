@@ -94,6 +94,7 @@ public class dashboardController {
     @FXML private Label averageSalesLabel;
     @FXML private Button totalSalesButton;
     @FXML private Button compareButton;
+    @FXML private Button forecastRefreshButton;
 
     @FXML private ScrollPane notifScrollPane;
     @FXML private VBox recent1;
@@ -182,6 +183,14 @@ public class dashboardController {
             // Initialize search functionality
             if (searchField != null) {
                 setupSearch();
+            }
+            
+            if (forecastRefreshButton != null) {
+                forecastRefreshButton.setOnAction(e -> {
+                    if (forecastingController != null) {
+                        forecastingController.refreshProductList();
+                    }
+                });
             }
             
         } catch (Exception e) {
@@ -1715,6 +1724,11 @@ public class dashboardController {
                 if (connect != null) {
                     database_utility.close(connect);
                 }
+            }
+
+            // Refresh forecasting product list
+            if (forecastingController != null) {
+                forecastingController.refreshProductList();
             }
         });
     }

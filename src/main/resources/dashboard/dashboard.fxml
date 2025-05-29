@@ -661,7 +661,17 @@
                                        <HBox alignment="CENTER_LEFT" spacing="20">
                                            <VBox spacing="2">
                                                <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Product" />
-                                               <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                               <HBox spacing="5">
+                                                   <ComboBox fx:id="forecastProductComboBox" prefWidth="300" promptText="Choose a product" style="-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;" />
+                                                   <Button fx:id="forecastRefreshButton" mnemonicParsing="false" prefHeight="25" prefWidth="25" style="-fx-background-color: transparent; -fx-text-fill: #0A1196; -fx-font-size: 16;" text="⟳">
+                                                       <tooltip>
+                                                           <Tooltip text="Refresh product list" />
+                                                       </tooltip>
+                                                       <cursor>
+                                                           <Cursor fx:constant="HAND" />
+                                                       </cursor>
+                                                   </Button>
+                                               </HBox>
                                            </VBox>
                                            <VBox spacing="2">
                                                <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 13px;" text="Forecast Formula" />

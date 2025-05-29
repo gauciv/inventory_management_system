@@ -476,4 +476,8 @@ public class ForecastingController {
     private static class Delta {
         double x, y;
     }
+
+    public void refreshProductList() {
+        loadProducts();
+    }
 }
