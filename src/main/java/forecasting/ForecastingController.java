@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
+import javafx.geometry.Insets;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -386,67 +387,70 @@ public class ForecastingController {
         try {
             // Create a new stage for the popup
             Stage helpStage = new Stage();
-            helpStage.initStyle(StageStyle.UNDECORATED);
+            helpStage.initStyle(StageStyle.TRANSPARENT);
             
             // Create the content
-            VBox content = new VBox(10);
-            content.setStyle("-fx-background-color: #081739; -fx-padding: 20; -fx-border-color: #AEB9E1; -fx-border-width: 1;");
-            content.setPrefWidth(400);
+            VBox content = new VBox(15);
+            content.getStyleClass().add("help-popup");
+            content.setPrefWidth(450);
             
-            // Add title
-            Label title = new Label("Forecasting Formulas");
-            title.setStyle("-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;");
-            
-            // Add formula descriptions
-            VBox formulasBox = new VBox(15);
-            
-            // Holt-Winters description
-            VBox hwBox = new VBox(5);
-            Label hwTitle = new Label("Holt-Winters Method");
-            hwTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-            Label hwDesc = new Label("Triple exponential smoothing that captures level, trend, and seasonality. Best for data with clear seasonal patterns.");
-            hwDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
-            hwBox.getChildren().addAll(hwTitle, hwDesc);
-            
-            // Moving Average description
-            VBox maBox = new VBox(5);
-            Label maTitle = new Label("Moving Average");
-            maTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-            Label maDesc = new Label("Averages a fixed number of recent periods to smooth out fluctuations. Good for stable data with minimal seasonality.");
-            maDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
-            maBox.getChildren().addAll(maTitle, maDesc);
-            
-            // Simple Average description
-            VBox saBox = new VBox(5);
-            Label saTitle = new Label("Simple Average");
-            saTitle.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-            Label saDesc = new Label("Takes the mean of all historical data points. Best for very stable data with no clear trends or seasonality.");
-            saDesc.setStyle("-fx-text-fill: #AEB9E1; -fx-wrap-text: true;");
-            saBox.getChildren().addAll(saTitle, saDesc);
-            
-            formulasBox.getChildren().addAll(hwBox, maBox, saBox);
-            
-            // Add close button
-            Button closeButton = new Button("Close");
-            closeButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5;");
-            closeButton.setOnAction(e -> helpStage.close());
-            
-            // Add window controls
-            HBox windowControls = new HBox(10);
+            // Window controls
+            HBox windowControls = new HBox();
+            windowControls.getStyleClass().add("window-controls");
             windowControls.setAlignment(Pos.TOP_RIGHT);
             
-            Button minimizeBtn = new Button("-");
-            minimizeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+            Button minimizeBtn = new Button("─");
+            minimizeBtn.getStyleClass().addAll("control-button", "minimize-button");
             minimizeBtn.setOnAction(e -> helpStage.setIconified(true));
             
             Button closeBtn = new Button("×");
-            closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+            closeBtn.getStyleClass().addAll("control-button", "close-button");
             closeBtn.setOnAction(e -> helpStage.close());
             
             windowControls.getChildren().addAll(minimizeBtn, closeBtn);
             
+            // Add title with icon
+            HBox titleBox = new HBox();
+            titleBox.getStyleClass().add("title-box");
+            titleBox.setAlignment(Pos.CENTER_LEFT);
+            
+            Label titleIcon = new Label("📊");
+            titleIcon.getStyleClass().add("title-icon");
+            
+            Label title = new Label("Forecasting Formulas");
+            title.getStyleClass().add("title-text");
+            
+            titleBox.getChildren().addAll(titleIcon, title);
+            
+            // Add formula descriptions with improved styling
+            VBox formulasBox = new VBox();
+            formulasBox.getStyleClass().add("formulas-box");
+            
+            // Holt-Winters description
+            VBox hwBox = createFormulaBox(
+                "Holt-Winters Method",
+                "Triple exponential smoothing that captures level, trend, and seasonality. Best for data with clear seasonal patterns.",
+                "📈"
+            );
+            
+            // Moving Average description
+            VBox maBox = createFormulaBox(
+                "Moving Average",
+                "Averages a fixed number of recent periods to smooth out fluctuations. Good for stable data with minimal seasonality.",
+                "📊"
+            );
+            
+            // Simple Average description
+            VBox saBox = createFormulaBox(
+                "Simple Average",
+                "Takes the mean of all historical data points. Best for very stable data with no clear trends or seasonality.",
+                "📉"
+            );
+            
+            formulasBox.getChildren().addAll(hwBox, maBox, saBox);
+            
             // Add all components
-            content.getChildren().addAll(windowControls, title, formulasBox, closeButton);
+            content.getChildren().addAll(windowControls, titleBox, formulasBox);
             
             // Make window draggable
             final Delta dragDelta = new Delta();
@@ -462,6 +466,10 @@ public class ForecastingController {
             // Show the popup
             Scene scene = new Scene(content);
             scene.setFill(null);
+            
+            // Load CSS
+            scene.getStylesheets().add(getClass().getResource("/styles/forecasting-help.css").toExternalForm());
+            
             helpStage.setScene(scene);
             helpStage.show();
             
@@ -470,6 +478,30 @@ public class ForecastingController {
             e.printStackTrace();
             showError("Help Error", "Failed to show formula help: " + e.getMessage());
         }
+    }
+    
+    private VBox createFormulaBox(String title, String description, String icon) {
+        VBox box = new VBox(10);
+        box.getStyleClass().add("formula-card");
+        
+        HBox titleBox = new HBox(10);
+        titleBox.getStyleClass().add("formula-title-box");
+        titleBox.setAlignment(Pos.CENTER_LEFT);
+        
+        Label iconLabel = new Label(icon);
+        iconLabel.getStyleClass().add("formula-icon");
+        
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("formula-title");
+        
+        titleBox.getChildren().addAll(iconLabel, titleLabel);
+        
+        Label descLabel = new Label(description);
+        descLabel.getStyleClass().add("formula-description");
+        descLabel.setWrapText(true);
+        
+        box.getChildren().addAll(titleBox, descLabel);
+        return box;
     }
     
     // Helper class for window dragging

@@ -1,0 +1,115 @@
+.help-popup {
+    -fx-background-color: #081739;
+    -fx-background-radius: 15;
+    -fx-border-color: #AEB9E1;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 5);
+}
+
+.window-controls {
+    -fx-spacing: 15;
+    -fx-padding: 0 0 10 0;
+}
+
+.control-button {
+    -fx-background-color: #2A3C65;
+    -fx-text-fill: white;
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+    -fx-background-radius: 17.5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+    -fx-transition: all 0.3s ease;
+}
+
+.control-button:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.minimize-button {
+    -fx-font-size: 14px;
+}
+
+.minimize-button:hover {
+    -fx-background-color: #3A4C75;
+}
+
+.close-button {
+    -fx-font-size: 18px;
+}
+
+.close-button:hover {
+    -fx-background-color: #FF3B30;
+}
+
+.title-box {
+    -fx-spacing: 15;
+    -fx-padding: 0 0 10 0;
+}
+
+.title-icon {
+    -fx-font-size: 24;
+    -fx-text-fill: white;
+}
+
+.title-text {
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.formulas-box {
+    -fx-spacing: 20;
+    -fx-padding: 15 0 15 0;
+}
+
+.formula-card {
+    -fx-background-color: #1E2B4D;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+.formula-card:hover {
+    -fx-background-color: #2A3C65;
+    -fx-effect: dropshadow(gaussian, rgba(174, 185, 225, 0.4), 15, 0, 0, 0),
+                innershadow(gaussian, rgba(174, 185, 225, 0.15), 10, 0, 0, 0);
+    -fx-translate-y: -2;
+}
+
+.formula-title-box {
+    -fx-spacing: 10;
+    -fx-opacity: 0.95;
+}
+
+.formula-icon {
+    -fx-font-size: 18;
+    -fx-text-fill: white;
+}
+
+.formula-title {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.formula-description {
+    -fx-font-size: 14;
+    -fx-text-fill: #AEB9E1;
+    -fx-wrap-text: true;
+    -fx-opacity: 0.85;
+}
+
+.formula-card:hover .formula-description {
+    -fx-opacity: 1;
+}
+
+.formula-card:hover .formula-title-box {
+    -fx-opacity: 1;
+} 
