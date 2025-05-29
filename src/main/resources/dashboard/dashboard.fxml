@@ -6,7 +6,6 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -368,25 +367,26 @@
                                                             <Insets bottom="5.0" />
                                                          </padding>
                                                       </ScrollPane>
-                                                      <Label text="Recent Activities" textFill="#00b4ff">
-                                                         <font>
-                                                            <Font name="System Italic" size="15.0" />
-                                                         </font>
-                                                         <VBox.margin>
-                                                            <Insets left="10.0" />
-                                                         </VBox.margin>
-                                                      </Label>
-                                                      <Button fx:id="clearActivitiesButton" onAction="#handleClearActivities" style="-fx-background-color: #0A1196; -fx-background-radius: 5; -fx-text-fill: white;" text="Clear Activities">
-                                                         <font>
-                                                            <Font size="12.0" />
-                                                         </font>
-                                                         <cursor>
-                                                            <Cursor fx:constant="HAND" />
-                                                         </cursor>
-                                                         <VBox.margin>
-                                                            <Insets left="10.0" />
-                                                         </VBox.margin>
-                                                      </Button>
+                                                      <HBox spacing="15.0">
+                                                         <children>
+                                                            <Label text="Recent Activities" textFill="#00b4ff">
+                                                               <font>
+                                                                  <Font name="System Italic" size="15.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <Button fx:id="clearActivitiesButton" onAction="#handleClearActivities" style="-fx-background-color: #0A1196; -fx-background-radius: 5; -fx-text-fill: white;" text="Clear Activities">
+                                                               <font>
+                                                                  <Font size="12.0" />
+                                                               </font>
+                                                               <cursor>
+                                                                  <Cursor fx:constant="HAND" />
+                                                               </cursor>
+                                                            </Button>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="11.0" />
+                                                         </padding>
+                                                      </HBox>
                                                       <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="302.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
