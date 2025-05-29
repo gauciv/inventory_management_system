@@ -468,7 +468,11 @@ public class ForecastingController {
             scene.setFill(null);
             
             // Load CSS
-            scene.getStylesheets().add(getClass().getResource("/styles/forecasting-help.css").toExternalForm());
+            String cssPath = "/styles/forecasting-help.css";
+            if (getClass().getResource(cssPath) == null) {
+                throw new IllegalStateException("Cannot find CSS file: " + cssPath);
+            }
+            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
             
             helpStage.setScene(scene);
             helpStage.show();
