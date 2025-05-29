@@ -2,6 +2,7 @@
     -fx-background-color: #081028;
     -fx-background-radius: 15;
     -fx-border-color: #4c5574;
+
     -fx-border-width: 1;
     -fx-border-radius: 15;
     -fx-padding: 25;
@@ -14,6 +15,7 @@
 }
 
 .control-button {
+
     -fx-background-color: #081739;
     -fx-text-fill: white;
     -fx-min-width: 35px;
@@ -35,6 +37,7 @@
 }
 
 .minimize-button:hover {
+
     -fx-background-color: #0A1196;
 }
 
@@ -48,12 +51,14 @@
 
 .title-box {
     -fx-spacing: 15;
+
     -fx-padding: 0 0 20 0;
 }
 
 .title-icon {
     -fx-font-size: 24;
     -fx-text-fill: #00b4ff;
+
 }
 
 .title-text {
@@ -68,6 +73,7 @@
 }
 
 .formula-card {
+
     -fx-background-color: #081739;
     -fx-background-radius: 10;
     -fx-padding: 20;
@@ -77,6 +83,7 @@
 }
 
 .formula-card:hover {
+
     -fx-background-color: #0A1196;
     -fx-effect: dropshadow(gaussian, rgba(0, 180, 255, 0.2), 15, 0, 0, 0),
                 innershadow(gaussian, rgba(0, 180, 255, 0.1), 10, 0, 0, 0);

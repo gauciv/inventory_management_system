@@ -1253,17 +1253,14 @@ public class dashboardController {
             notificationBox.setMaxHeight(30);
             notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
 
-            // Add margins using layout constraints
             VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
 
-            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/stocks.png").toExternalForm()));
-            imageView.setFitHeight(22);
-            imageView.setFitWidth(22);
-            imageView.setPreserveRatio(true);
+            String imagePath = "/images/stocks.png";
+            ImageView imageView = createNotificationIcon(imagePath);
 
             LocalDateTime currentTime = LocalDateTime.now();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
@@ -1287,7 +1284,7 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
 
-            // Save to database
+            // Save to database with only the notification text
             Connection connect = null;
             try {
                 Object[] result = database_utility.update(
@@ -1320,17 +1317,14 @@ public class dashboardController {
             notificationBox.setMaxHeight(30);
             notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
 
-            // Add margins using layout constraints
             VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;"); // Adjusted padding to maintain content position
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
 
-            ImageView imageView = new ImageView(new Image(getClass().getResource("/images/peso.png").toExternalForm()));
-            imageView.setFitHeight(22);
-            imageView.setFitWidth(22);
-            imageView.setPreserveRatio(true);
+            String imagePath = "/images/peso.png";
+            ImageView imageView = createNotificationIcon(imagePath);
 
             LocalDateTime currentTime = LocalDateTime.now();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd yyyy");
@@ -1354,7 +1348,7 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
 
-            // Save to database
+            // Save to database with only notification text
             Connection connect = null;
             try {
                 Object[] result = database_utility.update(
@@ -1444,7 +1438,26 @@ public class dashboardController {
             alert.showAndWait();
         }
     }
-    private void loadNotificationsFromDatabase() {
+    private ImageView createNotificationIcon(String iconPath) {
+        Image icon;
+        try {
+            // Try to load the specified icon
+            icon = new Image(getClass().getResource(iconPath).toExternalForm());
+            if (icon.isError()) {
+                throw new Exception("Icon failed to load");
+            }
+        } catch (Exception e) {
+            // If specified icon fails to load, determine fallback based on notification text
+            System.err.println("Failed to load icon: " + iconPath + ". Using fallback icon.");
+            icon = new Image(getClass().getResource("/images/stocks.png").toExternalForm());
+        }
+        
+        ImageView imageView = new ImageView(icon);
+        imageView.setFitHeight(22);
+        imageView.setFitWidth(22);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }    private void loadNotificationsFromDatabase() {
         Connection connect = null;
         try {
             Object[] result = database_utility.query(
@@ -1453,10 +1466,30 @@ public class dashboardController {
             if (result != null) {
                 connect = (Connection) result[0];
                 ResultSet rs = (ResultSet) result[1];
-
+                
                 while (rs.next()) {
                     String activity = rs.getString("activities");
                     
+                    // Determine icon path based on activity text pattern
+                    String iconPath;
+                    if (activity.contains("Product deleted")) {
+                        iconPath = "/images/trash.png";
+                    } else if (activity.contains("New product added")) {
+                        iconPath = "/images/plus.png";
+                    } else if (activity.contains("has been sold")) {
+                        iconPath = "/images/peso.png";
+                    } else if (activity.contains("arrived")) {
+                        iconPath = "/images/stocks.png";
+                    } else if (activity.contains("Product updated")) {
+                        iconPath = "/images/edit.png";
+                    } else {
+                        iconPath = "/images/stocks.png"; // default fallback
+                    }
+
+                    // Debug print to verify icon selection
+                    System.out.println("Activity: " + activity);
+                    System.out.println("Selected icon: " + iconPath);
+
                     VBox notificationBox = new VBox();
                     notificationBox.setPrefHeight(30);
                     notificationBox.setMinHeight(30);
@@ -1469,12 +1502,7 @@ public class dashboardController {
                     hBox.setFillHeight(true);
                     hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
 
-                    // Choose icon based on notification content
-                    String imagePath = activity.contains("has been sold") ? "/images/peso.png" : "/images/stocks.png";
-                    ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
-                    imageView.setFitHeight(22);
-                    imageView.setFitWidth(22);
-                    imageView.setPreserveRatio(true);
+                    ImageView imageView = createNotificationIcon(iconPath);
 
                     Label label = new Label(activity);
                     label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
@@ -1713,86 +1741,79 @@ public class dashboardController {
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
             
-            // Choose icon and color based on action
+            // Choose icon and notification text based on action
             String imagePath;
             String notificationText;
-            String backgroundColor;
+            String backgroundColor = "#0E1D47";
+            
             switch (action.toLowerCase()) {
                 case "add":
                     imagePath = "/images/plus.png";
                     notificationText = "New product added: " + description;
-                    backgroundColor = "#0E1D47"; // Reverted to dark blue
                     break;
                 case "edit":
                     imagePath = "/images/edit.png";
                     notificationText = "Product updated: " + description;
-                    backgroundColor = "#0E1D47"; // Reverted to dark blue
                     break;
                 case "delete":
                     imagePath = "/images/trash.png";
                     notificationText = "Product deleted: " + description;
-                    backgroundColor = "#0E1D47"; // Dark blue
                     break;
                 default:
                     imagePath = "/images/stocks.png";
                     notificationText = "Inventory action: " + description;
-                    backgroundColor = "#0E1D47"; // Default dark blue
             }
             
             notificationBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
-
             VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
-            HBox hBox = new HBox(8);
-            hBox.setFillHeight(true);
-            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+        HBox hBox = new HBox(8);
+        hBox.setFillHeight(true);
+        hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
 
-            ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
-            imageView.setFitHeight(22);
-            imageView.setFitWidth(22);
-            imageView.setPreserveRatio(true);
+        ImageView imageView = createNotificationIcon(imagePath);
 
-            Label label = new Label(notificationText);
-            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+        Label label = new Label(notificationText);
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
 
-            hBox.getChildren().addAll(imageView, label);
-            notificationBox.getChildren().add(hBox);
+        hBox.getChildren().addAll(imageView, label);
+        notificationBox.getChildren().add(hBox);
 
-            // Add to the top of the VBox (most recent first)
-            recent.getChildren().add(0, notificationBox);
+        // Add to the top of the VBox (most recent first)
+        recent.getChildren().add(0, notificationBox);
 
-            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
-            if (recent.getParent() instanceof ScrollPane scrollPane) {
-                scrollPane.setFitToWidth(true);
-                scrollPane.setFitToHeight(false);
-                scrollPane.setPannable(true);
-                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
+        if (recent.getParent() instanceof ScrollPane scrollPane) {
+            scrollPane.setFitToWidth(true);
+            scrollPane.setFitToHeight(false);
+            scrollPane.setPannable(true);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        }
+
+        // Save to database with only notification text
+        Connection connect = null;
+        try {
+            Object[] result = database_utility.update(
+                "INSERT INTO notifications_activities (activities) VALUES (?)",
+                notificationText
+            );
+            if (result != null) {
+                connect = (Connection) result[0];
             }
-
-            // Save to database
-            Connection connect = null;
-            try {
-                Object[] result = database_utility.update(
-                    "INSERT INTO notifications_activities (activities) VALUES (?)",
-                    notificationText
-                );
-                if (result != null) {
-                    connect = (Connection) result[0];
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (connect != null) {
-                    database_utility.close(connect);
-                }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connect != null) {
+                database_utility.close(connect);
             }
+        }
 
-            // Refresh forecasting product list
-            if (forecastingController != null) {
-                forecastingController.refreshProductList();
-            }
-        });
-    }
+        // Refresh forecasting product list
+        if (forecastingController != null) {
+            forecastingController.refreshProductList();
+        }
+    });
+}
 
     @FXML
     private void handleClearActivities() {
@@ -1842,3 +1863,4 @@ public class dashboardController {
         });
     }
 }
+
