@@ -1,0 +1,122 @@
+.dialog-pane {
+    -fx-background-color: #0D0D43;
+    -fx-background-radius: 25px;
+    -fx-padding: 15px;
+}
+
+.dialog-pane > .content {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 20px 15px;
+    -fx-alignment: center;
+}
+
+/* Remove header panel and icon completely */
+.dialog-pane > .header-panel {
+    -fx-visible: false;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+    -fx-opacity: 0;
+    -fx-translate-y: -1000;
+}
+
+.dialog-pane > .header-panel > .graphic-container {
+    -fx-visible: false;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-opacity: 0;
+}
+
+/* Center the button box */
+.dialog-pane > .button-bar {
+    -fx-alignment: center;
+    -fx-padding: 0 0 10px 0;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-alignment: center;
+}
+
+/* Style and center the button */
+.dialog-pane .button-bar .button {
+    -fx-background-color: #0A1196;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-min-width: 80px;
+    -fx-min-height: 30px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-content-display: center;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #0D0D43;
+    -fx-border-color: #0A1196;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+}
+
+/* Remove any graphics */
+.dialog-pane .graphic {
+    -fx-visible: false;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-opacity: 0;
+    -fx-translate-x: -1000;
+}
+
+/* Center text content */
+.dialog-pane .content {
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+/* Remove default label styling */
+.dialog-pane .label {
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+/* Hide all graphics and icons */
+.dialog-pane .graphic,
+.dialog-pane:header .graphic,
+.dialog-pane > .graphic,
+.dialog-pane .header-panel .graphic {
+    -fx-visible: false;
+    -fx-opacity: 0;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+    -fx-translate-x: -1000;
+    -fx-translate-y: -1000;
+}
+
+/* Center button container */
+.button-bar > .container {
+    -fx-alignment: center;
+    -fx-padding: 0;
+}
+
+/* Ensure button box is centered */
+HBox.button-bar > .container {
+    -fx-alignment: center;
+}
+
+/* Additional button centering */
+.dialog-pane .button-bar .container > .button {
+    -fx-translate-x: 0;
+    -fx-alignment: center;
+    -fx-content-display: center;
+    -fx-text-alignment: center;
+} 
