@@ -21,7 +21,7 @@ public class dashboard extends Application {
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");
-        primaryStage.setWidth(1050);
+        primaryStage.setWidth(1075);
         primaryStage.setHeight(650);
         primaryStage.show();
     }

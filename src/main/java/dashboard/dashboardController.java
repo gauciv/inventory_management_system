@@ -58,6 +58,7 @@ public class dashboardController {
     @FXML private Button exitButton;
     @FXML private BorderPane borderpane;
     @FXML private TabPane tabpane;
+    @FXML private Tab dashboardTab;
     @FXML private Button dashboardbutton;
     @FXML private AnchorPane dashboardpane;
     @FXML private Button inventorybutton;
@@ -128,6 +129,21 @@ public class dashboardController {
     @FXML
     public void initialize() {
         try {
+            // Hide tab headers immediately
+            if (tabpane != null) {
+                tabpane.lookupAll(".tab-header-area").forEach(node -> {
+                    node.setVisible(false);
+                    node.setManaged(false);
+                });
+            }
+
+            // Initially hide all panes
+            if (dashboardpane != null) dashboardpane.setVisible(false);
+            if (inventorypane != null) inventorypane.setVisible(false);
+            if (salespane != null) salespane.setVisible(false);
+            if (forecastingpane != null) forecastingpane.setVisible(false);
+            if (helppane != null) helppane.setVisible(false);
+
             // Initialize collections first
             inventory_management_table = FXCollections.observableArrayList();
             
@@ -135,16 +151,30 @@ public class dashboardController {
             if (borderpane != null) {
                 borderpane.setUserData(this);
             }
+
+            // Get current month name
+            String currentMonth = java.time.LocalDate.now().getMonth().toString();
+            // Capitalize first letter only
+            currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
+
+            // Perform database operations first
+            Connection connect = null;
+            try {
+                // Pre-load database connection
+                Object[] result = database_utility.query("SELECT 1");
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
+            }
             
             // Initialize UI components
             setupTableView();
             setupWindowControls();
             setupFormContainers();
-            
-            // Get current month name
-            String currentMonth = java.time.LocalDate.now().getMonth().toString();
-            // Capitalize first letter only
-            currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
             
             // Set current month as default for monthComboBox
             if (monthComboBox != null) {
@@ -171,22 +201,19 @@ public class dashboardController {
                 stocksCombo.setValue("1000");
                 stocksCombo.setOnAction(event -> updateStockNotifications());
             }
+
+            // Pre-load data before showing UI
+            inventory_management_query();
+            updateStockNotifications();
             
-            // Initialize views after UI is set up
-            Platform.runLater(() -> {
-                initializeForecastingSection();
-                initializeSalesSection();
-                loadNotificationsFromDatabase();
-                updateStockNotifications(); // Initial check of stock levels
-                inventory_management_query(); // Load initial table data
-                setupNavigation(); // Set up navigation after everything is initialized
-                TabSwitch(dashboardbutton, dashboardpane); // Set initial active state
-                hideTabHeaders(); // Hide tab headers
-            });
+            // Initialize other sections first
+            initializeForecastingSection();
+            initializeSalesSection();
+            loadNotificationsFromDatabase();
+            setupNavigation();
             
-            startClock(); // Initialize the clock
+            startClock();
             
-            // Initialize search functionality
             if (searchField != null) {
                 setupSearch();
             }
@@ -706,10 +733,7 @@ public class dashboardController {
         helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
         
         // Set initial active state for dashboard
-        Platform.runLater(() -> {
-            TabSwitch(dashboardbutton, dashboardpane);
-            hideTabHeaders();
-        });
+        TabSwitch(dashboardbutton, dashboardpane);
     }
 
     private void TabSwitch(Button button, AnchorPane pane) {
@@ -1215,6 +1239,9 @@ public class dashboardController {
             
             // Initialize sales controller
             salesController = new SalesController();
+            
+            // Set the main controller reference
+            salesController.setMainController(this);
             
             // Initialize controller after injecting components
             salesController.initialize();
@@ -1860,6 +1887,20 @@ public class dashboardController {
                     }
                 }
             }
+        });
+    }
+
+    // Add a new method to show dashboard
+    public void showDashboard() {
+        Platform.runLater(() -> {
+            // Set initial tab and visibility
+            if (tabpane != null) {
+                tabpane.getSelectionModel().select(0);
+            }
+            if (dashboardpane != null) {
+                dashboardpane.setVisible(true);
+            }
+            TabSwitch(dashboardbutton, dashboardpane);
         });
     }
 }
