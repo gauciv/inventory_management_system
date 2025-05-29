@@ -7,40 +7,25 @@
     -fx-background-radius: 0;
     -fx-background-insets: 0;
     -fx-border-width: 0;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
 }
 
 .nav-button:hover {
     -fx-text-fill: white;
     -fx-background-color: transparent;
-    -fx-effect: dropshadow(gaussian, #0A1196, 25, 0.4, 0, 0);
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-    -fx-translate-x: 3;
+    -fx-effect: dropshadow(gaussian, #0A1196, 20, 0.4, 0, 0);
+    -fx-translate-x: 2;
 }
 
 .nav-button:pressed {
     -fx-background-color: transparent;
-    -fx-scale-x: 0.97;
-    -fx-scale-y: 0.97;
     -fx-translate-x: 1;
-}
-
-.nav-button:focused {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
 }
 
 .nav-button.active {
     -fx-text-fill: white;
     -fx-background-color: transparent;
-    -fx-effect: dropshadow(gaussian, #0A1196, 30, 0.5, 0, 0);
-    -fx-translate-x: 3;
+    -fx-effect: dropshadow(gaussian, #0A1196, 25, 0.5, 0, 0);
 }
 
 .nav-container {
@@ -54,34 +39,29 @@
     -fx-alignment: center-left;
     -fx-min-height: 43;
     -fx-background-radius: 5;
-    -fx-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    -fx-transition: all 0.3s ease;
     -fx-background-insets: 0;
     -fx-border-width: 0;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
 }
 
 .nav-item:hover {
     -fx-background-color: rgba(45, 60, 114, 0.2);
-    -fx-effect: dropshadow(gaussian, rgba(10, 17, 150, 0.3), 15, 0, 0, 0);
-    -fx-translate-x: 3;
+    -fx-effect: dropshadow(gaussian, #0A1196, 10, 0.2, 0, 0);
+    -fx-translate-x: 2;
 }
 
 .nav-item.active {
     -fx-background-color: rgba(45, 60, 114, 0.2);
-    -fx-effect: dropshadow(gaussian, rgba(10, 17, 150, 0.4), 20, 0, 0, 0);
-    -fx-translate-x: 3;
+    -fx-effect: dropshadow(gaussian, #0A1196, 15, 0.3, 0, 0);
 }
 
 .nav-icon {
     -fx-opacity: 0.7;
-    -fx-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    -fx-transition: all 0.3s ease;
 }
 
 .nav-icon.active {
     -fx-opacity: 1;
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
 }
 
 .nav-indicator {
@@ -91,16 +71,16 @@
     -fx-max-width: 3;
     -fx-min-height: 0;
     -fx-opacity: 0;
-    -fx-translate-x: -5;
+    -fx-translate-x: -3;
     -fx-background-insets: 0;
-    -fx-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    -fx-transition: all 0.3s ease;
 }
 
 .nav-indicator.active {
     -fx-min-height: 25;
     -fx-opacity: 1;
     -fx-translate-x: 0;
-    -fx-effect: dropshadow(gaussian, #0A1196, 10, 0.4, 0, 0);
+    -fx-effect: dropshadow(gaussian, #0A1196, 8, 0.4, 0, 0);
 }
 
 .nav-item:hover .nav-icon {

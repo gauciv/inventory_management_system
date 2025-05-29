@@ -128,23 +128,18 @@ public class dashboardController {
     @FXML
     public void initialize() {
         try {
+            // Initialize collections first
+            inventory_management_table = FXCollections.observableArrayList();
+            
             // Store controller reference in BorderPane's userData
             if (borderpane != null) {
                 borderpane.setUserData(this);
             }
             
-            // Initialize table first since other components may depend on it
-            inventory_management_table = FXCollections.observableArrayList();
-            if (inventory_table != null) {
-                inventory_table.setItems(inventory_management_table);
-            }
-            
+            // Initialize UI components
             setupTableView();
             setupWindowControls();
             setupFormContainers();
-            
-            // Set up navigation button handlers with their respective indicators
-            setupNavigation();
             
             // Get current month name
             String currentMonth = java.time.LocalDate.now().getMonth().toString();
@@ -183,13 +178,13 @@ public class dashboardController {
                 initializeSalesSection();
                 loadNotificationsFromDatabase();
                 updateStockNotifications(); // Initial check of stock levels
+                inventory_management_query(); // Load initial table data
+                setupNavigation(); // Set up navigation after everything is initialized
+                TabSwitch(dashboardbutton, dashboardpane); // Set initial active state
+                hideTabHeaders(); // Hide tab headers
             });
-            startClock(); // Initialize the clock
             
-            // Load initial data
-            Platform.runLater(() -> {
-                inventory_management_query();
-            });
+            startClock(); // Initialize the clock
             
             // Initialize search functionality
             if (searchField != null) {
@@ -370,6 +365,14 @@ public class dashboardController {
     }
 
     private void setupTableView() {
+        if (inventory_table == null) {
+            showErrorAlert("Initialization Error", "Table view not found in FXML");
+            return;
+        }
+
+        // Set the items list
+        inventory_table.setItems(inventory_management_table);
+
         // Add style classes to columns
         col_number.getStyleClass().add("col-number");
         col_select.getStyleClass().add("col-select");
@@ -398,7 +401,6 @@ public class dashboardController {
         // Special styling for select column header
         col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
 
-
         // Set fixed column widths
         col_number.setPrefWidth(50);
         col_select.setPrefWidth(50);
@@ -425,7 +427,6 @@ public class dashboardController {
             column.setReorderable(false);
             column.setSortable(false);
         });
-
 
         // Make table responsive
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -485,18 +486,6 @@ public class dashboardController {
 
         // Apply CSS styling
         inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-
-        // Initialize data list and set it to table
-        inventory_management_table = FXCollections.observableArrayList();
-        inventory_table.setItems(inventory_management_table);
-        
-        // Load the inventory data
-        inventory_management_query();
-
-        // Force layout pass to ensure proper alignment
-        Platform.runLater(() -> {
-            inventory_table.refresh();
-        });
     }
     
     private void setupWindowControls() {
@@ -708,33 +697,80 @@ public class dashboardController {
         });
     }
 
-    public void TabSwitch(Button button, AnchorPane pane) {
-        hideTabHeaders();
-        styleActiveButton(button);
+    private void setupNavigation() {
+        // Set up navigation button handlers
+        dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
+        inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
+        salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
+        forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
+        helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
+        
+        // Set initial active state for dashboard
+        Platform.runLater(() -> {
+            TabSwitch(dashboardbutton, dashboardpane);
+            hideTabHeaders();
+        });
+    }
 
+    private void TabSwitch(Button button, AnchorPane pane) {
+        // Handle navigation indicator
+        Region indicator = null;
+        if (button == dashboardbutton) indicator = dashboardIndicator;
+        else if (button == inventorybutton) indicator = inventoryIndicator;
+        else if (button == salesbutton) indicator = salesIndicator;
+        else if (button == forecastingbutton) indicator = forecastingIndicator;
+        else if (button == helpbutton) indicator = helpIndicator;
+
+        if (indicator != null) {
+            handleNavigation(button, indicator, pane);
+        }
+    }
+
+    private void handleNavigation(Button button, Region indicator, Node content) {
+        // Remove active classes from current indicator and button
+        if (currentIndicator != null) {
+            currentIndicator.getStyleClass().remove("active");
+            currentIndicator.getParent().getStyleClass().remove("active");
+        }
+        
+        // Deactivate all buttons
+        dashboardbutton.getStyleClass().remove("active");
+        inventorybutton.getStyleClass().remove("active");
+        salesbutton.getStyleClass().remove("active");
+        forecastingbutton.getStyleClass().remove("active");
+        helpbutton.getStyleClass().remove("active");
+        
+        // Activate new button and indicator
+        button.getStyleClass().add("active");
+        indicator.getStyleClass().add("active");
+        indicator.getParent().getStyleClass().add("active");
+        
+        // Update current indicator
+        currentIndicator = indicator;
+        
+        // Show the selected content
+        if (content != null) {
+            dashboardpane.setVisible(false);
+            inventorypane.setVisible(false);
+            salespane.setVisible(false);
+            forecastingpane.setVisible(false);
+            helppane.setVisible(false);
+            
+            content.setVisible(true);
+        }
+        
+        // Update tab selection
         String tabText = button.getText().trim();
         for (Tab tab : tabpane.getTabs()) {
             if (tab.getText().equalsIgnoreCase(tabText) || 
                 tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
                 tabpane.getSelectionModel().select(tab);
-                if (pane != null) {
-                    pane.setVisible(true);
-                }
-                return;
+                break;
             }
         }
     }
-    
-    private boolean isDescendant(Node parent, Node child) {
-        if (parent instanceof Parent) {
-            for (Node node : ((Parent) parent).getChildrenUnmodifiable()) {
-                if (node == child || isDescendant(node, child)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }    @FXML
+
+    @FXML
     private void handleAddButton() {
         try {
             // Count checked checkboxes in inventory table
@@ -855,7 +891,9 @@ public class dashboardController {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
-    }    @FXML
+    }
+
+    @FXML
     private void handleSoldButton() {
         try {
             // Count checked checkboxes in inventory table
@@ -909,7 +947,9 @@ public class dashboardController {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait();
         }
-    }@FXML
+    }
+
+    @FXML
     private void handleConfirmationButton() {
         try {
             // Count checked checkboxes in inventory table
@@ -1800,61 +1840,5 @@ public class dashboardController {
                 }
             }
         });
-    }
-
-    private void setupNavigation() {
-        // Set up navigation button handlers
-        dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
-        inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
-        salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
-        forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
-        helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
-        
-        // Set initial active state for dashboard
-        Platform.runLater(() -> TabSwitch(dashboardbutton, dashboardpane));
-    }
-
-    private void handleNavigation(Button button, Region indicator, Node content) {
-        // Remove active classes from current indicator and button
-        if (currentIndicator != null) {
-            currentIndicator.getStyleClass().remove("active");
-            currentIndicator.getParent().getStyleClass().remove("active");
-        }
-        
-        // Deactivate all buttons
-        dashboardbutton.getStyleClass().remove("active");
-        inventorybutton.getStyleClass().remove("active");
-        salesbutton.getStyleClass().remove("active");
-        forecastingbutton.getStyleClass().remove("active");
-        helpbutton.getStyleClass().remove("active");
-        
-        // Activate new button and indicator
-        button.getStyleClass().add("active");
-        indicator.getStyleClass().add("active");
-        indicator.getParent().getStyleClass().add("active");
-        
-        // Update current indicator
-        currentIndicator = indicator;
-        
-        // Show the selected content
-        if (content != null) {
-            dashboardpane.setVisible(false);
-            inventorypane.setVisible(false);
-            salespane.setVisible(false);
-            forecastingpane.setVisible(false);
-            helppane.setVisible(false);
-            
-            content.setVisible(true);
-        }
-        
-        // Update tab selection
-        String tabText = button.getText().trim();
-        for (Tab tab : tabpane.getTabs()) {
-            if (tab.getText().equalsIgnoreCase(tabText) || 
-                tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
-                tabpane.getSelectionModel().select(tab);
-                break;
-            }
-        }
     }
 }
