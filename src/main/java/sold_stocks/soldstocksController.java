@@ -7,8 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Scene;
 import database.database_utility;
 import java.sql.Connection;
+import javafx.scene.control.ButtonType;
 
 public class soldstocksController {
 
@@ -125,10 +128,25 @@ public class soldstocksController {
     }
 
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        if (title.equals("Success")) {
+            // Apply custom styling for success alerts
+            alert.getDialogPane().getStylesheets().add(
+                getClass().getResource("/styles/success-alert.css").toExternalForm()
+            );
+            alert.initStyle(StageStyle.TRANSPARENT);
+            Scene scene = alert.getDialogPane().getScene();
+            scene.setFill(null);
+            
+            // Remove the graphic
+            alert.getDialogPane().setGraphic(null);
+        }
+        
         alert.showAndWait();
     }
 }

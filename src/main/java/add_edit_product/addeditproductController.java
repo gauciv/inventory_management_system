@@ -7,10 +7,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Scene;
 import database.database_utility;
 import dashboard.Inventory_management_bin;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import javafx.scene.control.ButtonType;
 
 public class addeditproductController {
     @FXML private Pane addedit_pane;
@@ -169,10 +172,25 @@ public class addeditproductController {
     }
 
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        if (title.equals("Success")) {
+            // Apply custom styling for success alerts
+            alert.getDialogPane().getStylesheets().add(
+                getClass().getResource("/styles/success-alert.css").toExternalForm()
+            );
+            alert.initStyle(StageStyle.TRANSPARENT);
+            Scene scene = alert.getDialogPane().getScene();
+            scene.setFill(null);
+            
+            // Remove the graphic
+            alert.getDialogPane().setGraphic(null);
+        }
+        
         alert.showAndWait();
     }
 }
