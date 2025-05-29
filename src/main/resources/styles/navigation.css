@@ -1,0 +1,96 @@
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #aeb9e1;
+    -fx-font-size: 16px;
+    -fx-alignment: center-left;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #0A1196, 20, 0.4, 0, 0);
+    -fx-translate-x: 2;
+}
+
+.nav-button:pressed {
+    -fx-background-color: transparent;
+    -fx-translate-x: 1;
+}
+
+.nav-button.active {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #0A1196, 25, 0.5, 0, 0);
+}
+
+.nav-container {
+    -fx-padding: 31 0 0 31;
+    -fx-spacing: 0;
+}
+
+.nav-item {
+    -fx-spacing: 10;
+    -fx-padding: 0;
+    -fx-alignment: center-left;
+    -fx-min-height: 43;
+    -fx-background-radius: 5;
+    -fx-transition: all 0.3s ease;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
+.nav-item:hover {
+    -fx-background-color: rgba(45, 60, 114, 0.2);
+    -fx-effect: dropshadow(gaussian, #0A1196, 10, 0.2, 0, 0);
+    -fx-translate-x: 2;
+}
+
+.nav-item.active {
+    -fx-background-color: rgba(45, 60, 114, 0.2);
+    -fx-effect: dropshadow(gaussian, #0A1196, 15, 0.3, 0, 0);
+}
+
+.nav-icon {
+    -fx-opacity: 0.7;
+    -fx-transition: all 0.3s ease;
+}
+
+.nav-icon.active {
+    -fx-opacity: 1;
+}
+
+.nav-indicator {
+    -fx-background-color: #0A1196;
+    -fx-min-width: 3;
+    -fx-pref-width: 3;
+    -fx-max-width: 3;
+    -fx-min-height: 0;
+    -fx-opacity: 0;
+    -fx-translate-x: -3;
+    -fx-background-insets: 0;
+    -fx-transition: all 0.3s ease;
+}
+
+.nav-indicator.active {
+    -fx-min-height: 25;
+    -fx-opacity: 1;
+    -fx-translate-x: 0;
+    -fx-effect: dropshadow(gaussian, #0A1196, 8, 0.4, 0, 0);
+}
+
+.nav-item:hover .nav-icon {
+    -fx-opacity: 1;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Separator line */
+.nav-separator {
+    -fx-stroke: #4c5574;
+    -fx-opacity: 0.8;
+} 
