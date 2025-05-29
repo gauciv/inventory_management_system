@@ -44,6 +44,7 @@ import forecasting.ForecastingModel;
 import confirmation.confirmationController;
 import sold_stocks.soldStock;
 import add_edit_product.addeditproductController;
+import javafx.scene.layout.Region;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -99,6 +100,14 @@ public class dashboardController {
     @FXML private ScrollPane notifScrollPane;
     @FXML private VBox recent1;
 
+    @FXML private Region dashboardIndicator;
+    @FXML private Region inventoryIndicator;
+    @FXML private Region salesIndicator;
+    @FXML private Region forecastingIndicator;
+    @FXML private Region helpIndicator;
+    
+    private Region currentIndicator;
+
     private double xOffset = 0;
     private double yOffset = 0;
     private boolean isFullscreen = false;
@@ -133,7 +142,9 @@ public class dashboardController {
             setupTableView();
             setupWindowControls();
             setupFormContainers();
-            styleActiveButton(dashboardbutton);
+            
+            // Set up navigation button handlers with their respective indicators
+            setupNavigation();
             
             // Get current month name
             String currentMonth = java.time.LocalDate.now().getMonth().toString();
@@ -616,21 +627,34 @@ public class dashboardController {
             return;
         }
 
+        // First, reset all buttons to default state
         for (Button btn : validButtons) {
-            if (btn == selectedButton) {
-                btn.setStyle(
-                        "-fx-background-color: #2D3C7233;" +
-                                "-fx-border-color: transparent transparent transparent #060D84;" +
-                                "-fx-border-width: 0 0 0 2px;"
-                );
-                activeButton = btn;
-            } else {
-                btn.setStyle(
-                        "-fx-background-color: transparent;" +
-                                "-fx-border-width: 0;"
-                );
+            btn.getStyleClass().remove("active");
+            btn.setStyle("-fx-background-color: transparent;");
+            
+            // Find and reset the indicator for this button
+            HBox parent = (HBox) btn.getParent();
+            if (parent != null) {
+                parent.getStyleClass().remove("active");
+                parent.getChildren().stream()
+                    .filter(node -> node instanceof Region && node.getStyleClass().contains("nav-indicator"))
+                    .findFirst()
+                    .ifPresent(indicator -> indicator.getStyleClass().remove("active"));
             }
         }
+
+        // Then style the selected button and its indicator
+        HBox parent = (HBox) selectedButton.getParent();
+        if (parent != null) {
+            parent.getStyleClass().add("active");
+            parent.getChildren().stream()
+                .filter(node -> node instanceof Region && node.getStyleClass().contains("nav-indicator"))
+                .findFirst()
+                .ifPresent(indicator -> indicator.getStyleClass().add("active"));
+        }
+        
+        selectedButton.getStyleClass().add("active");
+        selectedButton.setStyle("-fx-background-color: #2D3C7233;");
     }
 
     @FXML
@@ -686,22 +710,19 @@ public class dashboardController {
 
     public void TabSwitch(Button button, AnchorPane pane) {
         hideTabHeaders();
-        button.setOnAction(__ -> {
-            styleActiveButton(button);
+        styleActiveButton(button);
 
-            String tabText = button.getText().trim();
-            for (Tab tab : tabpane.getTabs()) {
-                if (tab.getText().equalsIgnoreCase(tabText) || 
-                    tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
-                    tabpane.getSelectionModel().select(tab);
-                    if (pane != null) {
-                        pane.setVisible(true);
-                    }
-                    return;
+        String tabText = button.getText().trim();
+        for (Tab tab : tabpane.getTabs()) {
+            if (tab.getText().equalsIgnoreCase(tabText) || 
+                tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
+                tabpane.getSelectionModel().select(tab);
+                if (pane != null) {
+                    pane.setVisible(true);
                 }
+                return;
             }
-            System.out.println("No matching tab found for " + tabText);
-        });
+        }
     }
     
     private boolean isDescendant(Node parent, Node child) {
@@ -1779,5 +1800,61 @@ public class dashboardController {
                 }
             }
         });
+    }
+
+    private void setupNavigation() {
+        // Set up navigation button handlers
+        dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
+        inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
+        salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
+        forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
+        helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
+        
+        // Set initial active state for dashboard
+        Platform.runLater(() -> TabSwitch(dashboardbutton, dashboardpane));
+    }
+
+    private void handleNavigation(Button button, Region indicator, Node content) {
+        // Remove active classes from current indicator and button
+        if (currentIndicator != null) {
+            currentIndicator.getStyleClass().remove("active");
+            currentIndicator.getParent().getStyleClass().remove("active");
+        }
+        
+        // Deactivate all buttons
+        dashboardbutton.getStyleClass().remove("active");
+        inventorybutton.getStyleClass().remove("active");
+        salesbutton.getStyleClass().remove("active");
+        forecastingbutton.getStyleClass().remove("active");
+        helpbutton.getStyleClass().remove("active");
+        
+        // Activate new button and indicator
+        button.getStyleClass().add("active");
+        indicator.getStyleClass().add("active");
+        indicator.getParent().getStyleClass().add("active");
+        
+        // Update current indicator
+        currentIndicator = indicator;
+        
+        // Show the selected content
+        if (content != null) {
+            dashboardpane.setVisible(false);
+            inventorypane.setVisible(false);
+            salespane.setVisible(false);
+            forecastingpane.setVisible(false);
+            helppane.setVisible(false);
+            
+            content.setVisible(true);
+        }
+        
+        // Update tab selection
+        String tabText = button.getText().trim();
+        for (Tab tab : tabpane.getTabs()) {
+            if (tab.getText().equalsIgnoreCase(tabText) || 
+                tab.getText().equalsIgnoreCase(tabText.replace(" ", ""))) {
+                tabpane.getSelectionModel().select(tab);
+                break;
+            }
+        }
     }
 }

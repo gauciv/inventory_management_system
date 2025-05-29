@@ -30,7 +30,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-radius: 20; -fx-background-color: white; -fx-border-radius: 20" stylesheets="@../styles/navigation.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dashboard.dashboardController">
 
    <!-- Left Panel (Sidebar) -->
    <left>
@@ -50,19 +50,20 @@
             </StackPane>
             <VBox prefHeight="310.0" prefWidth="265.0" VBox.vgrow="ALWAYS">
                <children>
-                  <HBox fillHeight="false" prefHeight="43.0">
+                  <HBox styleClass="nav-item" prefHeight="43.0">
                      <children>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <Region fx:id="dashboardIndicator" styleClass="nav-indicator" />
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-icon">
                            <HBox.margin>
-                              <Insets top="12.0" />
+                              <Insets left="15.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/dashboard_gray.png" />
                            </image>
                         </ImageView>
-                        <Button fx:id="dashboardbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="#aeb9e1">
+                        <Button fx:id="dashboardbutton" styleClass="nav-button" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" text="Dashboard" textFill="#aeb9e1">
                            <HBox.margin>
-                              <Insets left="7.0" top="5.0" />
+                              <Insets left="10.0" />
                            </HBox.margin>
                            <font>
                               <Font size="16.0" />
@@ -72,26 +73,21 @@
                            </cursor>
                         </Button>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                   </HBox>
-                  <HBox prefHeight="43.0">
+                  <HBox styleClass="nav-item" prefHeight="43.0">
                      <children>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <Region fx:id="inventoryIndicator" styleClass="nav-indicator" />
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-icon">
                            <HBox.margin>
-                              <Insets top="12.0" />
+                              <Insets left="15.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/inventory_gray.png" />
                            </image>
                         </ImageView>
-                        <Button fx:id="inventorybutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" style="-fx-background-color: transparent;" text="Manage Inventory" textFill="#aeb9e1">
+                        <Button fx:id="inventorybutton" styleClass="nav-button" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" text="Manage Inventory" textFill="#aeb9e1">
                            <HBox.margin>
-                              <Insets left="7.0" top="5.0" />
+                              <Insets left="10.0" />
                            </HBox.margin>
                            <font>
                               <Font size="16.0" />
@@ -101,26 +97,21 @@
                            </cursor>
                         </Button>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                   </HBox>
-                  <HBox prefHeight="43.0">
+                  <HBox styleClass="nav-item" prefHeight="43.0">
                      <children>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <Region fx:id="salesIndicator" styleClass="nav-indicator" />
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-icon">
                            <HBox.margin>
-                              <Insets top="10.0" />
+                              <Insets left="15.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/sales_gray.png" />
                            </image>
                         </ImageView>
-                        <Button fx:id="salesbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" style="-fx-background-color: transparent;" text="Sales" textFill="#aeb9e1">
+                        <Button fx:id="salesbutton" styleClass="nav-button" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" text="Sales" textFill="#aeb9e1">
                            <HBox.margin>
-                              <Insets left="7.0" top="5.0" />
+                              <Insets left="10.0" />
                            </HBox.margin>
                            <font>
                               <Font size="16.0" />
@@ -130,26 +121,21 @@
                            </cursor>
                         </Button>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                   </HBox>
-                  <HBox prefHeight="43.0">
+                  <HBox styleClass="nav-item" prefHeight="43.0">
                      <children>
-                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <Region fx:id="forecastingIndicator" styleClass="nav-indicator" />
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-icon">
                            <HBox.margin>
-                              <Insets top="12.0" />
+                              <Insets left="15.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/forecasting_gray.png" />
                            </image>
                         </ImageView>
-                        <Button fx:id="forecastingbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" style="-fx-background-color: transparent;" text="Forecasting " textFill="#aeb9e1">
+                        <Button fx:id="forecastingbutton" styleClass="nav-button" mnemonicParsing="false" prefHeight="34.0" prefWidth="163.0" text="Forecasting " textFill="#aeb9e1">
                            <HBox.margin>
-                              <Insets left="7.0" top="5.0" />
+                              <Insets left="10.0" />
                            </HBox.margin>
                            <font>
                               <Font size="16.0" />
@@ -159,50 +145,42 @@
                            </cursor>
                         </Button>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                   </HBox>
                </children>
                <padding>
-                  <Insets left="31.0" />
+                  <Insets left="0" />
                </padding>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
             </VBox>
-            <Line endX="150.0" startX="-100.0" stroke="#4c5574">
+            <Line endX="150.0" startX="-100.0" stroke="#4c5574" styleClass="nav-separator">
                <VBox.margin>
                   <Insets top="60.0" />
                </VBox.margin>
             </Line>
-            <HBox layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
+            <HBox styleClass="nav-item" layoutX="40.0" layoutY="440.0" prefHeight="30.0" prefWidth="170.0">
                <children>
-                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                  <Region fx:id="helpIndicator" styleClass="nav-indicator" />
+                  <ImageView fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-icon">
                      <HBox.margin>
-                        <Insets top="5.0" />
+                        <Insets left="15.0" />
                      </HBox.margin>
                      <image>
                         <Image url="@../images/help__gray.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="helpbutton" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" style="-fx-background-color: transparent;" text="Contact Us" textFill="#aeb9e1">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
+                  <Button fx:id="helpbutton" styleClass="nav-button" mnemonicParsing="false" prefHeight="35.0" prefWidth="152.0" text="Contact Us" textFill="#aeb9e1">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
+                     <font>
+                        <Font size="16.0" />
+                     </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
                </children>
                <VBox.margin>
-                  <Insets bottom="20.0" left="30.0" right="15.0" top="15.0" />
+                  <Insets bottom="20.0" left="0" right="15.0" top="15.0" />
                </VBox.margin>
             </HBox>
          </children>
