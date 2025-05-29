@@ -202,7 +202,7 @@ public class login_controller {
             
             // Set the icon for the dashboard window
             dashboardStage.getIcons().add(
-                new Image(getClass().getResource("/images/logo.png").toExternalForm())
+                new Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm())
             );
             
             // Close the login window
@@ -214,7 +214,7 @@ public class login_controller {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", 
-                     "Could not load the dashboard.\n" + e.getMessage());
+                     "Could not load dashboard. Please try again.");
         }
     }
 

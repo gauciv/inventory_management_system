@@ -18,7 +18,7 @@ public class soldStock {
         stage.initOwner(owner);
         stage.initModality(Modality.WINDOW_MODAL);
 
-        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm()));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/soldStocks/soldstock_form.fxml"));
         Scene scene = new Scene(loader.load(), 377, 432);
         

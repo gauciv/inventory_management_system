@@ -17,7 +17,7 @@ public class confirmation {
         stage.initOwner(owner); // Set the owner to avoid taskbar icon
         stage.initModality(Modality.WINDOW_MODAL); // Must be used with initOwner
 
-        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/logo.png").toExternalForm()));
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm()));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
         Scene scene = new Scene(loader.load(), 377, 432);
         scene.setFill(Color.TRANSPARENT);
