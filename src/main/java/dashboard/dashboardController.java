@@ -1642,34 +1642,40 @@ public class dashboardController {
             notificationBox.setPrefHeight(30);
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
-            notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+            
+            // Choose icon and color based on action
+            String imagePath;
+            String notificationText;
+            String backgroundColor;
+            switch (action.toLowerCase()) {
+                case "add":
+                    imagePath = "/images/plus.png";
+                    notificationText = "New product added: " + description;
+                    backgroundColor = "#0E1D47"; // Reverted to dark blue
+                    break;
+                case "edit":
+                    imagePath = "/images/edit.png";
+                    notificationText = "Product updated: " + description;
+                    backgroundColor = "#0E1D47"; // Reverted to dark blue
+                    break;
+                case "delete":
+                    imagePath = "/images/trash.png";
+                    notificationText = "Product deleted: " + description;
+                    backgroundColor = "#0E1D47"; // Dark blue
+                    break;
+                default:
+                    imagePath = "/images/stocks.png";
+                    notificationText = "Inventory action: " + description;
+                    backgroundColor = "#0E1D47"; // Default dark blue
+            }
+            
+            notificationBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
 
             VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
 
             HBox hBox = new HBox(8);
             hBox.setFillHeight(true);
             hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
-
-            // Choose icon based on action
-            String imagePath;
-            String notificationText;
-            switch (action.toLowerCase()) {
-                case "add":
-                    imagePath = "/images/plus.png";
-                    notificationText = "New product added: " + description;
-                    break;
-                case "edit":
-                    imagePath = "/images/edit.png";
-                    notificationText = "Product updated: " + description;
-                    break;
-                case "delete":
-                    imagePath = "/images/trash.png";
-                    notificationText = "Product deleted: " + description;
-                    break;
-                default:
-                    imagePath = "/images/stocks.png";
-                    notificationText = "Inventory action: " + description;
-            }
 
             ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
             imageView.setFitHeight(22);
@@ -1708,6 +1714,56 @@ public class dashboardController {
             } finally {
                 if (connect != null) {
                     database_utility.close(connect);
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void handleClearActivities() {
+        // Show confirmation dialog
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Clear Activities");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to clear all recent activities?");
+        alert.initStyle(StageStyle.UNDECORATED);
+
+        // Customize the buttons
+        ButtonType buttonTypeYes = new ButtonType("Yes");
+        ButtonType buttonTypeNo = new ButtonType("No");
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        // Show the dialog and wait for user response
+        alert.showAndWait().ifPresent(response -> {
+            if (response == buttonTypeYes) {
+                // Clear UI
+                if (recent != null) {
+                    recent.getChildren().clear();
+                }
+                if (recent1 != null) {
+                    recent1.getChildren().clear();
+                }
+
+                // Clear database
+                Connection connect = null;
+                try {
+                    Object[] result = database_utility.update("DELETE FROM notifications_activities");
+                    if (result != null) {
+                        connect = (Connection) result[0];
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Show error alert
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("Failed to clear activities: " + e.getMessage());
+                    errorAlert.initStyle(StageStyle.UNDECORATED);
+                    errorAlert.showAndWait();
+                } finally {
+                    if (connect != null) {
+                        database_utility.close(connect);
+                    }
                 }
             }
         });

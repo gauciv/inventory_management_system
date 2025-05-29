@@ -376,6 +376,17 @@
                                                             <Insets left="10.0" />
                                                          </VBox.margin>
                                                       </Label>
+                                                      <Button fx:id="clearActivitiesButton" onAction="#handleClearActivities" style="-fx-background-color: #0A1196; -fx-background-radius: 5; -fx-text-fill: white;" text="Clear Activities">
+                                                         <font>
+                                                            <Font size="12.0" />
+                                                         </font>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </VBox.margin>
+                                                      </Button>
                                                       <ScrollPane fx:id="recentScrollPane" fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" prefHeight="302.0" prefWidth="687.0" style="-fx-background-color: #0B1739;" stylesheets="@../style.css" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                                                          <content>
                                                             <VBox fx:id="recent" minHeight="0.0" minWidth="0.0" spacing="5.0" style="-fx-background-color: #081739; -fx-background-radius: 0 0 15 15;">
