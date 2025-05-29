@@ -561,17 +561,22 @@
                                            </HBox>
 
                                           <!-- Chart Section -->
-                                          <StackPane VBox.vgrow="ALWAYS">
-                                              <LineChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent; -fx-text-fill: white;" title="Monthly Sales Overview">
+                                          <VBox style="-fx-background-color: #081739;" VBox.vgrow="ALWAYS">
+                                              <padding>
+                                                  <Insets bottom="20" left="20" right="20" top="20" />
+                                              </padding>
+                                              
+                                              <AreaChart fx:id="salesChart" animated="false" createSymbols="true" legendVisible="true" stylesheets="@../styles/chart.css">
                                                   <xAxis>
-                                                      <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      <CategoryAxis fx:id="salesChartXAxis" label="Month" side="BOTTOM" />
                                                   </xAxis>
                                                   <yAxis>
-                                                      <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" style="-fx-tick-label-fill: white; -fx-text-fill: white;" tickLabelFill="white" />
+                                                      <NumberAxis fx:id="salesChartYAxis" autoRanging="true" label="Sales Volume" minorTickCount="2" side="LEFT" />
                                                   </yAxis>
-                                              </LineChart>
-                                              <Label fx:id="salesChartPlaceholder" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16;" text="" visible="false" StackPane.alignment="CENTER" />
-                                          </StackPane>
+                                                  <title>Monthly Sales Overview</title>
+                                              </AreaChart>
+                                              <Label fx:id="salesChartPlaceholder" style="-fx-text-fill: #AEB9E1; -fx-font-size: 16;" text="" visible="false" />
+                                          </VBox>
                                           
                                           <!-- Sales Summary Section -->
                                           <HBox alignment="CENTER" spacing="20">

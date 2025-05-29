@@ -80,9 +80,7 @@ public class dashboardController {
     @FXML private Label forecastRecommendationsLabel;
     @FXML private Label dateLabel;
     @FXML private Label dateTimeLabel;
-    @FXML private LineChart<String, Number> salesChart;
-    @FXML private BarChart<String, Number> salesBarChart;
-    @FXML private AreaChart<String, Number> salesAreaChart;
+    @FXML private AreaChart<String, Number> salesChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
     @FXML private Label salesDateLabel;
@@ -91,11 +89,6 @@ public class dashboardController {
     @FXML private ComboBox<String> forecastFormulaComboBox;
     @FXML private Label forecastPlaceholderLabel;
     @FXML private Button formulaHelpButton;
-
-    @FXML private ComboBox<String> chartTypeComboBox;
-    @FXML private ComboBox<String> compareProductComboBox;
-    @FXML private DatePicker startDate;
-    @FXML private DatePicker endDate;
     @FXML private Button exportButton;
     @FXML private Label growthRateLabel;
     @FXML private Label averageSalesLabel;
@@ -1169,14 +1162,8 @@ public class dashboardController {
             System.out.println("Sales section initialization complete.");
             
         } catch (Exception e) {
-            System.err.println("Error initializing sales section: " + e.getMessage());
             e.printStackTrace();
-            
-            // Show user-friendly error
-            if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data");
-            if (topProductLabel != null) topProductLabel.setText("Error loading data");
-            if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
-            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
+            System.err.println("Error initializing sales section: " + e.getMessage());
         }
     }
 
