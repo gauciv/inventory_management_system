@@ -37,14 +37,30 @@ public class SalesController {
         "#00BCD4", "#FF5722", "#795548", "#607D8B", "#3F51B5"
     };
 
+    private dashboardController mainController;
+
+    public void setMainController(dashboardController controller) {
+        this.mainController = controller;
+    }
+
     public void initialize() {
         System.out.println("Initializing SalesController...");
         Platform.runLater(() -> {
             setupControls();
             setupSalesChart();
             setupClock();
-            updateTotalSales(); // Show total sales by default
+            updateTotalSales();
             System.out.println("SalesController initialization complete.");
+            
+            // Add a delay before showing dashboard
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
+            delay.setOnFinished(event -> {
+                // Show dashboard after delay
+                if (mainController != null) {
+                    mainController.showDashboard();
+                }
+            });
+            delay.play();
         });
     }
 
