@@ -96,6 +96,12 @@
                            </cursor>
                         </Button>
                      </children>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
                   </HBox>
                   <HBox prefHeight="43.0" styleClass="nav-item">
                      <children>
@@ -120,6 +126,9 @@
                            </cursor>
                         </Button>
                      </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
                   </HBox>
                   <HBox prefHeight="43.0" styleClass="nav-item">
                      <children>
@@ -144,6 +153,9 @@
                            </cursor>
                         </Button>
                      </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
                   </HBox>
                </children>
                <padding>
