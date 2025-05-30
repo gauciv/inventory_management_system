@@ -294,7 +294,7 @@
                                                             <Insets bottom="-15.0" left="10.0" top="30.0" />
                                                          </VBox.margin>
                                                          <children>
-                                                            <Label prefHeight="23.0" prefWidth="90.0" text="Critical Stocks" textFill="#00b4ff">
+                                                            <Label prefHeight="23.0" prefWidth="113.0" text="Critical Stocks" textFill="#00b4ff">
                                                                <font>
                                                                   <Font name="System Italic" size="15.0" />
                                                                </font>
