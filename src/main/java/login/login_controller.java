@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -30,6 +31,7 @@ public class login_controller {
     @FXML private ImageView eyeimage;
     @FXML private Button eyebutton;
     @FXML private TextField username_field;
+    @FXML private Label errorLabel;
 
     private boolean isPasswordVisible = false;
     private double xOffset = 0;
@@ -51,21 +53,27 @@ public class login_controller {
 
         // Hide visible password field initially
         visiblePassword.setVisible(false);
+        
+        // Hide error label initially
+        errorLabel.setVisible(false);
 
-        // Add Enter key handler for both password fields and the username field
+        // Clear error when user starts typing
         username_field.setOnKeyPressed(event -> {
+            errorLabel.setVisible(false);
             switch (event.getCode()) {
                 case ENTER -> login_button_clicked();
             }
         });
 
         password.setOnKeyPressed(event -> {
+            errorLabel.setVisible(false);
             switch (event.getCode()) {
                 case ENTER -> login_button_clicked();
             }
         });
 
         visiblePassword.setOnKeyPressed(event -> {
+            errorLabel.setVisible(false);
             switch (event.getCode()) {
                 case ENTER -> login_button_clicked();
             }
@@ -117,7 +125,7 @@ public class login_controller {
         String password_string = isPasswordVisible ? visiblePassword.getText() : password.getText();
 
         if (username.isEmpty() || password_string.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Login Error", "Please enter both username and password.");
+            showError("Please enter both username and password.");
             return;
         }
 
@@ -128,7 +136,7 @@ public class login_controller {
             );
 
             if (result_from_query == null) {
-                showAlert(Alert.AlertType.ERROR, "Database Error", "Could not connect to database. Please try again.");
+                showError("Could not connect to database. Please try again.");
                 return;
             }
 
@@ -137,7 +145,9 @@ public class login_controller {
 
             try {
                 if (result.next()) {
-                    // Login successful
+                    // Login successful - clear any error messages
+                    errorLabel.setVisible(false);
+                    
                     String fullName = result.getString("first_name") + " " + 
                                     result.getString("middle_initial") + " " + 
                                     result.getString("last_name");
@@ -158,8 +168,7 @@ public class login_controller {
                         });
                     }).start();
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Login Failed", 
-                             "Invalid username or password.\nPlease try again.");
+                    showError("Log in credentials are invalid");
                 }
             } finally {
                 // Close the database resources
@@ -168,20 +177,13 @@ public class login_controller {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "System Error", 
-                     "An error occurred while processing your request.\n" + e.getMessage());
+            showError("An error occurred while processing your request.");
         }
     }
 
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        
-        // Make alert match the application's style
-        alert.initStyle(StageStyle.UNDECORATED);
-        alert.showAndWait();
+    private void showError(String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
     }
 
     private void loadDashboard(String username) {
@@ -213,8 +215,7 @@ public class login_controller {
             
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", 
-                     "Could not load dashboard. Please try again.");
+            showError("Could not load dashboard. Please try again.");
         }
     }
 
