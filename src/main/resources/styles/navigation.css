@@ -93,4 +93,29 @@
 .nav-separator {
     -fx-stroke: #4c5574;
     -fx-opacity: 0.8;
+}
+
+/* Hide TabPane headers completely */
+.tab-pane .tab-header-area {
+    visibility: hidden;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+
+.tab-pane .tab-header-background {
+    visibility: hidden;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.tab-pane .headers-region {
+    visibility: hidden;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
 } 
