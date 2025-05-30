@@ -33,12 +33,12 @@
          </children>
       </VBox>
       <HBox alignment="CENTER" layoutY="96.0" prefHeight="97.0" prefWidth="338.0" spacing="30.0">
-         <children>            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleNextButton" prefWidth="95.0" style="-fx-background-color: #0A1196; -fx-background-radius: 20;" text="Next" textFill="WHITE">
+         <children>            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleNextButton" prefWidth="95.0" style="-fx-background-color: #0A1196; -fx-background-radius: 20;" text="Confirm" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleUndoButton" prefWidth="95.0" style="-fx-background-color: #06774A; -fx-background-radius: 20;" text="Undo" textFill="WHITE">
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#handleUndoButton" prefWidth="95.0" style="-fx-background-color: RED; -fx-background-radius: 20;" text="Cancel" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
