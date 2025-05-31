@@ -618,7 +618,7 @@
                                                       </font>
                                                   </Label>
                                                   <Label style="-fx-text-fill: #AEB9E1; -fx-font-size: 12;" text="Product with highest sales volume" />
-                                                  <Label fx:id="topProductLabel" style="-fx-text-fill: white; -fx-font-size: 16;" wrapText="true" />
+                                                  <Label fx:id="topProductLabel" style="-fx-text-fill: white; -fx-font-size: 10;" wrapText="true" />
                                               </VBox>
 
                                               <!-- Sales Analytics Card -->
