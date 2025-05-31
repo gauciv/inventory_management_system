@@ -99,7 +99,7 @@ public class ForecastingController {
             if (forecastFormulaComboBox != null) {
                 forecastFormulaComboBox.setTooltip(new Tooltip("Select the forecasting formula to use."));
                 forecastFormulaComboBox.getItems().clear();
-                forecastFormulaComboBox.getItems().addAll("Holt-Winters", "Moving Average", "Simple Average");
+                forecastFormulaComboBox.getItems().addAll("Holt-Winters", "Moving Average", "Simple Average", "Linear Programming");
                 forecastFormulaComboBox.setValue(null);
                 forecastFormulaComboBox.setPromptText("Choose a formula");
                 forecastFormulaComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
@@ -220,6 +220,7 @@ public class ForecastingController {
                             switch (selectedFormula) {
                                 case "Moving Average" -> forecast = movingAverageForecast(historicalData, 6, 3); // window=3
                                 case "Simple Average" -> forecast = simpleAverageForecast(historicalData, 6);
+                                case "Linear Programming" -> forecast = linearProgrammingForecast(historicalData, 6);
                                 default -> forecast = forecastingModel.forecast(historicalData, 6); // Holt-Winters
                             }
                             
@@ -382,6 +383,30 @@ public class ForecastingController {
         Arrays.fill(forecast, avg);
         return forecast;
     }
+    private double[] linearProgrammingForecast(double[] data, int periodsAhead) {
+        // Linear Programming implementation using simple linear regression
+        double[] forecast = new double[periodsAhead];
+        int n = data.length;
+        
+        // Calculate slope and intercept using least squares method
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        for (int i = 0; i < n; i++) {
+            sumX += i;
+            sumY += data[i];
+            sumXY += i * data[i];
+            sumX2 += i * i;
+        }
+        
+        double slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        double intercept = (sumY - slope * sumX) / n;
+        
+        // Generate forecast using the linear equation: y = mx + b
+        for (int i = 0; i < periodsAhead; i++) {
+            forecast[i] = Math.max(0, slope * (n + i) + intercept); // Ensure non-negative values
+        }
+        
+        return forecast;
+    }
 
     private void showFormulaHelp() {
         try {
@@ -447,7 +472,14 @@ public class ForecastingController {
                 "📉"
             );
             
-            formulasBox.getChildren().addAll(hwBox, maBox, saBox);
+            // Linear Programming description
+            VBox lpBox = createFormulaBox(
+                "Linear Programming",
+                "Uses linear regression to find the best-fit line through historical data points and extrapolate future values. Best for data with clear linear trends.",
+                "📊"
+            );
+            
+            formulasBox.getChildren().addAll(hwBox, maBox, saBox, lpBox);
             
             // Add all components
             content.getChildren().addAll(windowControls, titleBox, formulasBox);
