@@ -157,21 +157,7 @@ public class dashboardController {
             // Capitalize first letter only
             currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
 
-            // Perform database operations first
-            Connection connect = null;
-            try {
-                // Pre-load database connection
-                Object[] result = database_utility.query("SELECT 1");
-                if (result != null) {
-                    connect = (Connection) result[0];
-                }
-            } finally {
-                if (connect != null) {
-                    database_utility.close(connect);
-                }
-            }
-            
-            // Initialize UI components
+            // Initialize UI components first
             setupTableView();
             setupWindowControls();
             setupFormContainers();
@@ -202,22 +188,18 @@ public class dashboardController {
                 stocksCombo.setOnAction(event -> updateStockNotifications());
             }
 
-            // Pre-load data before showing UI
-            inventory_management_query();
-            updateStockNotifications();
-            
-            // Initialize other sections first
-            initializeForecastingSection();
-            initializeSalesSection();
-            loadNotificationsFromDatabase();
-            setupNavigation();
-            
+            // Start clock immediately
             startClock();
             
+            // Setup navigation
+            setupNavigation();
+            
+            // Initialize search if available
             if (searchField != null) {
                 setupSearch();
             }
             
+            // Setup forecast refresh button
             if (forecastRefreshButton != null) {
                 forecastRefreshButton.setOnAction(e -> {
                     if (forecastingController != null) {
@@ -225,6 +207,43 @@ public class dashboardController {
                     }
                 });
             }
+
+            // Load data in background
+            new Thread(() -> {
+                try {
+                    // Pre-load database connection
+                    Connection connect = null;
+                    try {
+                        Object[] result = database_utility.query("SELECT 1");
+                        if (result != null) {
+                            connect = (Connection) result[0];
+                        }
+                    } finally {
+                        if (connect != null) {
+                            database_utility.close(connect);
+                        }
+                    }
+
+                    // Load initial data
+                    Platform.runLater(() -> {
+                        try {
+                            inventory_management_query();
+                            updateStockNotifications();
+                            initializeForecastingSection();
+                            initializeSalesSection();
+                            loadNotificationsFromDatabase();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            showErrorAlert("Data Loading Error", "Failed to load initial data: " + e.getMessage());
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> 
+                        showErrorAlert("Initialization Error", "Failed to initialize dashboard: " + e.getMessage())
+                    );
+                }
+            }).start();
             
         } catch (Exception e) {
             e.printStackTrace();

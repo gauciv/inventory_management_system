@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import javafx.application.Platform;
 
 public class login_controller {
 
@@ -129,56 +130,63 @@ public class login_controller {
             return;
         }
 
-        try {
-            Object[] result_from_query = database_utility.query(
-                "SELECT * FROM accounts WHERE username = ? AND password = ?", 
-                username, password_string
-            );
+        // Show loading overlay immediately
+        showLoadingOverlay();
 
-            if (result_from_query == null) {
-                showError("Could not connect to database. Please try again.");
-                return;
-            }
-
-            Connection conn = (Connection) result_from_query[0];
-            ResultSet result = (ResultSet) result_from_query[1];
-
+        // Perform login in background thread
+        new Thread(() -> {
             try {
-                if (result.next()) {
-                    // Login successful - clear any error messages
-                    errorLabel.setVisible(false);
-                    
-                    String fullName = result.getString("first_name") + " " + 
-                                    result.getString("middle_initial") + " " + 
-                                    result.getString("last_name");
-                    String usernameFromDb = result.getString("username");
+                Object[] result_from_query = database_utility.query(
+                    "SELECT * FROM accounts WHERE username = ? AND password = ?", 
+                    username, password_string
+                );
 
-                    // Show loading overlay (non-blocking)
-                    showLoadingOverlay();
-
-                    // Load the dashboard in a background thread
-                    new Thread(() -> {
-                        try {
-                            // Simulate loading time (optional, remove in production)
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {}
-                        javafx.application.Platform.runLater(() -> {
-                            loadDashboard(usernameFromDb);
-                            hideLoadingOverlay();
-                        });
-                    }).start();
-                } else {
-                    showError("Log in credentials are invalid");
+                if (result_from_query == null) {
+                    Platform.runLater(() -> {
+                        hideLoadingOverlay();
+                        showError("Could not connect to database. Please try again.");
+                    });
+                    return;
                 }
-            } finally {
-                // Close the database resources
-                if (result != null) result.close();
-                if (conn != null) database_utility.close(conn);
+
+                Connection conn = (Connection) result_from_query[0];
+                ResultSet result = (ResultSet) result_from_query[1];
+
+                try {
+                    if (result.next()) {
+                        // Login successful - clear any error messages
+                        String usernameFromDb = result.getString("username");
+                        
+                        // Load dashboard on JavaFX thread
+                        Platform.runLater(() -> {
+                            try {
+                                loadDashboard(usernameFromDb);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showError("Could not load dashboard. Please try again.");
+                            } finally {
+                                hideLoadingOverlay();
+                            }
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            hideLoadingOverlay();
+                            showError("Invalid username or password.");
+                        });
+                    }
+                } finally {
+                    // Close database resources
+                    if (result != null) result.close();
+                    if (conn != null) database_utility.close(conn);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    hideLoadingOverlay();
+                    showError("An error occurred during login. Please try again.");
+                });
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("An error occurred while processing your request.");
-        }
+        }).start();
     }
 
     private void showError(String message) {
