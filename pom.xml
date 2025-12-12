@@ -118,6 +118,9 @@
                     <appVersion>1.0.0</appVersion>
                     <vendor>Intervein</vendor>
                     <destination>target/dist</destination>
+                    
+                    <input>${project.build.directory}</input>
+                    
                     <mainJar>inventory_MS-1.0-SNAPSHOT.jar</mainJar>
                     <mainClass>${main.class}</mainClass>
                     <winDirChooser>true</winDirChooser>

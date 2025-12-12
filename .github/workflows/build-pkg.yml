@@ -38,29 +38,38 @@ jobs:
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      # 3. Package EXE (Using full JDK, no jlink needed)
-      # We pass the input folder so jpackage finds the JAR and the /lib folder
-      - name: Package EXE (JPackage)
+      # 3. Package as Portable Folder (App Image)
+      # We force 'type=app-image' so we get a folder we can modify, not a locked .exe installer
+      - name: Package Application Image
         run: |
           mvn jpackage:jpackage `
+            "-Djpackage.type=app-image" `
             "-Djpackage.input=target" `
             "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" `
-            "-Djpackage.main-class=login.Launcher" `
-            "-Djpackage.runtime-image="
+            "-Djpackage.main-class=login.Launcher"
 
-      # 4. Prepare Release
+      # 4. Prepare Release (Inject Key into the folder)
       - name: Prepare Release Folder
+        shell: powershell
         run: |
-          mkdir release
-          xcopy /E /I target/dist/InventorySystem release/InventorySystem
-          copy serviceAccountKey.json release/InventorySystem/
+          New-Item -ItemType Directory -Force -Path release
+          # Copy the generated App Image folder
+          Copy-Item -Path "target/dist/InventorySystem" -Destination "release/InventorySystem" -Recurse
+          # Copy the key INSIDE that folder, next to the exe
+          Copy-Item -Path "serviceAccountKey.json" -Destination "release/InventorySystem/serviceAccountKey.json"
 
-      # 5. Release
+      # 5. Zip the Folder (So the client gets one file containing everything)
+      - name: Zip Release
+        shell: powershell
+        run: |
+          Compress-Archive -Path "release/InventorySystem" -DestinationPath "release/InventorySystem-Portable.zip"
+
+      # 6. Release
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: release/
+          files: release/InventorySystem-Portable.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
