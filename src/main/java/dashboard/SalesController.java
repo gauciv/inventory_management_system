@@ -1,3 +1,10 @@
+    private String idToken;
+    private String projectId;
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+        this.projectId = FirebaseConfig.getProjectId();
+    }
 package dashboard;
 
 import javafx.application.Platform;
@@ -10,15 +17,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import database.database_utility;
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
 
 public class SalesController {
     @FXML private AreaChart<String, Number> salesChart;
@@ -80,18 +85,24 @@ public class SalesController {
     }
 
     private void loadProducts() {
+        // Load product list from Firestore
         try {
-            String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
-            Object[] result = database_utility.query(query);
-            if (result != null && result.length == 2) {
-                ResultSet rs = (ResultSet) result[1];
-                List<String> products = new ArrayList<>();
-                while (rs.next()) {
-                    products.add(rs.getString("item_description"));
+            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
+            String collectionPath = "inventory?pageSize=1000";
+            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
+            org.json.JSONObject json = new org.json.JSONObject(response);
+            org.json.JSONArray docs = json.optJSONArray("documents");
+            List<String> products = new ArrayList<>();
+            if (docs != null) {
+                for (int i = 0; i < docs.length(); i++) {
+                    org.json.JSONObject doc = docs.getJSONObject(i);
+                    org.json.JSONObject fields = doc.getJSONObject("fields");
+                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                    products.add(item_des);
                 }
-                rs.close();
             }
-        } catch (SQLException e) {
+            // TODO: Use products list in UI (e.g., pass to dialog)
+        } catch (Exception e) {
             e.printStackTrace();
             showError("Error", "Failed to load products: " + e.getMessage());
         }
@@ -106,29 +117,34 @@ public class SalesController {
 
     private void addComparisonSeries(String productName) {
         try {
-            String query = "SELECT jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec` " +
-                          "FROM sale_offtake WHERE item_description = ?";
-            
-            Object[] result = database_utility.query(query, productName);
-            if (result != null && result.length == 2) {
-                ResultSet rs = (ResultSet) result[1];
-                if (rs.next()) {
-                    XYChart.Series<String, Number> series = new XYChart.Series<>();
-                    series.setName(productName);
-
-                    String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-                    
-                    for (String month : months) {
-                        series.getData().add(new XYChart.Data<>(month, rs.getInt(month.toLowerCase())));
+            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
+            String collectionPath = "inventory?pageSize=1000";
+            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
+            org.json.JSONObject json = new org.json.JSONObject(response);
+            org.json.JSONArray docs = json.optJSONArray("documents");
+            if (docs != null) {
+                for (int i = 0; i < docs.length(); i++) {
+                    org.json.JSONObject doc = docs.getJSONObject(i);
+                    org.json.JSONObject fields = doc.getJSONObject("fields");
+                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                    if (item_des.equals(productName)) {
+                        XYChart.Series<String, Number> series = new XYChart.Series<>();
+                        series.setName(productName);
+                        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                        for (String month : months) {
+                            int value = 0;
+                            if (fields.has(month.toLowerCase())) {
+                                value = fields.getJSONObject(month.toLowerCase()).getInt("integerValue");
+                            }
+                            series.getData().add(new XYChart.Data<>(month, value));
+                        }
+                        currentData.add(series);
+                        updateChartData(currentData);
+                        break;
                     }
-
-                    currentData.add(series);
-                    updateChartData(currentData);
                 }
-                rs.close();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             showError("Error", "Failed to load comparison data: " + e.getMessage());
         }
@@ -277,120 +293,101 @@ public class SalesController {
             topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
         }
         
-        Connection conn = null;
         try {
-            String monthlySalesQuery = "SELECT " +
-                "SUM(jan) as Jan, SUM(feb) as Feb, SUM(mar) as Mar, " +
-                "SUM(apr) as Apr, SUM(may) as May, SUM(jun) as Jun, " +
-                "SUM(jul) as Jul, SUM(aug) as Aug, SUM(sep) as Sep, " +
-                "SUM(oct) as Oct, SUM(nov) as Nov, SUM(`dec`) as `Dec` " +
-                "FROM sale_offtake";
-
-            Object[] result = database_utility.query(monthlySalesQuery);
-            if (result != null && result.length == 2) {
-                conn = (Connection) result[0];
-                ResultSet rs = (ResultSet) result[1];
-
-                if (rs.next()) {
-                    XYChart.Series<String, Number> series = new XYChart.Series<>();
-                    series.setName("Total Sales Volume");
-
-                    String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-                    int annualTotal = 0;
-                    double previousMonth = 0;
-                    double totalSales = 0;
-                    int monthCount = 0;
-                    boolean hasData = false;
-
-                    for (String month : months) {
-                        double value = rs.getDouble(month);
-                        if (!rs.wasNull()) {
-                            hasData = true;
+            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
+            String collectionPath = "inventory?pageSize=1000";
+            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
+            org.json.JSONObject json = new org.json.JSONObject(response);
+            org.json.JSONArray docs = json.optJSONArray("documents");
+            String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Total Sales Volume");
+            int annualTotal = 0;
+            double previousMonth = 0;
+            double totalSales = 0;
+            int monthCount = 0;
+            boolean hasData = false;
+            // Aggregate sales for each month
+            int[] monthTotals = new int[months.length];
+            if (docs != null) {
+                for (int i = 0; i < docs.length(); i++) {
+                    org.json.JSONObject doc = docs.getJSONObject(i);
+                    org.json.JSONObject fields = doc.getJSONObject("fields");
+                    for (int m = 0; m < months.length; m++) {
+                        String month = months[m].toLowerCase();
+                        if (fields.has(month)) {
+                            int value = fields.getJSONObject(month).getInt("integerValue");
+                            monthTotals[m] += value;
                         }
-                        annualTotal += value;
-                        totalSales += value;
-                        monthCount++;
-                        // Calculate growth rate
-                        if (previousMonth > 0) {
-                            double growthRate = ((value - previousMonth) / previousMonth) * 100;
-                            Platform.runLater(() -> 
-                                growthRateLabel.setText(String.format("Growth Rate: %.1f%%", growthRate))
-                            );
-                        }
-                        previousMonth = value;
-                        series.getData().add(new XYChart.Data<>(month, value));
                     }
-
-                    double averageSales = monthCount > 0 ? totalSales / monthCount : 0;
-                    final int finalAnnualTotal = annualTotal;
-                    final double finalAverageSales = averageSales;
-                    final boolean finalHasData = hasData;
-
-                    Platform.runLater(() -> {
-                        currentData.clear();
-                        if (finalHasData) {
-                            currentData.add(series);
-                            updateChartData(currentData);
-                            if (totalSalesLabel != null) {
-                                totalSalesLabel.setText(String.format("%,d units", finalAnnualTotal));
-                            }
-                            if (averageSalesLabel != null) {
-                                averageSalesLabel.setText(String.format("Avg. Monthly Sales: %,.0f units", finalAverageSales));
-                            }
-                        } else {
-                            updateChartData(new ArrayList<>());
-                            if (totalSalesLabel != null) totalSalesLabel.setText("No sales data available");
-                            if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
-                        }
-                        styleChartSeries();
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        updateChartData(new ArrayList<>());
-                        if (totalSalesLabel != null) totalSalesLabel.setText("No sales data available");
-                        if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
-                    });
                 }
-                rs.close();
-            } else {
-                Platform.runLater(() -> {
+                for (int m = 0; m < months.length; m++) {
+                    int value = monthTotals[m];
+                    if (value > 0) hasData = true;
+                    annualTotal += value;
+                    totalSales += value;
+                    monthCount++;
+                    // Calculate growth rate
+                    if (previousMonth > 0) {
+                        double growthRate = ((value - previousMonth) / previousMonth) * 100;
+                        final double finalGrowthRate = growthRate;
+                        Platform.runLater(() -> growthRateLabel.setText(String.format("Growth Rate: %.1f%%", finalGrowthRate)));
+                    }
+                    previousMonth = value;
+                    series.getData().add(new XYChart.Data<>(months[m], value));
+                }
+            }
+            double averageSales = monthCount > 0 ? totalSales / monthCount : 0;
+            final int finalAnnualTotal = annualTotal;
+            final double finalAverageSales = averageSales;
+            final boolean finalHasData = hasData;
+            Platform.runLater(() -> {
+                currentData.clear();
+                if (finalHasData) {
+                    currentData.add(series);
+                    updateChartData(currentData);
+                    if (totalSalesLabel != null) {
+                        totalSalesLabel.setText(String.format("%,d units", finalAnnualTotal));
+                    }
+                    if (averageSalesLabel != null) {
+                        averageSalesLabel.setText(String.format("Avg. Monthly Sales: %,.0f units", finalAverageSales));
+                    }
+                } else {
                     updateChartData(new ArrayList<>());
-                    if (totalSalesLabel != null) totalSalesLabel.setText("Error loading data (no result)");
+                    if (totalSalesLabel != null) totalSalesLabel.setText("No sales data available");
                     if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
-                });
-            }
-
-            // Get top product
-            String topProductQuery = 
-                "SELECT item_description, " +
-                "(jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + `dec`) as total_sales " +
-                "FROM sale_offtake " +
-                "ORDER BY total_sales DESC LIMIT 1";
-
-            Object[] topProductResult = database_utility.query(topProductQuery);
-            if (topProductResult != null && topProductResult.length == 2) {
-                ResultSet rs = (ResultSet) topProductResult[1];
-                if (rs.next()) {
-                    String topProduct = rs.getString("item_description");
-                    int topSales = rs.getInt("total_sales");
-                    Platform.runLater(() -> {
-                        if (topProductLabel != null) {
-                            topProductLabel.setText(String.format("%s\nAnnual Volume: %,d units", topProduct, topSales));
-                        }
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        if (topProductLabel != null) topProductLabel.setText("No top product data");
-                    });
                 }
-                rs.close();
-            } else {
-                Platform.runLater(() -> {
-                    if (topProductLabel != null) topProductLabel.setText("Error loading top product");
-                });
+                styleChartSeries();
+            });
+            // Find top product
+            String topProduct = null;
+            int topSales = 0;
+            if (docs != null) {
+                for (int i = 0; i < docs.length(); i++) {
+                    org.json.JSONObject doc = docs.getJSONObject(i);
+                    org.json.JSONObject fields = doc.getJSONObject("fields");
+                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                    int productTotal = 0;
+                    for (String month : months) {
+                        if (fields.has(month.toLowerCase())) {
+                            productTotal += fields.getJSONObject(month.toLowerCase()).getInt("integerValue");
+                        }
+                    }
+                    if (productTotal > topSales) {
+                        topSales = productTotal;
+                        topProduct = item_des;
+                    }
+                }
             }
-
+            final String finalTopProduct = topProduct;
+            final int finalTopSales = topSales;
+            Platform.runLater(() -> {
+                if (finalTopProduct != null && topProductLabel != null) {
+                    topProductLabel.setText(String.format("%s\nAnnual Volume: %,d units", finalTopProduct, finalTopSales));
+                } else if (topProductLabel != null) {
+                    topProductLabel.setText("No top product data");
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
             Platform.runLater(() -> {
@@ -401,10 +398,6 @@ public class SalesController {
                 if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
                 if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: N/A");
             });
-        } finally {
-            if (conn != null) {
-                database_utility.close(conn);
-            }
         }
     }
 

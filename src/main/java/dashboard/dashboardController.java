@@ -1026,40 +1026,37 @@ public class dashboardController {
             controller.setDeletionCallback(new confirmationController.DeletionCallback() {
                 @Override
                 public void onConfirmDeletion() {
-                    // Remove from table
+                    // Remove from table (UI only, Firestore delete is async)
                     inventory_table.getItems().remove(itemToDelete);
-                    
-                    // Delete from database
-                    try {
-                        Connection connect = null;
-                        try {
-                            // First delete from stock_onhand (child table)
-                            Object[] result = database_utility.update("DELETE FROM stock_onhand WHERE item_code = ?", itemToDelete.getItem_code());
-                            if (result != null) {
-                                connect = (Connection)result[0];
-                                // Then delete from sale_offtake (parent table)
-                                database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", itemToDelete.getItem_code());
+                    // Delete from Firestore
+                    deleteInventoryItem(itemToDelete);
+                    // Firestore delete logic for inventory items
+                    public void deleteInventoryItem(Inventory_management_bin itemToDelete) {
+                        new Thread(() -> {
+                            try {
+                                if (idToken == null) {
+                                    throw new Exception("No idToken set. User not authenticated.");
+                                }
+                                String projectId = FirebaseConfig.getProjectId();
+                                String collectionPath = "inventory";
+                                String documentId = String.valueOf(itemToDelete.getItem_code());
+                                FirestoreClient.deleteDocument(projectId, collectionPath, documentId, idToken);
+                                // Refresh table data
+                                Platform.runLater(this::inventory_management_query);
+                                // Add notification for the delete action
+                                addInventoryActionNotification("delete", itemToDelete.getItem_des());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Platform.runLater(() -> {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setTitle("Error");
+                                    alert.setHeaderText(null);
+                                    alert.setContentText("Failed to delete item from Firestore: " + e.getMessage());
+                                    alert.initStyle(StageStyle.UNDECORATED);
+                                    alert.showAndWait();
+                                });
                             }
-                        } finally {
-                            if (connect != null) {
-                                database_utility.close(connect);
-                            }
-                        }
-                        
-                        // Refresh table data
-                        inventory_management_query();
-                        
-                        // Add notification for the delete action
-                        addInventoryActionNotification("delete", itemToDelete.getItem_des());
-                        
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Failed to delete item from database: " + e.getMessage());
-                        alert.initStyle(StageStyle.UNDECORATED);
-                        alert.showAndWait();
+                        }).start();
                     }
                 }
 

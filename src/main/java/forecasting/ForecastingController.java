@@ -1,3 +1,12 @@
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
+    private String idToken;
+    private String projectId;
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+        this.projectId = FirebaseConfig.getProjectId();
+    }
 package forecasting;
 
 import javafx.application.Platform;
@@ -132,17 +141,32 @@ public class ForecastingController {
         }
     }
     
-    // TODO: loadProducts() - Replace with Firebase query to fetch product list
     private void loadProducts() {
-        // Placeholder for Firebase implementation
-        System.out.println("TODO: Load products from Firebase");
-        if (forecastProductComboBox != null) {
-            forecastProductComboBox.getItems().clear();
-            forecastProductComboBox.setValue(null);
+        // Load product list from Firestore
+        try {
+            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
+            String collectionPath = "inventory?pageSize=1000";
+            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
+            org.json.JSONObject json = new org.json.JSONObject(response);
+            org.json.JSONArray docs = json.optJSONArray("documents");
+            if (forecastProductComboBox != null) {
+                forecastProductComboBox.getItems().clear();
+                if (docs != null) {
+                    for (int i = 0; i < docs.length(); i++) {
+                        org.json.JSONObject doc = docs.getJSONObject(i);
+                        org.json.JSONObject fields = doc.getJSONObject("fields");
+                        String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                        forecastProductComboBox.getItems().add(item_des);
+                    }
+                }
+                forecastProductComboBox.setValue(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Failed to load products: " + e.getMessage());
         }
     }
     
-    // TODO: updateForecast() - Replace with Firebase query to fetch historical data and update chart
     private void updateForecast() {
         String selectedProduct = forecastProductComboBox != null ? forecastProductComboBox.getValue() : null;
         String selectedFormula = forecastFormulaComboBox != null ? forecastFormulaComboBox.getValue() : null;
@@ -151,8 +175,41 @@ public class ForecastingController {
             forecastPlaceholderLabel.setVisible(!ready);
         }
         if (!ready) return;
-        // TODO: Fetch historical data for selectedProduct from Firebase and call updateChart, updateTrendAnalysis, updateRecommendations
-        System.out.println("TODO: Fetch historical data for " + selectedProduct + " from Firebase");
+        // Fetch historical data for selectedProduct from Firestore
+        try {
+            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
+            String collectionPath = "inventory?pageSize=1000";
+            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
+            org.json.JSONObject json = new org.json.JSONObject(response);
+            org.json.JSONArray docs = json.optJSONArray("documents");
+            if (docs != null) {
+                for (int i = 0; i < docs.length(); i++) {
+                    org.json.JSONObject doc = docs.getJSONObject(i);
+                    org.json.JSONObject fields = doc.getJSONObject("fields");
+                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                    if (item_des.equals(selectedProduct)) {
+                        // Extract monthly sales data
+                        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                        double[] sales = new double[months.length];
+                        for (int m = 0; m < months.length; m++) {
+                            String month = months[m].toLowerCase();
+                            if (fields.has(month)) {
+                                sales[m] = fields.getJSONObject(month).getInt("integerValue");
+                            } else {
+                                sales[m] = 0;
+                            }
+                        }
+                        // Call updateChart, updateTrendAnalysis, updateRecommendations as needed
+                        // Example: updateChart(sales, months);
+                        // TODO: Implement updateChart, updateTrendAnalysis, updateRecommendations
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Failed to fetch historical data: " + e.getMessage());
+        }
     }
     
     private double calculateAccuracy(double[] actual, double[] forecast) {
