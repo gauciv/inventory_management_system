@@ -38,27 +38,20 @@ jobs:
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      # 3. Setup Staging (DEBUG MODE)
-      # We print the directory structure to confirm files are really there
+      # 3. Setup Staging
       - name: Prepare Staging Area
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path target/staging
-          
-          # Copy Main JAR
           Copy-Item -Path "target/inventory_MS-1.0-SNAPSHOT.jar" -Destination "target/staging/"
-          
-          # Copy Libs
           Copy-Item -Path "target/lib" -Destination "target/staging/" -Recurse
-          
           echo "--- STAGING DIRECTORY CONTENTS ---"
           Get-ChildItem -Path target/staging -Recurse
 
-      # 4. Package (Using Absolute Paths)
+      # 4. Package Application Image (FIXED: Single Line Command)
       - name: Package Application Image
         shell: powershell
         run: |
-          # Get Absolute Path to workspace
           $Root = Get-Location
           $InputPath = "$Root\target\staging"
           $DestPath = "$Root\target\dist"
@@ -66,16 +59,10 @@ jobs:
           echo "Input Path: $InputPath"
           echo "Dest Path: $DestPath"
           
-          # Run Maven with explicit paths
-          # We use -X for debug output to see why jpackage might skip
-          mvn -X jpackage:jpackage `
-            -Djpackage.type=app-image `
-            -Djpackage.input="$InputPath" `
-            -Djpackage.dest="$DestPath" `
-            -Djpackage.main-jar="inventory_MS-1.0-SNAPSHOT.jar" `
-            -Djpackage.main-class="login.Launcher"
+          # Single line command to prevent backtick errors
+          mvn -X jpackage:jpackage "-Djpackage.type=app-image" "-Djpackage.input=$InputPath" "-Djpackage.dest=$DestPath" "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" "-Djpackage.main-class=login.Launcher"
 
-      # 5. Verify Output (DEBUG)
+      # 5. Verify Output
       - name: Verify Output
         shell: powershell
         run: |
@@ -86,13 +73,12 @@ jobs:
               echo "WARNING: target/dist was NOT created."
           }
 
-      # 6. Prepare Release
+      # 6. Prepare Release Folder
       - name: Prepare Release Folder
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path release
           
-          # Smart Search: Find any directory inside target/dist
           $AppPath = Get-ChildItem -Path "target/dist" -Directory | Select-Object -First 1
           
           if ($null -eq $AppPath) {
@@ -101,11 +87,7 @@ jobs:
           }
           
           Write-Host "Found App at: $($AppPath.FullName)"
-          
-          # Copy to release folder
           Copy-Item -Path $AppPath.FullName -Destination "release/InventorySystem" -Recurse
-          
-          # Inject Key
           Copy-Item -Path "serviceAccountKey.json" -Destination "release/InventorySystem/serviceAccountKey.json"
 
       # 7. Zip
