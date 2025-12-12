@@ -1,13 +1,11 @@
 package login;
 
-import firebase.FirebaseAuth;
-import org.json.JSONObject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -18,14 +16,22 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.json.JSONObject;
+import firebase.FirebaseConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import javafx.application.Platform;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class login_controller {
+
+    // --- PASTE YOUR WEB API KEY HERE ---
+    // Go to Firebase Console -> Project Settings -> General -> Web API Key
+    private static final String WEB_API_KEY = "AIzaSyDzTB6ITybJlZRsIrMQVQ3cVgtQzw7fRj8";
 
     @FXML private Pane login_pane;
     @FXML private PasswordField password;
@@ -39,49 +45,36 @@ public class login_controller {
     private double xOffset = 0;
     private double yOffset = 0;
 
-    // Store idToken for session
     public static String idToken = null;
 
     @FXML
     public void initialize() {
-        // Enable dragging of undecorated window
+        // Dragging logic
         login_pane.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
-
         login_pane.setOnMouseDragged(event -> {
             Stage stage = (Stage) login_pane.getScene().getWindow();
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
 
-        // Hide visible password field initially
         visiblePassword.setVisible(false);
-        
-        // Hide error label initially
         errorLabel.setVisible(false);
 
-        // Clear error when user starts typing
+        // Enter key handlers
         username_field.setOnKeyPressed(event -> {
             errorLabel.setVisible(false);
-            switch (event.getCode()) {
-                case ENTER -> login_button_clicked();
-            }
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) login_button_clicked();
         });
-
         password.setOnKeyPressed(event -> {
             errorLabel.setVisible(false);
-            switch (event.getCode()) {
-                case ENTER -> login_button_clicked();
-            }
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) login_button_clicked();
         });
-
         visiblePassword.setOnKeyPressed(event -> {
             errorLabel.setVisible(false);
-            switch (event.getCode()) {
-                case ENTER -> login_button_clicked();
-            }
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) login_button_clicked();
         });
     }
 
@@ -90,38 +83,28 @@ public class login_controller {
         InputStream eyeStream = getClass().getResourceAsStream("/images/eye.png");
         InputStream eyeCloseStream = getClass().getResourceAsStream("/images/eyeclose.png");
 
-        if (eyeStream == null || eyeCloseStream == null) {
-            System.out.println("Error: Image files not found.");
-            return;
-        }
-
         if (isPasswordVisible) {
-            // Hide password (switch to PasswordField)
-            eyeimage.setImage(new Image(eyeStream));
+            if (eyeStream != null) eyeimage.setImage(new Image(eyeStream));
             visiblePassword.setVisible(false);
             password.setVisible(true);
             password.setText(visiblePassword.getText());
         } else {
-            // Show password (switch to TextField)
-            eyeimage.setImage(new Image(eyeCloseStream));
+            if (eyeCloseStream != null) eyeimage.setImage(new Image(eyeCloseStream));
             visiblePassword.setText(password.getText());
             visiblePassword.setVisible(true);
             password.setVisible(false);
         }
-
         isPasswordVisible = !isPasswordVisible;
     }
 
     @FXML
     private void handleExit(MouseEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
+        ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
     }
 
     @FXML
     private void handleMinimize(MouseEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setIconified(true);
+        ((Stage) ((Node) event.getSource()).getScene().getWindow()).setIconified(true);
     }
 
     @FXML
@@ -134,24 +117,122 @@ public class login_controller {
             return;
         }
 
-        // Show loading overlay immediately
+        // Check for API Key placeholder
+        if (WEB_API_KEY.equals("REPLACE_WITH_YOUR_WEB_API_KEY") || WEB_API_KEY.isEmpty()) {
+            // Fallback: Try to get from FirebaseConfig if method exists, otherwise error
+            try {
+                // If you implemented getApiKey() in FirebaseConfig, uncomment below:
+                // String configKey = FirebaseConfig.getApiKey(); 
+                // if (configKey != null && !configKey.isEmpty()) {
+                //     apiKeyToUse = configKey;
+                // } else { throw new Exception("Key missing"); }
+                
+                showError("Configuration Error: Web API Key is missing.");
+                return;
+            } catch (Exception e) {
+                showError("Configuration Error: Web API Key is missing.");
+                return;
+            }
+        }
+
         showLoadingOverlay();
 
-        // Perform login in background thread using Firebase Auth REST API
         new Thread(() -> {
             try {
-                String response = FirebaseAuth.signInWithEmailPassword(username, password_string);
-                JSONObject json = new JSONObject(response);
-                idToken = json.getString("idToken");
-                Platform.runLater(() -> {
-                    hideLoadingOverlay();
-                    loadDashboard(username);
-                });
+                // Auth URL
+                String urlStr = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + WEB_API_KEY;
+                URL url = new URL(urlStr);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                // JSON Body
+                JSONObject jsonBody = new JSONObject();
+                jsonBody.put("email", username);
+                jsonBody.put("password", password_string);
+                jsonBody.put("returnSecureToken", true);
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    byte[] input = jsonBody.toString().getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == 200) {
+                    // Success
+                    Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+                    String response = scanner.hasNext() ? scanner.next() : "";
+                    scanner.close();
+
+                    JSONObject jsonResponse = new JSONObject(response);
+                    idToken = jsonResponse.getString("idToken");
+
+                    Platform.runLater(() -> {
+                        hideLoadingOverlay();
+                        loadDashboard(username);
+                    });
+                } else {
+                    // Failure
+                    InputStream errorStream = conn.getErrorStream();
+                    String errorResponse = "";
+                    if (errorStream != null) {
+                        Scanner scanner = new Scanner(errorStream, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+                        errorResponse = scanner.hasNext() ? scanner.next() : "";
+                        scanner.close();
+                    }
+
+                    System.out.println("Firebase Error: " + errorResponse); // Debug print
+
+                    String friendlyMessage = "Login failed.";
+                    try {
+                        if (!errorResponse.isEmpty()) {
+                            JSONObject jsonError = new JSONObject(errorResponse);
+                            if (jsonError.has("error")) {
+                                String rawError = jsonError.getJSONObject("error").getString("message");
+                                switch (rawError) {
+                                    case "INVALID_PASSWORD":
+                                        friendlyMessage = "Incorrect password.";
+                                        break;
+                                    case "EMAIL_NOT_FOUND":
+                                        friendlyMessage = "Account not found.";
+                                        break;
+                                    case "USER_DISABLED":
+                                        friendlyMessage = "Account disabled.";
+                                        break;
+                                    case "TOO_MANY_ATTEMPTS_TRY_LATER":
+                                        friendlyMessage = "Too many attempts. Wait a moment.";
+                                        break;
+                                    case "INVALID_EMAIL":
+                                        friendlyMessage = "Invalid email format.";
+                                        break;
+                                    case "MISSING_PASSWORD":
+                                        friendlyMessage = "Missing password.";
+                                        break;
+                                    default:
+                                        friendlyMessage = "Error: " + rawError;
+                                        break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        friendlyMessage = "Error parsing response.";
+                    }
+
+                    final String msg = friendlyMessage;
+                    Platform.runLater(() -> {
+                        hideLoadingOverlay();
+                        showError(msg);
+                    });
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
                     hideLoadingOverlay();
-                    showError("Login failed: " + e.getMessage());
+                    showError("Connection Error: " + e.getMessage());
                 });
             }
         }).start();
@@ -166,10 +247,10 @@ public class login_controller {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard/dashboard.fxml"));
             Parent dashboardRoot = loader.load();
-            // Pass idToken to dashboardController
+            
             dashboard.dashboardController controller = loader.getController();
             controller.setIdToken(idToken);
-            // Create new scene and stage for dashboard
+            
             Stage dashboardStage = new Stage();
             dashboardStage.initStyle(StageStyle.UNDECORATED);
             Scene dashboardScene = new Scene(dashboardRoot);
@@ -181,11 +262,10 @@ public class login_controller {
             dashboardStage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Could not load dashboard. Please try again.");
+            showError("Dashboard load failed.");
         }
     }
 
-    // --- Loading overlay logic ---
     private Stage loadingStage;
     private void showLoadingOverlay() {
         try {
@@ -203,6 +283,7 @@ public class login_controller {
             e.printStackTrace();
         }
     }
+    
     private void hideLoadingOverlay() {
         if (loadingStage != null) {
             loadingStage.close();
