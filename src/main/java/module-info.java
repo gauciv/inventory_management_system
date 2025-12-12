@@ -6,6 +6,10 @@ module inventory.example.inventory_ms {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.jetbrains.annotations;
+    
+    // Added these two to fix visibility errors
+    requires org.json;
+    requires java.sql;
 
     opens login to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
     opens dashboard to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;

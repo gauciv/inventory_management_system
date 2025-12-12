@@ -51,4 +51,21 @@ public class FirestoreClient {
         }
         return response;
     }
+
+    // NEW METHOD: Delete a document
+    public static void deleteDocument(String projectId, String collectionPath, String documentId, String idToken) throws Exception {
+        String urlStr = BASE_URL + projectId + "/databases/(default)/documents/" + collectionPath + "/" + documentId;
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("DELETE");
+        conn.setRequestProperty("Authorization", "Bearer " + idToken);
+        
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
+            String response = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+            throw new Exception("Firestore deleteDocument failed: " + response);
+        }
+    }
 }

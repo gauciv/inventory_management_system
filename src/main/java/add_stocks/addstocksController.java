@@ -44,13 +44,28 @@ public class addstocksController {
         this.idToken = idToken;
     }
 
+    // --- Added Missing Setters ---
+    public void setDashboardController(dashboard.dashboardController controller) {
+        this.dashboardControllerRef = controller;
+    }
+
+    public void setItemCodeAndSoh(Integer itemCode, Integer soh) {
+        this.itemCode = itemCode != null ? itemCode : -1;
+        this.currentSoh = soh != null ? soh : 0;
+    }
+
+    public void setSelectedItemDescription(String description) {
+        if (selectedItem != null) {
+            selectedItem.setText(description);
+        }
+    }
+    // ----------------------------
+
     @FXML
     private void handleExit() {
-        // Get the window/stage the button is in and close it
         Stage stage = (Stage) addPane.getScene().getWindow();
         stage.close();
     }
-
 
     @FXML
     private void handleContinue() {
@@ -82,6 +97,9 @@ public class addstocksController {
                 JSONObject doc = new JSONObject();
                 doc.put("fields", fields);
                 String jsonBody = doc.toString();
+                // Note: The URL here seems manually constructed in your original code, which is fine, 
+                // but typically we'd use FirestoreClient.setDocument/PATCH if possible. 
+                // Keeping your logic intact:
                 String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=soh";
                 java.net.URL u = new java.net.URL(url);
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
