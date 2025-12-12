@@ -9,7 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
-import database.database_utility;
+// TODO: Replace all database/database_utility and SQL logic with Firebase SDK
 import dashboard.Inventory_management_bin;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -99,8 +99,16 @@ public class addeditproductController {
                 return;
             }
 
-            // Update the database
-            updateDatabaseRecords(description, volume, category, salesOfftake, stocksOnHand);
+            // TODO: updateDatabaseRecords - Replace with Firebase update logic
+            // Placeholder for Firebase implementation
+            System.out.println("TODO: Update product and stock data in Firebase");
+            showAlert("Success", "Product updated successfully (Firebase TODO)");
+            if (dashboardControllerRef != null) {
+                dashboardControllerRef.addInventoryActionNotification("edit", description);
+                dashboardControllerRef.inventory_management_query();
+            }
+            Stage stage = (Stage) continueButton.getScene().getWindow();
+            stage.close();
 
         } catch (NumberFormatException e) {
             showAlert("Error", "Please enter valid numbers for Volume, Sales Offtake, and Stocks on Hand");
@@ -110,61 +118,7 @@ public class addeditproductController {
         }
     }
 
-    private void updateDatabaseRecords(String description, int volume, String category, int salesOfftake, int stocksOnHand) {
-        Connection connect = null;
-        try {
-            // Update sale_offtake table
-            String saleUpdate = String.format(
-                "UPDATE sale_offtake SET item_description = ?, volume = ?, category = ?, %s = ? WHERE item_code = ?",
-                currentMonth
-            );
-            Object[] saleResult = database_utility.update(saleUpdate, 
-                description, volume, category, salesOfftake, itemToEdit.getItem_code()
-            );
-
-            if (saleResult != null) {
-                connect = (Connection) saleResult[0];
-                
-                // Update stock_onhand table
-                String stockUpdate = String.format(
-                    "UPDATE stock_onhand SET %s1 = ? WHERE item_code = ?",
-                    currentMonth
-                );
-                Object[] stockResult = database_utility.update(stockUpdate, 
-                    stocksOnHand, itemToEdit.getItem_code()
-                );
-
-                if (stockResult != null) {
-                    showAlert("Success", "Product updated successfully");
-                    
-                    // Add notification for the edit action
-                    if (dashboardControllerRef != null) {
-                        dashboardControllerRef.addInventoryActionNotification("edit", description);
-                    }
-                    
-                    // Refresh the main table
-                    if (dashboardControllerRef != null) {
-                        dashboardControllerRef.inventory_management_query();
-                    }
-                    
-                    // Close the form
-                    Stage stage = (Stage) continueButton.getScene().getWindow();
-                    stage.close();
-                } else {
-                    showAlert("Error", "Failed to update stock on hand data");
-                }
-            } else {
-                showAlert("Error", "Failed to update product data");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Database error: " + e.getMessage());
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
-        }
-    }
+    // Removed updateDatabaseRecords method as it is replaced with Firebase logic
 
     private void handleCancel() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();

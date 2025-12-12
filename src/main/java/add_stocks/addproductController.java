@@ -9,10 +9,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
-import database.database_utility;
-import dashboard.Inventory_management_bin;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.List;
 import javafx.scene.control.ButtonType;
@@ -61,18 +57,9 @@ public class addproductController {
     }
 
     private int getNextItemCode() throws Exception {
-        System.out.println("Getting next item code...");
-        Object[] result = database_utility.query("SELECT COALESCE(MAX(item_code), 0) + 1 as next_code FROM sale_offtake");
-        if (result != null) {
-            ResultSet rs = (ResultSet) result[1];
-            if (rs.next()) {
-                int nextCode = rs.getInt("next_code");
-                System.out.println("Next item code: " + nextCode);
-                return nextCode;
-            }
-        }
-        System.out.println("No existing records, starting with code 1");
-        return 1;
+        // TODO: Replace with Firebase logic to get next item code
+        System.out.println("TODO: Get next item code from Firebase");
+        return 1; // Placeholder
     }
 
     private void handleContinue() {
@@ -105,21 +92,14 @@ public class addproductController {
                 return;
             }
 
-            Connection connect = null;
-            try {
-                // Get the selected month from dashboardController
-                String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
-                System.out.println("Selected month: " + selectedMonth);
+            // Get the selected month from dashboardController
+            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
+            System.out.println("Selected month: " + selectedMonth);
 
-                if (isEditMode) {
-                    updateExistingProduct(description, volume, category, salesOfftake, stocksOnHand);
-                } else {
-                    addNewProduct(description, volume, category, salesOfftake, stocksOnHand);
-                }
-            } finally {
-                if (connect != null) {
-                    database_utility.close(connect);
-                }
+            if (isEditMode) {
+                updateExistingProduct(description, volume, category, salesOfftake, stocksOnHand);
+            } else {
+                addNewProduct(description, volume, category, salesOfftake, stocksOnHand);
             }
         } catch (NumberFormatException e) {
             System.out.println("Number format error: " + e.getMessage());
@@ -217,137 +197,23 @@ public class addproductController {
     }
 
     private void updateExistingProduct(String description, int volume, String category, int salesOfftake, int stocksOnHand) {
-        Connection connect = null;
-        try {
-            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
-            
-            // Update sale_offtake table
-            String saleUpdate = String.format(
-                "UPDATE sale_offtake SET item_description = ?, volume = ?, category = ?, %s = ? WHERE item_code = ?",
-                selectedMonth
-            );
-            Object[] saleResult = database_utility.update(saleUpdate, 
-                description, volume, category, salesOfftake, itemToEdit.getItem_code()
-            );
-
-            if (saleResult != null) {
-                connect = (Connection) saleResult[0];
-                
-                // Update stock_onhand table
-                String stockUpdate = String.format(
-                    "UPDATE stock_onhand SET %s1 = ? WHERE item_code = ?",
-                    selectedMonth
-                );
-                Object[] stockResult = database_utility.update(stockUpdate, 
-                    stocksOnHand, itemToEdit.getItem_code()
-                );
-
-                if (stockResult != null) {
-                    showAlert("Success", "Product updated successfully");
-                    if (dashboardControllerRef != null) {
-                        dashboardControllerRef.inventory_management_query();
-                    }
-                    handleCancel();
-                } else {
-                    showAlert("Error", "Failed to update stock on hand data");
-                }
-            } else {
-                showAlert("Error", "Failed to update product data");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Database error: " + e.getMessage());
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+        // TODO: updateExistingProduct - Replace with Firebase update logic
+        System.out.println("TODO: Update existing product in Firebase");
+        showAlert("Success", "Product updated successfully (Firebase TODO)");
+        if (dashboardControllerRef != null) {
+            dashboardControllerRef.inventory_management_query();
         }
+        handleCancel();
     }
 
     private void addNewProduct(String description, int volume, String category, int salesOfftake, int stocksOnHand) {
-        Connection connect = null;
-        try {
-            // Insert into sale_offtake table first
-            String insertSaleQuery = "INSERT INTO sale_offtake (item_description, volume, category";
-            String values = "VALUES (?, ?, ?";
-            for (String month : ALL_MONTHS) {
-                insertSaleQuery += ", `" + month + "`";
-                values += ", ?";
-            }
-            insertSaleQuery += ") " + values + ")";
-
-            Object[] params = new Object[ALL_MONTHS.size() + 3];
-            params[0] = description;
-            params[1] = volume;
-            params[2] = category;
-            for (int i = 0; i < ALL_MONTHS.size(); i++) {
-                params[i + 3] = salesOfftake;
-            }
-
-            System.out.println("Executing sale_offtake insert: " + insertSaleQuery);
-            Object[] saleResult = database_utility.update(insertSaleQuery, params);
-            
-            if (saleResult != null) {
-                connect = (Connection) saleResult[0];
-                
-                // Get the most recently inserted item_code
-                String getItemCodeQuery = "SELECT item_code FROM sale_offtake WHERE item_description = ? AND volume = ? AND category = ? ORDER BY item_code DESC LIMIT 1";
-                Object[] queryParams = new Object[]{description, volume, category};
-                Object[] itemCodeResult = database_utility.query(getItemCodeQuery, queryParams);
-                
-                if (itemCodeResult != null && itemCodeResult.length > 1) {
-                    ResultSet rs = (ResultSet) itemCodeResult[1];
-                    if (rs.next()) {
-                        int newItemCode = rs.getInt("item_code");
-                        System.out.println("Retrieved item_code: " + newItemCode);
-
-                        // Now insert into stock_onhand with the correct item_code
-                        String insertStockQuery = "INSERT INTO stock_onhand (item_code";
-                        values = "VALUES (?";
-                        for (String month : ALL_MONTHS) {
-                            insertStockQuery += ", `" + month + "1`";
-                            values += ", ?";
-                        }
-                        insertStockQuery += ") " + values + ")";
-
-                        Object[] stockParams = new Object[ALL_MONTHS.size() + 1];
-                        stockParams[0] = newItemCode;
-                        for (int i = 0; i < ALL_MONTHS.size(); i++) {
-                            stockParams[i + 1] = stocksOnHand;
-                        }
-
-                        System.out.println("Executing stock_onhand insert: " + insertStockQuery);
-                        Object[] stockResult = database_utility.update(insertStockQuery, stockParams);
-                        
-                        if (stockResult != null) {
-                            showAlert("Success", "Product added successfully");
-                            if (dashboardControllerRef != null) {
-                                dashboardControllerRef.inventory_management_query();
-                                // Add notification for new product
-                                dashboardControllerRef.addInventoryActionNotification("add", description);
-                            }
-                            handleCancel();
-                        } else {
-                            // If stock_onhand insert fails, we should rollback the sale_offtake insert
-                            database_utility.update("DELETE FROM sale_offtake WHERE item_code = ?", newItemCode);
-                            showAlert("Error", "Failed to add stock on hand data");
-                        }
-                    } else {
-                        showAlert("Error", "Failed to retrieve the new item code");
-                    }
-                } else {
-                    showAlert("Error", "Failed to get item code for new product");
-                }
-            } else {
-                showAlert("Error", "Failed to add product data");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "Database error: " + e.getMessage());
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+        // TODO: addNewProduct - Replace with Firebase insert logic
+        System.out.println("TODO: Add new product to Firebase");
+        showAlert("Success", "Product added successfully (Firebase TODO)");
+        if (dashboardControllerRef != null) {
+            dashboardControllerRef.inventory_management_query();
+            dashboardControllerRef.addInventoryActionNotification("add", description);
         }
+        handleCancel();
     }
-} 
+}

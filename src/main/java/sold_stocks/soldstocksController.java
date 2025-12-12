@@ -9,8 +9,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
-import database.database_utility;
-import java.sql.Connection;
+// TODO: Replace all database/database_utility and SQL logic with Firebase SDK
 import javafx.scene.control.ButtonType;
 
 public class soldstocksController {
@@ -62,51 +61,15 @@ public class soldstocksController {
         }
 
         int updatedSoh = currentSoh - soldStocks;
-        Connection connect = null;
-        try {
-            // Get the selected month from dashboardController
-            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
-            
-            // Update stock_onhand table with the correct month column
-            Object[] result = database_utility.update(
-                String.format("UPDATE stock_onhand SET %s1 = ? WHERE item_code = ?", selectedMonth),
-                updatedSoh, itemCode
-            );
-            
-            if (result != null) {
-                connect = (Connection) result[0];
-                
-                // Update sale_offtake table with the correct month column
-                database_utility.update(
-                    String.format("UPDATE sale_offtake SET %s = COALESCE(%s, 0) + ? WHERE item_code = ?", 
-                        selectedMonth, selectedMonth),
-                    soldStocks, itemCode
-                );
-                
-                // Add notification to dashboard
-                if (dashboardControllerRef != null) {
-                    dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
-                }
-                
-                showAlert("Success", "Stock sold successfully and sales data updated.");
-                
-                // Refresh the inventory table
-                if (dashboardControllerRef != null) {
-                    dashboardControllerRef.inventory_management_query();
-                }
-                
-                // Close the form
-                Stage stage = (Stage) sold_pane.getScene().getWindow();
-                stage.close();
-            }
-        } catch (Exception e) {
-            showAlert("Database Error", "Failed to update stock and sales data: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+        // TODO: Replace with Firebase update logic
+        System.out.println("TODO: Update sold stocks and sales data in Firebase");
+        if (dashboardControllerRef != null) {
+            dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
+            dashboardControllerRef.inventory_management_query();
         }
+        showAlert("Success", "Stock sold successfully and sales data updated (Firebase TODO)");
+        Stage stage = (Stage) sold_pane.getScene().getWindow();
+        stage.close();
     }
 
     public void setSelectedItemDescription(String description) {

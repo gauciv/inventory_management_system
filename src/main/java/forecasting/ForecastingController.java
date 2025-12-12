@@ -9,7 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import database.database_utility;
+// TODO: Replace all database/database_utility and SQL logic with Firebase SDK
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
@@ -19,10 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
 import javafx.geometry.Insets;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.util.Arrays;
 
 public class ForecastingController {
@@ -135,44 +132,17 @@ public class ForecastingController {
         }
     }
     
+    // TODO: loadProducts() - Replace with Firebase query to fetch product list
     private void loadProducts() {
-        System.out.println("Loading products...");
-        try (Connection conn = database_utility.connect()) {
-            if (conn == null) {
-                throw new SQLException("Failed to establish database connection");
-            }
-            
-            // Clear existing items
-            if (forecastProductComboBox != null) {
-                forecastProductComboBox.getItems().clear();
-                forecastProductComboBox.setValue(null); // Show prompt
-            }
-            
-            String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
-            try (PreparedStatement stmt = conn.prepareStatement(query);
-                 ResultSet rs = stmt.executeQuery()) {
-                
-                int count = 0;
-                while (rs.next()) {
-                    String product = rs.getString("item_description");
-                    if (product != null) {
-                        forecastProductComboBox.getItems().add(product);
-                        count++;
-                        System.out.println("Added product: " + product);
-                    }
-                }
-                System.out.println("Loaded " + count + " products");
-                
-                if (count == 0) {
-                    showWarning("No Products", "No products found in the database.");
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error loading products: " + e.getMessage());
-            showError("Database Error", "Failed to load products: " + e.getMessage());
+        // Placeholder for Firebase implementation
+        System.out.println("TODO: Load products from Firebase");
+        if (forecastProductComboBox != null) {
+            forecastProductComboBox.getItems().clear();
+            forecastProductComboBox.setValue(null);
         }
     }
     
+    // TODO: updateForecast() - Replace with Firebase query to fetch historical data and update chart
     private void updateForecast() {
         String selectedProduct = forecastProductComboBox != null ? forecastProductComboBox.getValue() : null;
         String selectedFormula = forecastFormulaComboBox != null ? forecastFormulaComboBox.getValue() : null;
@@ -181,79 +151,8 @@ public class ForecastingController {
             forecastPlaceholderLabel.setVisible(!ready);
         }
         if (!ready) return;
-        
-        try (Connection conn = database_utility.connect()) {
-            if (conn == null) {
-                throw new SQLException("Failed to establish database connection");
-            }
-
-            // Clear existing chart data
-            if (forecastChart != null) {
-                Platform.runLater(() -> forecastChart.getData().clear());
-            }
-
-            // Get historical data
-            String query = "SELECT `jan`, `feb`, `mar`, `apr`, `may`, `jun`, `jul`, `aug`, `sep`, `oct`, `nov`, `dec` " +
-                         "FROM sale_offtake WHERE item_description = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, selectedProduct);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        double[] historicalData = new double[12];
-                        int nonZeroMonths = 0;
-                        for (int i = 0; i < 12; i++) {
-                            historicalData[i] = rs.getDouble(i + 1);
-                            if (historicalData[i] > 0) nonZeroMonths++;
-                        }
-
-                        // Require at least 12 months of data
-                        if (nonZeroMonths < 12) {
-                            showWarning("Insufficient Data", "A full year (12 months) of sales data is required to generate a forecast. Only " + nonZeroMonths + " months available.");
-                            if (forecastAccuracyLabel != null) forecastAccuracyLabel.setText("");
-                            if (forecastTrendLabel != null) forecastTrendLabel.setText("");
-                            if (forecastRecommendationsLabel != null) forecastRecommendationsLabel.setText("");
-                            return;
-                        }
-
-                        try {
-                            double[] forecast;
-                            switch (selectedFormula) {
-                                case "Moving Average" -> forecast = movingAverageForecast(historicalData, 6, 3); // window=3
-                                case "Simple Average" -> forecast = simpleAverageForecast(historicalData, 6);
-                                case "Linear Programming" -> forecast = linearProgrammingForecast(historicalData, 6);
-                                default -> forecast = forecastingModel.forecast(historicalData, 6); // Holt-Winters
-                            }
-                            
-                            // Update chart and analysis
-                            Platform.runLater(() -> {
-                                updateChart(historicalData, forecast);
-                                updateTrendAnalysis(historicalData, forecast);
-                                updateRecommendations(historicalData, forecast);
-                                
-                                // Calculate and display accuracy
-                                try {
-                                    double accuracy = calculateAccuracy(
-                                        Arrays.copyOfRange(historicalData, 6, 12),
-                                        Arrays.copyOfRange(forecast, 0, 6)
-                                    );
-                                    forecastAccuracyLabel.setText(String.format("Forecast Accuracy: %.1f%%", accuracy));
-                                } catch (IllegalArgumentException e) {
-                                    forecastAccuracyLabel.setText("Accuracy calculation failed: " + e.getMessage());
-                                }
-                            });
-                            
-                        } catch (IllegalArgumentException e) {
-                            showWarning("Forecast Error", "Unable to generate forecast: " + e.getMessage());
-                        }
-                    } else {
-                        showWarning("No Data", "No sales data found for " + selectedProduct);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error updating forecast: " + e.getMessage());
-            showError("Database Error", "Failed to update forecast: " + e.getMessage());
-        }
+        // TODO: Fetch historical data for selectedProduct from Firebase and call updateChart, updateTrendAnalysis, updateRecommendations
+        System.out.println("TODO: Fetch historical data for " + selectedProduct + " from Firebase");
     }
     
     private double calculateAccuracy(double[] actual, double[] forecast) {

@@ -40,20 +40,9 @@ cd inventory_management_system
 
 2. Start the application using Docker:
 ```bash
-docker compose up -d
-```
-
-3. Access the applications:
-   - Main Application: http://localhost:8080
-   - PHPMyAdmin: http://localhost:8081
-   - Database port: 3306
 
 ## Development Setup
 
-1. Clone the repository
-2. Install dependencies:
-```bash
-mvn clean install
 ```
 
 3. Run the application:
@@ -80,6 +69,58 @@ inventory_management_system/
 
 The system uses MySQL as its database. The database schema is automatically created when the application starts for the first time. You can manage the database through PHPMyAdmin at http://localhost:8081.
 
+## Firebase Integration Setup
+
+This project is now prepared for Firebase integration. All MySQL/JDBC/database_utility code has been removed and replaced with clear TODOs for Firebase in all controllers. Please follow these steps to complete the setup:
+
+### 1. Configure Firebase Environment Variables
+
+Copy `.env.example` to `.env` and fill in your Firebase project details:
+
+```
+cp .env.example .env
+```
+
+Edit `.env` and provide your Firebase credentials:
+
+- FIREBASE_API_KEY
+- FIREBASE_AUTH_DOMAIN
+- FIREBASE_PROJECT_ID
+- FIREBASE_STORAGE_BUCKET
+- FIREBASE_MESSAGING_SENDER_ID
+- FIREBASE_APP_ID
+- FIREBASE_MEASUREMENT_ID
+
+### 2. Implement Firebase Logic
+
+All previous database logic in the following controllers has been replaced with `// TODO` comments for Firebase:
+- add_stocks/addproductController.java
+- add_stocks/addstocksController.java
+- add_edit_product/addeditproductController.java
+- dashboard/dashboardController.java
+- dashboard/SalesController.java
+- forecasting/ForecastingController.java
+- sold_stocks/soldstocksController.java
+- login/login_controller.java
+
+Replace each TODO with the appropriate Firebase SDK calls for data access, updates, and queries.
+
+### 3. Removed Files and Configs
+
+- All MySQL, JDBC, and database_utility code
+- All SQL schema and database files
+- All Docker Compose and environment configs for MySQL/PHPMyAdmin
+
+### 4. Next Steps
+
+- Add your Firebase credentials to `.env`
+- Implement Firebase logic in all marked TODOs
+- Test the application thoroughly
+
+---
+
+For any questions or migration details, see the code comments and the file `addproductController.DBREMOVED.txt` for a summary of removed logic.
+
 ## Troubleshooting
 
 ### Port Conflicts
@@ -103,8 +144,6 @@ git update-index --chmod=+x mvnw
 ```
 
 ## Contributing
-
-This project is licensed under the GNU Affero General Public License v3.0. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 

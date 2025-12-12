@@ -15,7 +15,6 @@ module inventory.example.inventory_ms {
     opens sold_stocks to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
     opens add_stocks to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
     opens add_edit_product to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
-    opens database to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
     
     exports login;
     exports dashboard;
@@ -24,5 +23,4 @@ module inventory.example.inventory_ms {
     exports sold_stocks;
     exports add_stocks;
     exports add_edit_product;
-    exports database;
 }

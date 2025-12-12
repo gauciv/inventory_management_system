@@ -212,31 +212,21 @@ public class dashboardController {
             new Thread(() -> {
                 try {
                     // Pre-load database connection
-                    Connection connect = null;
-                    try {
-                        Object[] result = database_utility.query("SELECT 1");
-                        if (result != null) {
-                            connect = (Connection) result[0];
-                        }
-                    } finally {
-                        if (connect != null) {
-                            database_utility.close(connect);
-                        }
-                    }
-
-                    // Load initial data
-                    Platform.runLater(() -> {
-                        try {
-                            inventory_management_query();
-                            updateStockNotifications();
-                            initializeForecastingSection();
-                            initializeSalesSection();
-                            loadNotificationsFromDatabase();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            showErrorAlert("Data Loading Error", "Failed to load initial data: " + e.getMessage());
-                        }
-                    });
+                        // TODO: Pre-load Firebase connection if needed
+                        // Load initial data (Firebase)
+                        Platform.runLater(() -> {
+                            try {
+                                // TODO: Replace with Firebase data fetches
+                                inventory_management_query();
+                                updateStockNotifications();
+                                initializeForecastingSection();
+                                initializeSalesSection();
+                                loadNotificationsFromDatabase();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showErrorAlert("Data Loading Error", "Failed to load initial data: " + e.getMessage());
+                            }
+                        });
                 } catch (Exception e) {
                     e.printStackTrace();
                     Platform.runLater(() -> 
@@ -1148,43 +1138,15 @@ public class dashboardController {
 
     // Make this method public so it can be called from addstocksController
     public void inventory_management_query() {
-        Connection connect = null;
-        try {
-            String selectedMonth = getSelectedMonthColumn();
-            String sql_query = String.format(
-                "SELECT sale_offtake.item_code, item_description, volume, category, " +
-                "sale_offtake.%s as sot, stock_onhand.%s1 as soh " +
-                "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code",
-                selectedMonth, selectedMonth
-            );
-
-            Object[] result_from_query = database_utility.query(sql_query);
-            if (result_from_query != null) {
-                connect = (Connection) result_from_query[0];
-                ResultSet result = (ResultSet) result_from_query[1];
-
-                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
-                while (result.next()) {
-                    items.add(new Inventory_management_bin(
-                        result.getInt("item_code"),
-                        result.getString("item_description"),
-                        result.getInt("volume"),
-                        result.getString("category"),
-                        result.getInt("sot"),
-                        result.getInt("soh")
-                    ));
-                }
-
-                inventory_management_table.setAll(items);
-                inventory_table.refresh();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+    // TODO: inventory_management_query() - Replace with Firebase query to fetch inventory data
+    public void inventory_management_query() {
+        // Placeholder for Firebase implementation
+        System.out.println("TODO: Fetch inventory data from Firebase");
+        if (inventory_management_table != null) {
+            inventory_management_table.clear();
         }
+        // TODO: Populate inventory_management_table from Firebase
+    }
     }
 
     private void startClock() {
@@ -1704,75 +1666,15 @@ public class dashboardController {
     }
 
     private void performSearch(String searchTerm) {
-        Connection connect = null;
-        try {
-            String selectedMonth = getSelectedMonthColumn();
-            String sql_query = String.format(
-                "SELECT sale_offtake.item_code, item_description, volume, category, " +
-                "sale_offtake.%s as sot, stock_onhand.%s1 as soh " +
-                "FROM sale_offtake JOIN stock_onhand ON sale_offtake.item_code = stock_onhand.item_code " +
-                "WHERE LOWER(item_description) LIKE LOWER(?) OR " +
-                "sale_offtake.item_code LIKE ? OR " +
-                "LOWER(category) LIKE LOWER(?)",
-                selectedMonth, selectedMonth
-            );
-
-            Object[] result_from_query = database_utility.query(sql_query, 
-                "%" + searchTerm + "%",
-                "%" + searchTerm + "%",
-                "%" + searchTerm + "%"
-            );
-
-            if (result_from_query != null) {
-                connect = (Connection) result_from_query[0];
-                ResultSet result = (ResultSet) result_from_query[1];
-
-                ObservableList<Inventory_management_bin> items = FXCollections.observableArrayList();
-                while (result.next()) {
-                    items.add(new Inventory_management_bin(
-                        result.getInt("item_code"),
-                        result.getString("item_description"),
-                        result.getInt("volume"),
-                        result.getString("category"),
-                        result.getInt("sot"),
-                        result.getInt("soh")
-                    ));
-                }
-
-                inventory_management_table.setAll(items);
-                inventory_table.refresh();
-
-                // Show search results count
-                String resultText = items.size() + " item" + (items.size() != 1 ? "s" : "") + " found";
-                Tooltip tooltip = new Tooltip(resultText);
-                searchField.setTooltip(tooltip);
-                tooltip.show(searchField, 
-                    searchField.localToScreen(searchField.getBoundsInLocal()).getMinX(),
-                    searchField.localToScreen(searchField.getBoundsInLocal()).getMaxY());
-                
-                // Hide tooltip after 2 seconds
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), 
-                    ae -> tooltip.hide()));
-                timeline.play();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showErrorAlert("Search Error", "Failed to perform search: " + e.getMessage());
-
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+    // TODO: performSearch(String searchTerm) - Replace with Firebase query to search inventory
+    private void performSearch(String searchTerm) {
+        // Placeholder for Firebase implementation
+        System.out.println("TODO: Search inventory in Firebase for: " + searchTerm);
+        if (inventory_management_table != null) {
+            inventory_management_table.clear();
         }
-
-
-        // Configure scrolling
-        if (notifScrollPane != null) {
-            notifScrollPane.setFitToWidth(true);
-            notifScrollPane.setFitToHeight(false);
-            notifScrollPane.setPannable(true);
-            notifScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        }
+        // TODO: Populate inventory_management_table from Firebase search
+    }
     }
 
     /**
@@ -1793,76 +1695,15 @@ public class dashboardController {
             String backgroundColor = "#0E1D47";
             
             switch (action.toLowerCase()) {
-                case "add":
-                    imagePath = "/images/plus.png";
-                    notificationText = "New product added: " + description;
-                    break;
-                case "edit":
-                    imagePath = "/images/edit.png";
-                    notificationText = "Product updated: " + description;
-                    break;
-                case "delete":
-                    imagePath = "/images/trash.png";
-                    notificationText = "Product deleted: " + description;
-                    break;
-                default:
-                    imagePath = "/images/stocks.png";
-                    notificationText = "Inventory action: " + description;
+            // TODO: loadNotificationsFromDatabase() - Replace with Firebase query to fetch notifications
+            private void loadNotificationsFromDatabase() {
+                // Placeholder for Firebase implementation
+                System.out.println("TODO: Load notifications from Firebase");
+                if (recent != null) {
+                    recent.getChildren().clear();
+                }
+                // TODO: Populate recent VBox from Firebase notifications
             }
-            
-            notificationBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
-            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
-
-        HBox hBox = new HBox(8);
-        hBox.setFillHeight(true);
-        hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
-
-        ImageView imageView = createNotificationIcon(imagePath);
-
-        Label label = new Label(notificationText);
-        label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
-
-        hBox.getChildren().addAll(imageView, label);
-        notificationBox.getChildren().add(hBox);
-
-        // Add to the top of the VBox (most recent first)
-        recent.getChildren().add(0, notificationBox);
-
-        // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
-        if (recent.getParent() instanceof ScrollPane scrollPane) {
-            scrollPane.setFitToWidth(true);
-            scrollPane.setFitToHeight(false);
-            scrollPane.setPannable(true);
-            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        }
-
-        // Save to database with only notification text
-        Connection connect = null;
-        try {
-            Object[] result = database_utility.update(
-                "INSERT INTO notifications_activities (activities) VALUES (?)",
-                notificationText
-            );
-            if (result != null) {
-                connect = (Connection) result[0];
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
-        }
-
-        // Refresh forecasting product list
-        if (forecastingController != null) {
-            forecastingController.refreshProductList();
-        }
-    });
-}
-
-    @FXML
-    private void handleClearActivities() {
         // Show confirmation dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Clear Activities");

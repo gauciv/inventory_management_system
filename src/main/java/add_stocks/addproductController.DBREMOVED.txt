@@ -1,0 +1,3 @@
+// This file previously contained all MySQL/JDBC logic for addproductController.
+// All database logic has been removed and replaced with TODOs for Firebase integration.
+// See addproductController.java for the new stubs and TODOs.

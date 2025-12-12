@@ -134,59 +134,23 @@ public class login_controller {
         showLoadingOverlay();
 
         // Perform login in background thread
-        new Thread(() -> {
-            try {
-                Object[] result_from_query = database_utility.query(
-                    "SELECT * FROM accounts WHERE username = ? AND password = ?", 
-                    username, password_string
-                );
-
-                if (result_from_query == null) {
+            // TODO: Replace with Firebase authentication logic
+            new Thread(() -> {
+                try {
+                    System.out.println("TODO: Authenticate user with Firebase");
+                    // Simulate successful login for now
                     Platform.runLater(() -> {
                         hideLoadingOverlay();
-                        showError("Could not connect to database. Please try again.");
+                        loadDashboard(username);
                     });
-                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> {
+                        hideLoadingOverlay();
+                        showError("An error occurred during login. Please try again.");
+                    });
                 }
-
-                Connection conn = (Connection) result_from_query[0];
-                ResultSet result = (ResultSet) result_from_query[1];
-
-                try {
-                    if (result.next()) {
-                        // Login successful - clear any error messages
-                        String usernameFromDb = result.getString("username");
-                        
-                        // Load dashboard on JavaFX thread
-                        Platform.runLater(() -> {
-                            try {
-                                loadDashboard(usernameFromDb);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                showError("Could not load dashboard. Please try again.");
-                            } finally {
-                                hideLoadingOverlay();
-                            }
-                        });
-                    } else {
-                        Platform.runLater(() -> {
-                            hideLoadingOverlay();
-                            showError("Invalid username or password.");
-                        });
-                    }
-                } finally {
-                    // Close database resources
-                    if (result != null) result.close();
-                    if (conn != null) database_utility.close(conn);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    hideLoadingOverlay();
-                    showError("An error occurred during login. Please try again.");
-                });
-            }
-        }).start();
+            }).start();
     }
 
     private void showError(String message) {

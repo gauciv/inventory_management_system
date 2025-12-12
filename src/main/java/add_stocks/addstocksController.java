@@ -43,38 +43,16 @@ public class addstocksController {
     }
 
 
-    public void setSelectedItemDescription(String description) {
-        if (selectedItem != null) {
-            selectedItem.setText(description);
+        int updatedSoh = currentSoh + addStock;
+        // TODO: Replace with Firebase update logic
+        System.out.println("TODO: Update stocks in Firebase");
+        showAlert("Success", "Stocks updated successfully (Firebase TODO)");
+        if (dashboardControllerRef != null) {
+            dashboardControllerRef.addRecentStockNotification(addStock, textfield2.getText());
+            dashboardControllerRef.inventory_management_query();
         }
-    }
-
-    // Call this from dashboardController when opening the form
-    public void setItemCodeAndSoh(int itemCode, int soh) {
-        this.itemCode = itemCode;
-        this.currentSoh = soh;
-    }
-
-    public void setDashboardController(dashboard.dashboardController controller) {
-        this.dashboardControllerRef = controller;
-        if (monthLabel != null && dashboardControllerRef != null) {
-            String selectedMonth = dashboardControllerRef.monthComboBox.getValue();
-            monthLabel.setText("New Stocks (" + selectedMonth + "):");
-        }
-    }
-
-    @FXML
-    private void initialize() {
-        if (continueButton != null) {
-            continueButton.setOnAction(e -> handleContinue());
-        }
-    }
-
-    private void handleContinue() {
-        if (itemCode == -1) {
-            showAlert("Error", "No item selected.");
-            return;
-        }
+        Stage stage = (Stage) continueButton.getScene().getWindow();
+        stage.close();
         String newStockStr = newstock.getText();
         int addStock;
         try {
