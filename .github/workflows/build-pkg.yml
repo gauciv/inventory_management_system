@@ -24,47 +24,43 @@ jobs:
           java-version: '24'
           cache: 'maven'
 
-      # --- NEW STEP: Inject the Firebase Key ---
+      # 1. Inject Key
       - name: Create Firebase Key File
         shell: powershell
         run: |
           $content = "${{ secrets.FIREBASE_KEY_BASE64 }}"
           $bytes = [Convert]::FromBase64String($content)
           [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
-          Write-Host "serviceAccountKey.json has been restored from secrets."
 
-      - name: Build and Install
-        run: mvn clean install
+      # 2. Build the JAR (Copy dependencies into target/lib)
+      - name: Build JAR and Dependencies
+        run: |
+          mvn clean install
+          mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      - name: Create Runtime Image (JLink)
-        run: mvn javafx:jlink
-
+      # 3. Package EXE (Using full JDK, no jlink needed)
+      # We pass the input folder so jpackage finds the JAR and the /lib folder
       - name: Package EXE (JPackage)
-        run: mvn jpackage:jpackage
+        run: |
+          mvn jpackage:jpackage `
+            "-Djpackage.input=target" `
+            "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" `
+            "-Djpackage.main-class=login.Launcher" `
+            "-Djpackage.runtime-image="
 
-      # --- MODIFIED: Include Key in the Release ---
+      # 4. Prepare Release
       - name: Prepare Release Folder
         run: |
           mkdir release
-          # Copy the entire JPackage output folder (contains exe + jre)
           xcopy /E /I target/dist/InventorySystem release/InventorySystem
-          # CRITICAL: Put the key inside the folder next to the .exe
           copy serviceAccountKey.json release/InventorySystem/
 
-      # 2. Upload Artifact (ZIP it so the key stays with the exe)
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: InventorySystem-Full
-          path: release/
-
-      # 3. Create GitHub Release
+      # 5. Release
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: release/
-          # Ideally, zip the folder here or let GitHub do it on download
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
