@@ -43,6 +43,9 @@ import sold_stocks.soldStock;
 import add_edit_product.addeditproductController;
 import javafx.scene.layout.Region;
 
+// --- FIX: Added missing import ---
+import javafx.event.ActionEvent;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -108,7 +111,6 @@ public class dashboardController {
     private SalesController salesController;
     private javafx.application.HostServices hostServices;
 
-    // --- Authentication Token (SINGLE DEFINITION) ---
     private String idToken;
 
     public void setIdToken(String idToken) {
@@ -118,7 +120,6 @@ public class dashboardController {
     public String getIdToken() {
         return this.idToken;
     }
-    // ------------------------------------------------
 
     public void setHostServices(javafx.application.HostServices hostServices) {
         this.hostServices = hostServices;
@@ -221,7 +222,7 @@ public class dashboardController {
     private void initializeForecastingSection() {
         try {
             forecastingController = new ForecastingController();
-            forecastingController.setIdToken(idToken); // Pass token to child controller
+            forecastingController.setIdToken(idToken);
             
             if (forecastChart != null) {
                 forecastChart.setAnimated(false);
@@ -382,12 +383,20 @@ public class dashboardController {
             }
         });
 
-        TabSwitch(dashboardbutton, dashboardpane);
-        TabSwitch(inventorybutton, inventorypane);
-        TabSwitch(forecastingbutton, forecastingpane);
-        TabSwitch(salesbutton, salespane);
-        TabSwitch(helpbutton, helppane);
+        setupNavigation(); // Call setupNavigation() here inside setupWindowControls if you prefer, or just in initialize
     }
+    
+    // --- FIX: Ensure setupNavigation exists ---
+    private void setupNavigation() {
+        dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
+        inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
+        salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
+        forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
+        helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
+        
+        TabSwitch(dashboardbutton, dashboardpane);
+    }
+    // ------------------------------------------
     
     private void setupFormContainers() {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));

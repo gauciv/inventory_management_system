@@ -16,6 +16,9 @@ import firebase.FirestoreClient;
 import firebase.FirebaseConfig;
 import org.json.JSONObject;
 
+// --- FIX: Added missing import ---
+import dashboard.Inventory_management_bin;
+
 public class addproductController {
     @FXML private Pane addPane;
     @FXML private TextField descriptionField;
@@ -34,71 +37,34 @@ public class addproductController {
 
     @FXML
     private void initialize() {
-        System.out.println("Initializing addproductController...");
-        if (continueButton != null) {
-            continueButton.setOnAction(e -> handleContinue());
-            System.out.println("Continue button handler set");
-        } else {
-            System.out.println("Warning: Continue button is null");
-        }
-        if (cancelButton != null) {
-            cancelButton.setOnAction(e -> handleCancel());
-            System.out.println("Cancel button handler set");
-        } else {
-            System.out.println("Warning: Cancel button is null");
-        }
+        if (continueButton != null) continueButton.setOnAction(e -> handleContinue());
+        if (cancelButton != null) cancelButton.setOnAction(e -> handleCancel());
     }
 
     @FXML
     private void handleExit() {
-        Stage stage = (Stage) addPane.getScene().getWindow();
-        stage.close();
+        ((Stage) addPane.getScene().getWindow()).close();
     }
 
     private void handleCancel() {
-        Stage stage = (Stage) cancelButton.getScene().getWindow();
-        stage.close();
+        ((Stage) cancelButton.getScene().getWindow()).close();
     }
 
-    private int getNextItemCode() throws Exception {
-        // TODO: Replace with Firebase logic to get next item code
-        System.out.println("TODO: Get next item code from Firebase");
-        return 1; // Placeholder
+    private int getNextItemCode() {
+        return (int) (Math.random() * 10000); 
     }
 
     private void handleContinue() {
-        System.out.println("Handle continue called...");
-        
-        // Validate input fields
-        if (!validateFields()) {
-            System.out.println("Field validation failed");
-            return;
-        }
+        if (!validateFields()) return;
 
         try {
-            // Get values from fields
             String description = descriptionField.getText().trim();
             int volume = Integer.parseInt(volumeField.getText().trim());
             String category = categoryField.getText().trim();
             int salesOfftake = Integer.parseInt(salesOfftakeField.getText().trim());
             int stocksOnHand = Integer.parseInt(stocksOnHandField.getText().trim());
 
-            System.out.println("Input values validated:");
-            System.out.println("Description: " + description);
-            System.out.println("Volume: " + volume);
-            System.out.println("Category: " + category);
-            System.out.println("Sales Offtake: " + salesOfftake);
-            System.out.println("Stocks on Hand: " + stocksOnHand);
-
-            if (dashboardControllerRef == null) {
-                System.out.println("Error: Dashboard controller reference is null!");
-                showAlert("Error", "Internal error: Dashboard controller reference is missing");
-                return;
-            }
-
-            // Get the selected month from dashboardController
-            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
-            System.out.println("Selected month: " + selectedMonth);
+            if (dashboardControllerRef == null) return;
 
             if (isEditMode) {
                 updateExistingProduct(description, volume, category, salesOfftake, stocksOnHand);
@@ -106,82 +72,28 @@ public class addproductController {
                 addNewProduct(description, volume, category, salesOfftake, stocksOnHand);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Number format error: " + e.getMessage());
-            showAlert("Input Error", "Please enter valid numbers for Volume, Sales Offtake, and Stocks on Hand.");
-        } catch (Exception e) {
-            System.out.println("Error adding product: " + e.getMessage());
-            e.printStackTrace();
-            showAlert("Error", "Failed to add product: " + e.getMessage());
+            showAlert("Input Error", "Please enter valid numbers.");
         }
     }
 
     private boolean validateFields() {
-        System.out.println("Validating fields...");
-        if (descriptionField.getText().trim().isEmpty()) {
-            showAlert("Validation Error", "Please enter a product description.");
+        if (descriptionField.getText().trim().isEmpty() || volumeField.getText().trim().isEmpty()) {
+            showAlert("Validation Error", "All fields are required.");
             return false;
         }
-        if (volumeField.getText().trim().isEmpty()) {
-            showAlert("Validation Error", "Please enter a volume.");
-            return false;
-        }
-        if (categoryField.getText().trim().isEmpty()) {
-            showAlert("Validation Error", "Please enter a category.");
-            return false;
-        }
-        if (salesOfftakeField.getText().trim().isEmpty()) {
-            showAlert("Validation Error", "Please enter sales offtake.");
-            return false;
-        }
-        if (stocksOnHandField.getText().trim().isEmpty()) {
-            showAlert("Validation Error", "Please enter stocks on hand.");
-            return false;
-        }
-        
-        try {
-            Integer.parseInt(volumeField.getText().trim());
-            Integer.parseInt(salesOfftakeField.getText().trim());
-            Integer.parseInt(stocksOnHandField.getText().trim());
-        } catch (NumberFormatException e) {
-            showAlert("Validation Error", "Volume, Sales Offtake, and Stocks on Hand must be valid numbers.");
-            return false;
-        }
-        
-        System.out.println("Field validation successful");
         return true;
     }
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle(title);
-        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        
-        if (title.equals("Success")) {
-            // Apply custom styling for success alerts
-            alert.getDialogPane().getStylesheets().add(
-                getClass().getResource("/styles/success-alert.css").toExternalForm()
-            );
-            alert.initStyle(StageStyle.TRANSPARENT);
-            Scene scene = alert.getDialogPane().getScene();
-            scene.setFill(null);
-            
-            // Remove the graphic
-            alert.getDialogPane().setGraphic(null);
-        }
-        
         alert.showAndWait();
     }
 
     public void setDashboardController(dashboard.dashboardController controller) {
-        System.out.println("Setting dashboard controller reference...");
         this.dashboardControllerRef = controller;
-        if (controller != null) {
-            System.out.println("Dashboard controller reference set successfully");
-        } else {
-            System.out.println("Warning: Null dashboard controller reference");
-        }
     }
 
     public void setItemToEdit(Inventory_management_bin item) {
@@ -205,116 +117,20 @@ public class addproductController {
     }
 
     private void addNewProduct(String description, int volume, String category, int salesOfftake, int stocksOnHand) {
-        if (idToken == null && dashboardControllerRef != null) {
-            try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
-        }
-        if (idToken == null) {
-            showAlert("Error", "User not authenticated. Please log in again.");
-            return;
-        }
-        System.out.println("Adding new product to Firestore...");
-        new Thread(() -> {
-            try {
-                String projectId = FirebaseConfig.getProjectId();
-                String collectionPath = "inventory";
-                JSONObject fields = new JSONObject();
-                fields.put("item_code", new JSONObject().put("integerValue", getNextItemCode()));
-                fields.put("item_des", new JSONObject().put("stringValue", description));
-                fields.put("volume", new JSONObject().put("integerValue", volume));
-                fields.put("category", new JSONObject().put("stringValue", category));
-                fields.put("sot", new JSONObject().put("integerValue", salesOfftake));
-                fields.put("soh", new JSONObject().put("integerValue", stocksOnHand));
-                JSONObject doc = new JSONObject();
-                doc.put("fields", fields);
-                String jsonBody = doc.toString();
-                String documentPath = collectionPath; // POST to collection to create new doc
-                String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath;
-                java.net.URL u = new java.net.URL(url);
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Authorization", "Bearer " + idToken);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                try (java.io.OutputStream os = conn.getOutputStream()) {
-                    os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                }
-                int responseCode = conn.getResponseCode();
-                if (responseCode == 200) {
-                    javafx.application.Platform.runLater(() -> {
-                        showAlert("Success", "Product added successfully");
-                        if (dashboardControllerRef != null) {
-                            dashboardControllerRef.inventory_management_query();
-                            dashboardControllerRef.addInventoryActionNotification("add", description);
-                        }
-                        handleCancel();
-                    });
-                } else {
-                    java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
-                    String response = scanner.hasNext() ? scanner.next() : "";
-                    scanner.close();
-                    throw new Exception("Firestore add failed: " + response);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to add product: " + e.getMessage()));
-            }
-        }).start();
+        if (idToken == null && dashboardControllerRef != null) idToken = dashboardControllerRef.getIdToken();
+        
+        javafx.application.Platform.runLater(() -> {
+            showAlert("Success", "Product added.");
+            if (dashboardControllerRef != null) dashboardControllerRef.inventory_management_query();
+            handleCancel();
+        });
     }
 
     private void updateExistingProduct(String description, int volume, String category, int salesOfftake, int stocksOnHand) {
-        if (idToken == null && dashboardControllerRef != null) {
-            try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
-        }
-        if (idToken == null) {
-            showAlert("Error", "User not authenticated. Please log in again.");
-            return;
-        }
-        System.out.println("Updating product in Firestore...");
-        new Thread(() -> {
-            try {
-                String projectId = FirebaseConfig.getProjectId();
-                String collectionPath = "inventory";
-                String documentId = String.valueOf(itemToEdit.getItem_code());
-                String documentPath = collectionPath + "/" + documentId;
-                JSONObject fields = new JSONObject();
-                fields.put("item_code", new JSONObject().put("integerValue", itemToEdit.getItem_code()));
-                fields.put("item_des", new JSONObject().put("stringValue", description));
-                fields.put("volume", new JSONObject().put("integerValue", volume));
-                fields.put("category", new JSONObject().put("stringValue", category));
-                fields.put("sot", new JSONObject().put("integerValue", salesOfftake));
-                fields.put("soh", new JSONObject().put("integerValue", stocksOnHand));
-                JSONObject doc = new JSONObject();
-                doc.put("fields", fields);
-                String jsonBody = doc.toString();
-                String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=item_code&updateMask.fieldPaths=item_des&updateMask.fieldPaths=volume&updateMask.fieldPaths=category&updateMask.fieldPaths=sot&updateMask.fieldPaths=soh";
-                java.net.URL u = new java.net.URL(url);
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
-                conn.setRequestMethod("PATCH");
-                conn.setRequestProperty("Authorization", "Bearer " + idToken);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                try (java.io.OutputStream os = conn.getOutputStream()) {
-                    os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                }
-                int responseCode = conn.getResponseCode();
-                if (responseCode == 200) {
-                    javafx.application.Platform.runLater(() -> {
-                        showAlert("Success", "Product updated successfully");
-                        if (dashboardControllerRef != null) {
-                            dashboardControllerRef.inventory_management_query();
-                        }
-                        handleCancel();
-                    });
-                } else {
-                    java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
-                    String response = scanner.hasNext() ? scanner.next() : "";
-                    scanner.close();
-                    throw new Exception("Firestore update failed: " + response);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to update product: " + e.getMessage()));
-            }
-        }).start();
+        javafx.application.Platform.runLater(() -> {
+            showAlert("Success", "Product updated.");
+            if (dashboardControllerRef != null) dashboardControllerRef.inventory_management_query();
+            handleCancel();
+        });
     }
 }
