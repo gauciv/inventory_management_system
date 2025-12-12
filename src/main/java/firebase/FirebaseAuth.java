@@ -7,10 +7,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class FirebaseAuth {
+    
+    // TODO: Paste your Web API Key from Firebase Console here
+    private static final String WEB_API_KEY = "AIzaSyDzTB6ITybJlZRsIrMQVQ3cVgtQzw7fRj8";
+
     // Sign in with email and password using Firebase Auth REST API
     public static String signInWithEmailPassword(String email, String password) throws Exception {
-        String apiKey = FirebaseConfig.getApiKey();
-        String endpoint = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey;
+        // Use the hardcoded key instead of FirebaseConfig
+        String endpoint = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + WEB_API_KEY;
         String payload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}", email, password);
 
         URL url = new URL(endpoint);
@@ -18,15 +22,18 @@ public class FirebaseAuth {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
+        
         try (OutputStream os = conn.getOutputStream()) {
             os.write(payload.getBytes(StandardCharsets.UTF_8));
         }
+        
         int responseCode = conn.getResponseCode();
         Scanner scanner = new Scanner(
             responseCode == 200 ? conn.getInputStream() : conn.getErrorStream(), "UTF-8"
         ).useDelimiter("\\A");
         String response = scanner.hasNext() ? scanner.next() : "";
         scanner.close();
+        
         if (responseCode != 200) {
             throw new Exception("Firebase Auth failed: " + response);
         }
