@@ -24,7 +24,7 @@ jobs:
           java-version: '24'
           cache: 'maven'
 
-      # 1. Inject Firebase Key
+      # 1. Create Firebase Key
       - name: Create Firebase Key File
         shell: powershell
         run: |
@@ -32,76 +32,76 @@ jobs:
           $bytes = [Convert]::FromBase64String($content)
           [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
 
-      # 2. Build JAR and Libs
-      - name: Build Project
+      # 2. Build JAR and Copy Libraries
+      - name: Maven Build
         run: |
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      # 3. Setup Staging
+      # 3. Setup Staging Directory
+      # We put the Main JAR and the lib folder into 'target/staging'
       - name: Prepare Staging Area
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path target/staging
           Copy-Item -Path "target/inventory_MS-1.0-SNAPSHOT.jar" -Destination "target/staging/"
           Copy-Item -Path "target/lib" -Destination "target/staging/" -Recurse
-          echo "--- STAGING DIRECTORY CONTENTS ---"
+          
+          echo "--- VERIFY STAGING CONTENT ---"
           Get-ChildItem -Path target/staging -Recurse
 
-      # 4. Package Application Image (FIXED: Single Line Command)
-      - name: Package Application Image
+      # 4. Run JPackage (DIRECTLY)
+      # This bypasses Maven plugins and uses the JDK tool directly
+      - name: Run JPackage
         shell: powershell
         run: |
-          $Root = Get-Location
-          $InputPath = "$Root\target\staging"
-          $DestPath = "$Root\target\dist"
+          # Define paths
+          $InputPath = "$PWD\target\staging"
+          $DestPath = "$PWD\target\dist"
           
-          echo "Input Path: $InputPath"
-          echo "Dest Path: $DestPath"
-          
-          # Single line command to prevent backtick errors
-          mvn -X jpackage:jpackage "-Djpackage.type=app-image" "-Djpackage.input=$InputPath" "-Djpackage.dest=$DestPath" "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" "-Djpackage.main-class=login.Launcher"
+          # Run the command
+          jpackage `
+            --type app-image `
+            --input "$InputPath" `
+            --dest "$DestPath" `
+            --name "InventorySystem" `
+            --main-jar "inventory_MS-1.0-SNAPSHOT.jar" `
+            --main-class "login.Launcher" `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut `
+            --verbose
 
       # 5. Verify Output
       - name: Verify Output
         shell: powershell
         run: |
-          echo "--- TARGET/DIST CONTENTS ---"
-          if (Test-Path target/dist) {
-              Get-ChildItem -Path target/dist -Recurse
+          if (Test-Path "target/dist/InventorySystem") {
+              echo "SUCCESS: App Image created."
           } else {
-              echo "WARNING: target/dist was NOT created."
-          }
-
-      # 6. Prepare Release Folder
-      - name: Prepare Release Folder
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force -Path release
-          
-          $AppPath = Get-ChildItem -Path "target/dist" -Directory | Select-Object -First 1
-          
-          if ($null -eq $AppPath) {
-              Write-Error "CRITICAL FAILURE: No app folder found in target/dist."
+              echo "ERROR: Output folder missing."
+              Get-ChildItem -Path target/dist
               exit 1
           }
-          
-          Write-Host "Found App at: $($AppPath.FullName)"
-          Copy-Item -Path $AppPath.FullName -Destination "release/InventorySystem" -Recurse
-          Copy-Item -Path "serviceAccountKey.json" -Destination "release/InventorySystem/serviceAccountKey.json"
 
-      # 7. Zip
+      # 6. Inject Key into the App Folder
+      - name: Inject Key
+        shell: powershell
+        run: |
+          Copy-Item -Path "serviceAccountKey.json" -Destination "target/dist/InventorySystem/serviceAccountKey.json"
+
+      # 7. Zip the Result
       - name: Zip Release
         shell: powershell
         run: |
-          Compress-Archive -Path "release/InventorySystem" -DestinationPath "release/InventorySystem-Portable.zip"
+          Compress-Archive -Path "target/dist/InventorySystem" -DestinationPath "target/InventorySystem-Portable.zip"
 
-      # 8. Publish
+      # 8. Release
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: release/InventorySystem-Portable.zip
+          files: target/InventorySystem-Portable.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
