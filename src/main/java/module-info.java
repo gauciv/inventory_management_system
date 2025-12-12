@@ -3,7 +3,6 @@ module inventory.example.inventory_ms {
     requires javafx.fxml;
     requires javafx.base;
     requires javafx.graphics;
-    requires java.sql;
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.jetbrains.annotations;

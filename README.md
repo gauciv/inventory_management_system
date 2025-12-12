@@ -121,6 +121,24 @@ Replace each TODO with the appropriate Firebase SDK calls for data access, updat
 
 For any questions or migration details, see the code comments and the file `addproductController.DBREMOVED.txt` for a summary of removed logic.
 
+## Firebase REST API Usage in Java
+
+This project uses the Firebase REST API for authentication and Firestore access, as there is no official Java SDK for desktop apps.
+
+### 1. Authentication
+- Use `FirebaseAuth.signInWithEmailPassword(email, password)` to authenticate users.
+- The returned JSON contains `idToken`, which is required for Firestore requests.
+
+### 2. Firestore Access
+- Use `FirestoreClient.getDocument(projectId, documentPath, idToken)` to fetch a document.
+- Use `FirestoreClient.setDocument(projectId, documentPath, idToken, jsonBody)` to create/update a document.
+- All requests require a valid `idToken` from authentication.
+
+### 3. Configuration
+- All Firebase credentials are loaded from `.env` using `FirebaseConfig`.
+
+See the `firebase/` package for helper classes and usage examples.
+
 ## Troubleshooting
 
 ### Port Conflicts

@@ -1,0 +1,43 @@
+name: Build Windows Executable
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Package as EXE (Launch4j)
+        uses: docker://ghcr.io/lukaszlenart/launch4j-action:main
+        with:
+          jar: target/*.jar
+          outfile: target/inventory_management_system.exe
+          mainclass: your.main.ClassName
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventory_management_system-exe
+          path: target/inventory_management_system.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/inventory_management_system.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
