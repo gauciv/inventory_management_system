@@ -1,10 +1,3 @@
-    private String idToken;
-    private String projectId;
-
-    public void setIdToken(String idToken) {
-        this.idToken = idToken;
-        this.projectId = FirebaseConfig.getProjectId();
-    }
 package dashboard;
 
 import javafx.application.Platform;
@@ -15,17 +8,32 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.scene.layout.StackPane;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import database.database_utility;
 import firebase.FirestoreClient;
 import firebase.FirebaseConfig;
 
 public class SalesController {
+    
+    // --- Firebase Credentials ---
+    private String idToken;
+    private String projectId;
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+        this.projectId = FirebaseConfig.getProjectId();
+    }
+    // ----------------------------
+
     @FXML private AreaChart<String, Number> salesChart;
     @FXML private Label totalSalesLabel;
     @FXML private Label topProductLabel;
@@ -70,10 +78,6 @@ public class SalesController {
     }
 
     private void setupControls() {
-        // Setup date pickers with fixed start date and current end date
-        LocalDate fixedStartDate = LocalDate.of(2024, 5, 28); // May 28, 2024
-        LocalDate currentEndDate = LocalDate.now();
-        
         // Setup export button
         exportButton.setOnAction(e -> exportData());
 
@@ -84,69 +88,10 @@ public class SalesController {
         compareButton.setOnAction(e -> showProductSelectionDialog());
     }
 
-    private void loadProducts() {
-        // Load product list from Firestore
-        try {
-            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
-            String collectionPath = "inventory?pageSize=1000";
-            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
-            org.json.JSONObject json = new org.json.JSONObject(response);
-            org.json.JSONArray docs = json.optJSONArray("documents");
-            List<String> products = new ArrayList<>();
-            if (docs != null) {
-                for (int i = 0; i < docs.length(); i++) {
-                    org.json.JSONObject doc = docs.getJSONObject(i);
-                    org.json.JSONObject fields = doc.getJSONObject("fields");
-                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
-                    products.add(item_des);
-                }
-            }
-            // TODO: Use products list in UI (e.g., pass to dialog)
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Failed to load products: " + e.getMessage());
-        }
-    }
-
     private void updateChartData(List<XYChart.Series<String, Number>> data) {
         salesChart.getData().clear();
         for (XYChart.Series<String, Number> series : data) {
             salesChart.getData().add(series);
-        }
-    }
-
-    private void addComparisonSeries(String productName) {
-        try {
-            if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
-            String collectionPath = "inventory?pageSize=1000";
-            String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
-            org.json.JSONObject json = new org.json.JSONObject(response);
-            org.json.JSONArray docs = json.optJSONArray("documents");
-            if (docs != null) {
-                for (int i = 0; i < docs.length(); i++) {
-                    org.json.JSONObject doc = docs.getJSONObject(i);
-                    org.json.JSONObject fields = doc.getJSONObject("fields");
-                    String item_des = fields.getJSONObject("item_des").getString("stringValue");
-                    if (item_des.equals(productName)) {
-                        XYChart.Series<String, Number> series = new XYChart.Series<>();
-                        series.setName(productName);
-                        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-                        for (String month : months) {
-                            int value = 0;
-                            if (fields.has(month.toLowerCase())) {
-                                value = fields.getJSONObject(month.toLowerCase()).getInt("integerValue");
-                            }
-                            series.getData().add(new XYChart.Data<>(month, value));
-                        }
-                        currentData.add(series);
-                        updateChartData(currentData);
-                        break;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Failed to load comparison data: " + e.getMessage());
         }
     }
 
@@ -210,7 +155,6 @@ public class SalesController {
     }
 
     private void exportToExcel(File file) {
-        // TODO: Implement Excel export using Apache POI
         showError("Not Implemented", "Excel export is not yet implemented.");
     }
 
@@ -230,12 +174,6 @@ public class SalesController {
         String chartStyle = "-fx-background-color: transparent;";
         salesChart.setStyle(chartStyle);
         
-        // Initialize labels
-        if (totalSalesLabel != null) totalSalesLabel.setText("Loading...");
-        if (topProductLabel != null) topProductLabel.setText("Loading...");
-        if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: Loading...");
-        if (averageSalesLabel != null) averageSalesLabel.setText("Avg. Monthly Sales: Loading...");
-
         // Style axis
         CategoryAxis xAxis = (CategoryAxis) salesChart.getXAxis();
         NumberAxis yAxis = (NumberAxis) salesChart.getYAxis();
@@ -247,15 +185,12 @@ public class SalesController {
         xAxis.setStyle("-fx-text-fill: white;");
         yAxis.setStyle("-fx-text-fill: white;");
         
-        // Additional styling for axis labels
         xAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
         yAxis.lookup(".axis-label").setStyle("-fx-text-fill: white;");
         
-        // Add some padding to axis ranges for better visualization
         yAxis.setAutoRanging(true);
         yAxis.setMinorTickCount(2);
         
-        // Initialize labels with loading state
         if (totalSalesLabel != null) {
             totalSalesLabel.setText("Loading...");
             totalSalesLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24;");
@@ -283,11 +218,9 @@ public class SalesController {
 
     public void updateTotalSales() {
         System.out.println("Updating total sales data...");
-        // Set button states: total sales active, compare inactive
         totalSalesButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
         compareButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
         
-        // Reset top product card to default state
         if (topProductLabel != null) {
             topProductLabel.setText("Loading...");
             topProductLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
@@ -307,7 +240,7 @@ public class SalesController {
             double totalSales = 0;
             int monthCount = 0;
             boolean hasData = false;
-            // Aggregate sales for each month
+            
             int[] monthTotals = new int[months.length];
             if (docs != null) {
                 for (int i = 0; i < docs.length(); i++) {
@@ -327,7 +260,7 @@ public class SalesController {
                     annualTotal += value;
                     totalSales += value;
                     monthCount++;
-                    // Calculate growth rate
+                    
                     if (previousMonth > 0) {
                         double growthRate = ((value - previousMonth) / previousMonth) * 100;
                         final double finalGrowthRate = growthRate;
@@ -359,7 +292,7 @@ public class SalesController {
                 }
                 styleChartSeries();
             });
-            // Find top product
+            
             String topProduct = null;
             int topSales = 0;
             if (docs != null) {
@@ -402,18 +335,15 @@ public class SalesController {
     }
 
     public void showProductSelectionDialog() {
-        // Use a custom FXML dialog for product selection with checkboxes (max 10)
         showProductSelectionDialogFXML();
     }
 
-    // Placeholder for the new FXML-based dialog
     private void showProductSelectionDialogFXML() {
         try {
-            // Set button states: compare active, total inactive
             totalSalesButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
             compareButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
             
-            // Get list of products
+            // Using existing database_utility for products (Legacy compat, ideally move to Firebase)
             String query = "SELECT DISTINCT item_description FROM sale_offtake ORDER BY item_description";
             Object[] result = database_utility.query(query);
             if (result == null || result.length != 2) {
@@ -430,7 +360,7 @@ public class SalesController {
                 showError("Error", "No products found");
                 return;
             }
-            // Load FXML dialog
+            
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/dashboard/product_compare_dialog.fxml"));
             javafx.scene.Parent root = loader.load();
             ProductCompareDialogController controller = loader.getController();
@@ -443,7 +373,6 @@ public class SalesController {
             controller.setDialogStage(dialogStage);
             controller.setOnConfirm(selectedProducts -> {
                 updateComparisonChart(selectedProducts);
-                // Set button states: compare active, total inactive
                 totalSalesButton.setStyle("-fx-background-color: #181739; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #AEB9E1; -fx-border-width: 2;");
                 compareButton.setStyle("-fx-background-color: #0A1196; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-color: #00b4ff; -fx-border-width: 2;");
             });
@@ -457,13 +386,11 @@ public class SalesController {
     }
 
     private void updateComparisonChart(List<String> products) {
-        Connection conn = null;
         try {
-            currentData.clear(); // Always clear previous comparison data
+            currentData.clear(); 
             String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-            // Update top product card for comparison mode
             if (topProductLabel != null) {
                 StringBuilder comparisonInfo = new StringBuilder("Comparing Products:\n");
                 for (String product : products) {
@@ -499,7 +426,6 @@ public class SalesController {
                 updateChartData(currentData);
                 styleChartSeries();
                 
-                // Update labels for comparison mode
                 if (totalSalesLabel != null) totalSalesLabel.setText("Comparison Mode");
                 if (averageSalesLabel != null) averageSalesLabel.setText("Select products to compare");
                 if (growthRateLabel != null) growthRateLabel.setText("Growth Rate: N/A");
@@ -562,7 +488,6 @@ public class SalesController {
         });
     }
 
-    // Component injection method
     public void injectComponents(AreaChart<String, Number> salesChart,
                                Label totalSalesLabel,
                                Label topProductLabel,
@@ -582,7 +507,6 @@ public class SalesController {
         this.totalSalesButton = totalSalesButton;
         this.compareButton = compareButton;
         
-        // After injecting components, set up the controls
         setupControls();
         setupSalesChart();
         setupClock();

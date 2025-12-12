@@ -220,12 +220,8 @@ public class dashboardController {
             // Load data in background
             new Thread(() -> {
                 try {
-                    // Pre-load database connection
-                        // TODO: Pre-load Firebase connection if needed
-                        // Load initial data (Firebase)
                         Platform.runLater(() -> {
                             try {
-                                // TODO: Replace with Firebase data fetches
                                 inventory_management_query();
                                 updateStockNotifications();
                                 initializeForecastingSection();
@@ -269,16 +265,12 @@ public class dashboardController {
                 Node legend = forecastChart.lookup(".chart-legend");
                 if (legend != null) {
                     legend.setStyle("-fx-background-color: transparent;");
-                    
-                    // Style all legend items to have white text
                     legend.lookupAll(".chart-legend-item")
-                         .forEach(item -> item.setStyle("-fx-text-fill: white !important;"));
+                          .forEach(item -> item.setStyle("-fx-text-fill: white !important;"));
                 }
                 
-                // Add CSS class for styling
                 forecastChart.getStyleClass().add("chart");
                 
-                // Configure the NumberAxis for better scale
                 NumberAxis yAxis = (NumberAxis) forecastChart.getYAxis();
                 yAxis.setAutoRanging(true);
                 yAxis.setForceZeroInRange(false);
@@ -293,31 +285,16 @@ public class dashboardController {
                     }
                 });
 
-                // When data is added to the chart
                 forecastChart.getData().addListener((ListChangeListener<XYChart.Series<String, Number>>) c -> {
                     while (c.next()) {
                         if (c.wasAdded()) {
                             for (XYChart.Series<String, Number> series : c.getAddedSubList()) {
-                                // Style each data point
                                 for (XYChart.Data<String, Number> data : series.getData()) {
                                     if (data.getNode() != null) {
                                         Node node = data.getNode();
-                                        String color = series.getName().contains("Historical") ? "#4CAF50" : "#FF3B30";
-                                        
-                                        // Create tooltip with formatted value
                                         Tooltip tooltip = new Tooltip();
-                                        tooltip.setStyle(
-                                            "-fx-font-size: 12px; " +
-                                            "-fx-font-family: 'Arial'; " +
-                                            "-fx-font-weight: bold; " +
-                                            "-fx-background-color: rgba(255, 255, 255, 0.95); " +
-                                            "-fx-text-fill: #333333; " +
-                                            "-fx-padding: 8px 12px; " +
-                                            "-fx-background-radius: 6px; " +
-                                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);"
-                                        );
+                                        tooltip.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: black;");
                                         
-                                        // Format the number with commas and add 'k' suffix if needed
                                         String formattedValue;
                                         double value = data.getYValue().doubleValue();
                                         if (value >= 1000) {
@@ -326,48 +303,8 @@ public class dashboardController {
                                             formattedValue = String.format("%,.0f", value);
                                         }
                                         
-                                        tooltip.setText(
-                                            series.getName() + "\n" +
-                                            "Month: " + data.getXValue() + "\n" +
-                                            "Sales: " + formattedValue
-                                        );
-
-                                        // Configure tooltip behavior
-                                        tooltip.setShowDelay(javafx.util.Duration.millis(100));
-                                        tooltip.setHideDelay(javafx.util.Duration.millis(200));
-                                        tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
-                                        
-                                        // Install tooltip on the node
+                                        tooltip.setText(series.getName() + "\nMonth: " + data.getXValue() + "\nSales: " + formattedValue);
                                         Tooltip.install(node, tooltip);
-                                        
-                                        // Add hover effects
-                                        node.setOnMouseEntered(e -> {
-                                            // Show tooltip slightly offset from the cursor
-                                            tooltip.show(node, 
-                                                e.getScreenX() + 15, 
-                                                e.getScreenY() - 20);
-                                        });
-                                        
-                                        node.setOnMouseExited(e -> {
-                                            // Add a small delay before hiding
-                                            javafx.application.Platform.runLater(() -> {
-                                                if (!node.isHover()) {
-                                                    tooltip.hide();
-                                                }
-                                            });
-                                        });
-
-                                        // Remove the chart mouse moved event as it's causing the flickering
-                                        forecastChart.setOnMouseMoved(null);
-
-                                        // Update the chart mouse exited event
-                                        forecastChart.setOnMouseExited(e -> {
-                                            // Only hide if we're really leaving the chart area
-                                            if (!forecastChart.getBoundsInLocal().contains(
-                                                    forecastChart.sceneToLocal(e.getSceneX(), e.getSceneY()))) {
-                                                tooltip.hide();
-                                            }
-                                        });
                                     }
                                 }
                             }
@@ -376,7 +313,6 @@ public class dashboardController {
                 });
             }
             
-            // Initialize the forecasting controller with all UI components
             forecastingController.initialize(
                 forecastChart,
                 forecastProductComboBox,
@@ -390,7 +326,6 @@ public class dashboardController {
         } catch (Exception e) {
             System.err.println("Error initializing forecasting section: " + e.getMessage());
             e.printStackTrace();
-            
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Initialization Error");
             alert.setHeaderText(null);
@@ -415,10 +350,8 @@ public class dashboardController {
             return;
         }
 
-        // Set the items list
         inventory_table.setItems(inventory_management_table);
 
-        // Add style classes to columns
         col_number.getStyleClass().add("col-number");
         col_select.getStyleClass().add("col-select");
         col_item_code.getStyleClass().add("col-item-code");
@@ -428,9 +361,8 @@ public class dashboardController {
         col_soh.getStyleClass().add("col-soh");
         col_sot.getStyleClass().add("col-sot");
 
-        // Set column headers
         col_number.setText("#");
-        col_select.setText("☐");  // Square box symbol
+        col_select.setText("☐");
         col_item_code.setText("Item Code");
         col_item_des.setText("Product\nDescription");
         col_volume.setText("Volume");
@@ -438,15 +370,12 @@ public class dashboardController {
         col_soh.setText("Stocks on\nHand");
         col_sot.setText("Sales\nOfftake");
 
-        // Configure column alignment
         inventory_table.getColumns().forEach(column -> {
             column.setStyle("-fx-alignment: CENTER;");
         });
 
-        // Special styling for select column header
         col_select.setStyle("-fx-alignment: CENTER; -fx-font-size: 16px;");
 
-        // Set fixed column widths
         col_number.setPrefWidth(50);
         col_select.setPrefWidth(50);
         col_item_code.setPrefWidth(100);
@@ -456,7 +385,6 @@ public class dashboardController {
         col_soh.setPrefWidth(100);
         col_sot.setPrefWidth(100);
 
-        // Set minimum widths to match preferred widths
         col_number.setMinWidth(col_number.getPrefWidth());
         col_select.setMinWidth(col_select.getPrefWidth());
         col_item_code.setMinWidth(col_item_code.getPrefWidth());
@@ -466,27 +394,22 @@ public class dashboardController {
         col_soh.setMinWidth(col_soh.getPrefWidth());
         col_sot.setMinWidth(col_sot.getPrefWidth());
 
-        // Prevent column resizing
         inventory_table.getColumns().forEach(column -> {
             column.setResizable(false);
             column.setReorderable(false);
             column.setSortable(false);
         });
 
-        // Make table responsive
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
-        // Bind table width to parent width with padding
         inventory_table.prefWidthProperty().bind(
             inventorypane.widthProperty().multiply(0.98)
         );
         
-        // Bind table height to parent height with padding for other controls
         inventory_table.prefHeightProperty().bind(
             inventorypane.heightProperty().multiply(0.85)
         );
 
-        // Initialize table columns with proper alignment
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
                 () -> inventory_table.getItems().indexOf(cellData.getValue()) + 1
@@ -499,10 +422,8 @@ public class dashboardController {
         col_soh.setCellValueFactory(new PropertyValueFactory<>("soh"));
         col_sot.setCellValueFactory(new PropertyValueFactory<>("sot"));
         
-        // Setup checkbox column
         col_select.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
         
-        // Create CheckBoxes in each cell
         col_select.setCellFactory(column -> new TableCell<>() {
             private final CheckBox checkBox = new CheckBox();
             {
@@ -529,7 +450,6 @@ public class dashboardController {
             }
         });
 
-        // Apply CSS styling
         inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
     }
     
@@ -562,7 +482,6 @@ public class dashboardController {
         searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
         inventory_table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        // Listen for size changes with more concise syntax
         inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
         inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
         inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
@@ -574,7 +493,7 @@ public class dashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmation/confirmation_form.fxml"));
             Parent confirmationForm = loader.load();
             confirmationContainer.getChildren().setAll(confirmationForm);
-            confirmationContainer.setVisible(false); // keep hidden initially
+            confirmationContainer.setVisible(false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -593,15 +512,11 @@ public class dashboardController {
                     "-fx-prompt-text-fill: rgba(170,170,170,0.5);";
 
             if (newVal) {
-                // Focus gained: add text fill white, keep other styles
                 searchField.setStyle(baseStyle + " -fx-text-fill: white;");
             } else {
-                // Focus lost: remove the text fill override to default (black text)
                 searchField.setStyle(baseStyle + " -fx-text-fill: black;");
             }
         });
-
-
     }
 
     private void centerAddFormContainer() {
@@ -617,7 +532,6 @@ public class dashboardController {
         double topAnchor = (parentHeight - formHeight) / 2;
 
         AnchorPane.clearConstraints(addFormContainer);
-
         AnchorPane.setLeftAnchor(addFormContainer, leftAnchor);
         AnchorPane.setTopAnchor(addFormContainer, topAnchor);
         AnchorPane.setRightAnchor(addFormContainer, null);
@@ -636,7 +550,6 @@ public class dashboardController {
         double formWidth = confirmationContainer.getWidth();
         double formHeight = confirmationContainer.getHeight();
 
-        // If width/height are 0, fallback to prefWidth
         if (formWidth <= 0) formWidth = confirmationContainer.getPrefWidth();
         if (formHeight <= 0) formHeight = confirmationContainer.getPrefHeight();
 
@@ -650,7 +563,6 @@ public class dashboardController {
         AnchorPane.setBottomAnchor(confirmationContainer, null);
     }
 
-
     private void styleActiveButton(Button selectedButton) {
         List<Button> validButtons = List.of(
                 dashboardbutton, inventorybutton, salesbutton,
@@ -661,12 +573,10 @@ public class dashboardController {
             return;
         }
 
-        // First, reset all buttons to default state
         for (Button btn : validButtons) {
             btn.getStyleClass().remove("active");
             btn.setStyle("-fx-background-color: transparent;");
             
-            // Find and reset the indicator for this button
             HBox parent = (HBox) btn.getParent();
             if (parent != null) {
                 parent.getStyleClass().remove("active");
@@ -677,7 +587,6 @@ public class dashboardController {
             }
         }
 
-        // Then style the selected button and its indicator
         HBox parent = (HBox) selectedButton.getParent();
         if (parent != null) {
             parent.getStyleClass().add("active");
@@ -722,7 +631,6 @@ public class dashboardController {
 
             isFullscreen = false;
         }
-        // Recenter form container after resize toggle
         Platform.runLater(this::centerAddFormContainer);
     }
 
@@ -743,19 +651,16 @@ public class dashboardController {
     }
 
     private void setupNavigation() {
-        // Set up navigation button handlers
         dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
         inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
         salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
         forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
         helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
         
-        // Set initial active state for dashboard
         TabSwitch(dashboardbutton, dashboardpane);
     }
 
     private void TabSwitch(Button button, AnchorPane pane) {
-        // Handle navigation indicator
         Region indicator = null;
         if (button == dashboardbutton) indicator = dashboardIndicator;
         else if (button == inventorybutton) indicator = inventoryIndicator;
@@ -769,28 +674,23 @@ public class dashboardController {
     }
 
     private void handleNavigation(Button button, Region indicator, Node content) {
-        // Remove active classes from current indicator and button
         if (currentIndicator != null) {
             currentIndicator.getStyleClass().remove("active");
             currentIndicator.getParent().getStyleClass().remove("active");
         }
         
-        // Deactivate all buttons
         dashboardbutton.getStyleClass().remove("active");
         inventorybutton.getStyleClass().remove("active");
         salesbutton.getStyleClass().remove("active");
         forecastingbutton.getStyleClass().remove("active");
         helpbutton.getStyleClass().remove("active");
         
-        // Activate new button and indicator
         button.getStyleClass().add("active");
         indicator.getStyleClass().add("active");
         indicator.getParent().getStyleClass().add("active");
         
-        // Update current indicator
         currentIndicator = indicator;
         
-        // Show the selected content
         if (content != null) {
             dashboardpane.setVisible(false);
             inventorypane.setVisible(false);
@@ -801,7 +701,6 @@ public class dashboardController {
             content.setVisible(true);
         }
         
-        // Update tab selection
         String tabText = button.getText().trim();
         for (Tab tab : tabpane.getTabs()) {
             if (tab.getText().equalsIgnoreCase(tabText) || 
@@ -815,7 +714,6 @@ public class dashboardController {
     @FXML
     private void handleAddButton() {
         try {
-            // Count checked checkboxes in inventory table
             int checkedCount = 0;
             Inventory_management_bin selectedItem = null;
             
@@ -826,12 +724,10 @@ public class dashboardController {
                 }
             }
             
-            // Get the path and load appropriate FXML based on checkbox state
             String fxmlPath;
             String title;
             
             if (checkedCount > 1) {
-                // Show error alert if multiple checkboxes are checked
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -840,7 +736,6 @@ public class dashboardController {
                 alert.showAndWait();
                 return;
             } else if (checkedCount == 1) {
-                // Load addstocks form if exactly one checkbox is checked
                 fxmlPath = "/addStocks/addstocks_form.fxml";
                 title = "Add Stocks Form";
 
@@ -854,7 +749,6 @@ public class dashboardController {
                     controller.text_field4.setText(String.valueOf(selectedItem.getSoh()));
                     controller.setSelectedItemDescription(selectedItem.getFormattedItemDesc());
                     controller.setItemCodeAndSoh(selectedItem.getItem_code(), selectedItem.getSoh());
-                    // Pass dashboardController reference for auto-refresh
                     controller.setDashboardController(this);
                 }
                 Scene scene = new Scene(addForm);
@@ -873,16 +767,13 @@ public class dashboardController {
                 stage.toFront();
                 return;
             } else {
-                // Load addproduct form if no checkbox is checked
                 fxmlPath = "/addStocks/addproduct.fxml";
                 title = "Add Product Form";
             }
 
-            // Load the FXML and create scene
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent addForm = loader.load();
             
-            // Get the controller and pass dashboard reference
             add_stocks.addproductController controller = loader.getController();
             if (controller == null) {
                 throw new RuntimeException("Failed to get controller for add product form");
@@ -890,33 +781,26 @@ public class dashboardController {
             controller.setDashboardController(this);
             
             Scene scene = new Scene(addForm);
-            scene.setFill(null); // Make scene background transparent
+            scene.setFill(null);
             
-            // Create and configure stage
             Stage stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(title);
             stage.setScene(scene);
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
-            // Get screen bounds of right_pane for centering
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
-            
-            // Show stage to get its dimensions
             stage.show();
             
-            // Center the stage on right_pane
             double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
             double centerY = paneBounds.getMinY() + (paneBounds.getHeight() / 2) - (stage.getHeight() / 2);
             
-            // Set position and bring to front
             stage.setX(centerX);
             stage.setY(centerY);
             stage.toFront();
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Show error alert if loading fails
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -925,7 +809,6 @@ public class dashboardController {
             alert.showAndWait();
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // Show error alert if controller initialization fails
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -938,7 +821,6 @@ public class dashboardController {
     @FXML
     private void handleSoldButton() {
         try {
-            // Count checked checkboxes in inventory table
             int checkedCount = 0;
             Inventory_management_bin selectedItem = null;
             
@@ -950,7 +832,6 @@ public class dashboardController {
             }
             
             if (checkedCount == 0) {
-                // Show error if no item is selected
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -959,7 +840,6 @@ public class dashboardController {
                 alert.showAndWait();
                 return;
             } else if (checkedCount > 1) {
-                // Show error alert if multiple checkboxes are checked
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -967,7 +847,9 @@ public class dashboardController {
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.showAndWait();
                 return;
-            }            soldStock dialog = new soldStock();
+            }
+            
+            soldStock dialog = new soldStock();
             Stage owner = (Stage) right_pane.getScene().getWindow();
             dialog.showPopup(
                 owner,
@@ -994,7 +876,6 @@ public class dashboardController {
     @FXML
     private void handleConfirmationButton() {
         try {
-            // Count checked checkboxes in inventory table
             int checkedCount = 0;
             Inventory_management_bin selectedItem = null;
             
@@ -1006,7 +887,6 @@ public class dashboardController {
             }
             
             if (checkedCount == 0) {
-                // Show error if no item is selected
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -1022,19 +902,15 @@ public class dashboardController {
             Parent confirmationForm = loader.load();
             confirmationController controller = loader.getController();
             
-            // Set up the deletion callback
             controller.setDeletionCallback(new confirmationController.DeletionCallback() {
                 @Override
                 public void onConfirmDeletion() {
-                    // Remove from table (UI only, Firestore delete is async)
                     inventory_table.getItems().remove(itemToDelete);
-                    // Delete from Firestore
                     deleteInventoryItem(itemToDelete);
                 }
 
                 @Override
                 public void onCancelDeletion() {
-                    // Do nothing, dialog will be hidden by controller
                 }
             });
 
@@ -1045,7 +921,6 @@ public class dashboardController {
             confirmationContainer.setVisible(true);
             confirmationContainer.toFront();
 
-            // Wait for layout pass, then center
             Platform.runLater(() -> {
                 confirmationContainer.applyCss();
                 confirmationContainer.layout();
@@ -1056,7 +931,6 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-
 
     @FXML
     private void handleContinueClick() {
@@ -1071,7 +945,6 @@ public class dashboardController {
             confirmationContainer.setVisible(true);
             confirmationContainer.toFront();
 
-            // Wait for layout pass, then center
             Platform.runLater(() -> {
                 confirmationContainer.applyCss();
                 confirmationContainer.layout();
@@ -1082,7 +955,6 @@ public class dashboardController {
             e.printStackTrace();
         }
     }
-    //this section is for the inventory management tab
 
     @FXML
     private TableView<Inventory_management_bin> inventory_table;
@@ -1100,21 +972,18 @@ public class dashboardController {
     private TableColumn<Inventory_management_bin, Integer> col_soh;
     @FXML
     private TableColumn<Inventory_management_bin, Integer> col_sot;
-   @FXML 
+    @FXML 
     private TableColumn<Inventory_management_bin, Boolean> col_select;
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
-
-    // Helper method to get the selected month's column name
     public String getSelectedMonthColumn() {
         if (monthComboBox != null && monthComboBox.getValue() != null) {
             String month = monthComboBox.getValue().toLowerCase().substring(0, 3);
             return month;
         }
-        return "dec"; // Default to December if no month is selected
+        return "dec";
     }
 
-    // Make this method public so it can be called from addstocksController
     public void inventory_management_query() {
         if (inventory_management_table != null) {
             inventory_management_table.clear();
@@ -1158,7 +1027,6 @@ public class dashboardController {
         }).start();
     }
 
-    // Firestore delete logic for inventory items
     private void deleteInventoryItem(Inventory_management_bin itemToDelete) {
         new Thread(() -> {
             try {
@@ -1169,9 +1037,7 @@ public class dashboardController {
                 String collectionPath = "inventory";
                 String documentId = String.valueOf(itemToDelete.getItem_code());
                 FirestoreClient.deleteDocument(projectId, collectionPath, documentId, idToken);
-                // Refresh table data on the JavaFX thread
                 Platform.runLater(this::inventory_management_query);
-                // Add notification for the delete action
                 addInventoryActionNotification("delete", itemToDelete.getItem_des());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1186,7 +1052,6 @@ public class dashboardController {
             }
         }).start();
     }
-    }
 
     private void startClock() {
         Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
@@ -1196,28 +1061,21 @@ public class dashboardController {
             String formattedDate = currentTime.format(dateFormatter);
             String formattedTime = currentTime.format(timeFormatter);
             
-            // Update dashboard date and time
             if (dateLabel != null) {
                 dateLabel.setText("DATE: " + formattedDate + " | " + formattedTime);
             }
-            
         }), new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
     }
 
-
     @FXML
     private void handleRefreshData() {
-        // Clear existing table data
         if (inventory_management_table != null) {
             inventory_management_table.clear();
         }
-        
-        // Re-fetch data from database
         inventory_management_query();
         
-        // Show success message
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Refresh Complete");
         alert.setHeaderText(null);
@@ -1243,7 +1101,6 @@ public class dashboardController {
         try {
             System.out.println("Initializing sales section...");
             
-            // Make sure components are loaded
             if (salesChart == null || totalSalesLabel == null ||
                 topProductLabel == null || salesDateLabel == null ||
                 exportButton == null ||
@@ -1252,21 +1109,15 @@ public class dashboardController {
                 throw new RuntimeException("Sales components not found in FXML");
             }
             
-            // Configure chart axes
             salesChart.setAnimated(false);
             ((CategoryAxis) salesChart.getXAxis()).setLabel("Month");
             ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
             
-            // Initialize sales controller
             salesController = new SalesController();
-            
-            // Set the main controller reference
             salesController.setMainController(this);
-            
-            // Initialize controller after injecting components
+            salesController.setIdToken(idToken);
             salesController.initialize();
             
-            // Inject all components
             salesController.injectComponents(
                 salesChart,
                 totalSalesLabel,
@@ -1287,11 +1138,6 @@ public class dashboardController {
         }
     }
 
-    /**
-     * Adds a notification to the recent VBox for newly arrived stocks.
-     * @param stockCount The number of stocks added.
-     * @param description The item description.
-     */
     public void addRecentStockNotification(int stockCount, String description) {
         Platform.runLater(() -> {
             VBox notificationBox = new VBox();
@@ -1320,10 +1166,8 @@ public class dashboardController {
             hBox.getChildren().addAll(imageView, label);
             notificationBox.getChildren().add(hBox);
 
-            // Add to the top of the VBox (most recent first)
             recent.getChildren().add(0, notificationBox);
 
-            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
             if (recent.getParent() instanceof ScrollPane scrollPane) {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(false);
@@ -1331,7 +1175,6 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
 
-            // Save to database with only the notification text
             Connection connect = null;
             try {
                 Object[] result = database_utility.update(
@@ -1351,11 +1194,6 @@ public class dashboardController {
         });
     }
 
-    /**
-     * Adds a notification to the recent VBox for sold stocks.
-     * @param stockCount The number of stocks sold.
-     * @param description The item description.
-     */
     public void addSoldStockNotification(int stockCount, String description) {
         Platform.runLater(() -> {
             VBox notificationBox = new VBox();
@@ -1384,10 +1222,8 @@ public class dashboardController {
             hBox.getChildren().addAll(imageView, label);
             notificationBox.getChildren().add(hBox);
 
-            // Add to the top of the VBox (most recent first)
             recent.getChildren().add(0, notificationBox);
 
-            // If overflow, ensure parent VBox (recent) is scrollable and maintains its height
             if (recent.getParent() instanceof ScrollPane scrollPane) {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(false);
@@ -1395,7 +1231,6 @@ public class dashboardController {
                 scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             }
 
-            // Save to database with only notification text
             Connection connect = null;
             try {
                 Object[] result = database_utility.update(
@@ -1415,11 +1250,9 @@ public class dashboardController {
         });
     }
 
-
     @FXML
     private void handleEditButton() {
         try {
-            // Count checked checkboxes in inventory table
             int checkedCount = 0;
             Inventory_management_bin selectedItem = null;
             
@@ -1431,7 +1264,6 @@ public class dashboardController {
             }
             
             if (checkedCount == 0) {
-                // Show error if no item is selected
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -1440,7 +1272,6 @@ public class dashboardController {
                 alert.showAndWait();
                 return;
             } else if (checkedCount > 1) {
-                // Show error alert if multiple checkboxes are checked
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Selection Error");
                 alert.setHeaderText(null);
@@ -1450,11 +1281,9 @@ public class dashboardController {
                 return;
             }
 
-            // Load and show the edit form
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/addEditProduct/add-edit-product_form.fxml"));
             Parent editForm = loader.load();
             
-            // Get the controller and set up the data
             addeditproductController controller = loader.getController();
             controller.setDashboardController(this);
             controller.setItemToEdit(selectedItem);
@@ -1467,7 +1296,6 @@ public class dashboardController {
             stage.setScene(scene);
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/intervein_logo_no_text.png")));
             
-            // Center the stage on the inventory pane
             Bounds paneBounds = right_pane.localToScreen(right_pane.getBoundsInLocal());
             stage.show();
             double centerX = paneBounds.getMinX() + (paneBounds.getWidth() / 2) - (stage.getWidth() / 2);
@@ -1485,16 +1313,15 @@ public class dashboardController {
             alert.showAndWait();
         }
     }
+
     private ImageView createNotificationIcon(String iconPath) {
         Image icon;
         try {
-            // Try to load the specified icon
             icon = new Image(getClass().getResource(iconPath).toExternalForm());
             if (icon.isError()) {
                 throw new Exception("Icon failed to load");
             }
         } catch (Exception e) {
-            // If specified icon fails to load, determine fallback based on notification text
             System.err.println("Failed to load icon: " + iconPath + ". Using fallback icon.");
             icon = new Image(getClass().getResource("/images/stocks.png").toExternalForm());
         }
@@ -1504,76 +1331,12 @@ public class dashboardController {
         imageView.setFitWidth(22);
         imageView.setPreserveRatio(true);
         return imageView;
-    }    private void loadNotificationsFromDatabase() {
-        Connection connect = null;
-        try {
-            Object[] result = database_utility.query(
-                "SELECT activities, timestamp FROM notifications_activities ORDER BY timestamp DESC"
-            );
-            if (result != null) {
-                connect = (Connection) result[0];
-                ResultSet rs = (ResultSet) result[1];
-                
-                while (rs.next()) {
-                    String activity = rs.getString("activities");
-                    
-                    // Determine icon path based on activity text pattern
-                    String iconPath;
-                    if (activity.contains("Product deleted")) {
-                        iconPath = "/images/trash.png";
-                    } else if (activity.contains("New product added")) {
-                        iconPath = "/images/plus.png";
-                    } else if (activity.contains("has been sold")) {
-                        iconPath = "/images/peso.png";
-                    } else if (activity.contains("arrived")) {
-                        iconPath = "/images/stocks.png";
-                    } else if (activity.contains("Product updated")) {
-                        iconPath = "/images/edit.png";
-                    } else {
-                        iconPath = "/images/stocks.png"; // default fallback
-                    }
+    }
 
-                    // Debug print to verify icon selection
-                    System.out.println("Activity: " + activity);
-                    System.out.println("Selected icon: " + iconPath);
-
-                    VBox notificationBox = new VBox();
-                    notificationBox.setPrefHeight(30);
-                    notificationBox.setMinHeight(30);
-                    notificationBox.setMaxHeight(30);
-                    notificationBox.setStyle("-fx-background-color: #0E1D47; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
-
-                    VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
-
-                    HBox hBox = new HBox(8);
-                    hBox.setFillHeight(true);
-                    hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
-
-                    ImageView imageView = createNotificationIcon(iconPath);
-
-                    Label label = new Label(activity);
-                    label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
-
-                    hBox.getChildren().addAll(imageView, label);
-                    notificationBox.getChildren().add(hBox);
-
-                    recent.getChildren().add(notificationBox);
-                }
-
-                // Configure scrolling if needed
-                if (recent.getParent() instanceof ScrollPane scrollPane) {
-                    scrollPane.setFitToWidth(true);
-                    scrollPane.setFitToHeight(false);
-                    scrollPane.setPannable(true);
-                    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+    private void loadNotificationsFromDatabase() {
+        System.out.println("TODO: Load notifications from Firebase");
+        if (recent != null) {
+            recent.getChildren().clear();
         }
     }
     
@@ -1584,7 +1347,6 @@ public class dashboardController {
         if (hostServices != null) {
             hostServices.showDocument(url);
         } else {
-            // Fallback using Runtime if HostServices is not available
             try {
                 String os = System.getProperty("os.name").toLowerCase();
                 ProcessBuilder pb;
@@ -1598,7 +1360,6 @@ public class dashboardController {
                 pb.start();
             } catch (Exception e) {
                 e.printStackTrace();
-                // Show error dialog
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
@@ -1608,7 +1369,6 @@ public class dashboardController {
         }
     }
 
-
     private void updateStockNotifications() {
         ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
         ComboBox<String> monthCombo = (ComboBox<String>) borderpane.lookup("#month");
@@ -1617,21 +1377,18 @@ public class dashboardController {
             return;
         }
 
-        // Get the threshold value and month
         int threshold;
         try {
             threshold = Integer.parseInt(stocksCombo.getValue());
         } catch (NumberFormatException e) {
-            threshold = 1000; // Default value
+            threshold = 1000;
         }
         String selectedMonth = monthCombo.getValue().toLowerCase().substring(0, 3);
 
-        // Clear existing notifications
         recent1.getChildren().clear();
 
         Connection connect = null;
         try {
-            // Query to get stock levels for the selected month, joining with item descriptions
             String sql = String.format(
                 "SELECT s.item_code, s.%s1 as stock_level, so.item_description, so.volume " +
                 "FROM stock_onhand s " +
@@ -1651,7 +1408,6 @@ public class dashboardController {
                     String description = rs.getString("item_description");
                     int volume = rs.getInt("volume");
 
-                    // Create notification box
                     VBox notificationBox = new VBox();
                     notificationBox.setPrefHeight(30);
                     notificationBox.setMinHeight(30);
@@ -1674,10 +1430,8 @@ public class dashboardController {
                     hBox.getChildren().addAll(imageView, label);
                     notificationBox.getChildren().add(hBox);
 
-                    // Add margin between notifications
                     VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 5, 0));
 
-                    // Add to container
                     recent1.getChildren().add(notificationBox);
                 }
             }
@@ -1687,40 +1441,26 @@ public class dashboardController {
     }
     
     private void setupSearch() {
-        // Set prompt text and style
         searchField.setPromptText("Search items...");
         searchField.setStyle("-fx-background-color: #081739; -fx-background-radius: 30; " +
                            "-fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.5);");
 
-        // Add listener for real-time search
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                // If search field is empty, show all items
                 inventory_management_query();
             } else {
-                // Perform search with the new text
                 performSearch(newValue);
             }
         });
     }
 
     private void performSearch(String searchTerm) {
-    // TODO: performSearch(String searchTerm) - Replace with Firebase query to search inventory
-    private void performSearch(String searchTerm) {
-        // Placeholder for Firebase implementation
         System.out.println("TODO: Search inventory in Firebase for: " + searchTerm);
         if (inventory_management_table != null) {
             inventory_management_table.clear();
         }
-        // TODO: Populate inventory_management_table from Firebase search
-    }
     }
 
-    /**
-     * Adds a notification for inventory actions (add, edit, delete)
-     * @param action The action performed (add, edit, delete)
-     * @param description The item description
-     */
     public void addInventoryActionNotification(String action, String description) {
         Platform.runLater(() -> {
             VBox notificationBox = new VBox();
@@ -1728,43 +1468,93 @@ public class dashboardController {
             notificationBox.setMinHeight(30);
             notificationBox.setMaxHeight(30);
             
-            // Choose icon and notification text based on action
             String imagePath;
             String notificationText;
             String backgroundColor = "#0E1D47";
             
             switch (action.toLowerCase()) {
-            // TODO: loadNotificationsFromDatabase() - Replace with Firebase query to fetch notifications
-            private void loadNotificationsFromDatabase() {
-                // Placeholder for Firebase implementation
-                System.out.println("TODO: Load notifications from Firebase");
-                if (recent != null) {
-                    recent.getChildren().clear();
-                }
-                // TODO: Populate recent VBox from Firebase notifications
+                case "add":
+                    imagePath = "/images/plus.png";
+                    notificationText = "New product added: " + description;
+                    break;
+                case "edit":
+                    imagePath = "/images/edit.png";
+                    notificationText = "Product updated: " + description;
+                    break;
+                case "delete":
+                    imagePath = "/images/trash.png";
+                    notificationText = "Product deleted: " + description;
+                    break;
+                default:
+                    imagePath = "/images/stocks.png";
+                    notificationText = "Inventory action: " + description;
             }
-        // Show confirmation dialog
+            
+            notificationBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 7; -fx-padding: 1 1 1 1; -fx-margin: 0;");
+            VBox.setMargin(notificationBox, new javafx.geometry.Insets(0, 0, 0, 0));
+
+            HBox hBox = new HBox(8);
+            hBox.setFillHeight(true);
+            hBox.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 9 0 9;");
+
+            ImageView imageView = createNotificationIcon(imagePath);
+
+            Label label = new Label(notificationText);
+            label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Arial';");
+
+            hBox.getChildren().addAll(imageView, label);
+            notificationBox.getChildren().add(hBox);
+
+            recent.getChildren().add(0, notificationBox);
+
+            if (recent.getParent() instanceof ScrollPane scrollPane) {
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(false);
+                scrollPane.setPannable(true);
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            }
+
+            Connection connect = null;
+            try {
+                Object[] result = database_utility.update(
+                    "INSERT INTO notifications_activities (activities) VALUES (?)",
+                    notificationText
+                );
+                if (result != null) {
+                    connect = (Connection) result[0];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connect != null) {
+                    database_utility.close(connect);
+                }
+            }
+
+            if (forecastingController != null) {
+                forecastingController.refreshProductList();
+            }
+        });
+    }
+
+    @FXML
+    private void handleClearActivities() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Clear Activities");
         alert.setHeaderText(null);
         alert.setContentText("Are you sure you want to clear all recent activities?");
         alert.initStyle(StageStyle.UNDECORATED);
 
-        // Customize the buttons
         ButtonType buttonTypeYes = new ButtonType("Yes");
         ButtonType buttonTypeNo = new ButtonType("No");
         alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
 
-        // Show the dialog and wait for user response
         alert.showAndWait().ifPresent(response -> {
             if (response == buttonTypeYes) {
-                // Only clear the 'recent' VBox (Recent Activities)
                 if (recent != null) {
                     recent.getChildren().clear();
                 }
-                // Do NOT clear recent1 (Critical Stocks)
 
-                // Only clear activity notifications from the database
                 Connection connect = null;
                 try {
                     Object[] result = database_utility.update("DELETE FROM notifications_activities");
@@ -1773,7 +1563,6 @@ public class dashboardController {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    // Show error alert
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setTitle("Error");
                     errorAlert.setHeaderText(null);
@@ -1789,10 +1578,8 @@ public class dashboardController {
         });
     }
 
-    // Add a new method to show dashboard
     public void showDashboard() {
         Platform.runLater(() -> {
-            // Set initial tab and visibility
             if (tabpane != null) {
                 tabpane.getSelectionModel().select(0);
             }
@@ -1803,4 +1590,3 @@ public class dashboardController {
         });
     }
 }
-
