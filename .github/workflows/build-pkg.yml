@@ -1,15 +1,13 @@
 name: Build & Release Windows App
 
 on:
-  # Trigger on version tags (e.g., v1.0, v2.3)
   push:
     tags:
       - 'v*'
-  # Allow manual trigger from the "Actions" tab for testing
   workflow_dispatch:
 
 permissions:
-  contents: write # Required to create releases
+  contents: write
 
 jobs:
   build-and-release:
@@ -26,29 +24,28 @@ jobs:
           java-version: '24'
           cache: 'maven'
 
-      - name: Build Project
+      - name: Build and Install
         run: mvn clean install
 
+      # --- NEW STEP: Create the Runtime Image ---
+      - name: Create Runtime Image (JLink)
+        run: mvn javafx:jlink
+
+      # --- Package the EXE using the Image ---
       - name: Package EXE (JPackage)
         run: mvn jpackage:jpackage
 
-      # 1. Organize files into a clean folder for the client
       - name: Prepare Release Folder
         run: |
           mkdir release
-          # Copy the generated EXE (using wildcard in case version changes)
           copy target/dist/*.exe release/
-          # Copy your firebase key if you committed it (optional but helpful for testing)
-          # copy serviceAccountKey.json release/
 
-      # 2. Upload Artifact (So you can download it without a formal release)
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: InventorySystem-Build
           path: release/*.exe
 
-      # 3. Create GitHub Release (Only runs if a tag was pushed)
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2

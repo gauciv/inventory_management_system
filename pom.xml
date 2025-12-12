@@ -85,6 +85,15 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>${main.class}</mainClass>
+                    
+                    <jlinkImageName>image</jlinkImageName>
+                    <launcher>InventorySystem</launcher>
+                    
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    
                     <options>
                         <option>--add-opens</option>
                         <option>javafx.graphics/javafx.scene=org.controlsfx.controls</option>
