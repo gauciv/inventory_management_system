@@ -42,8 +42,6 @@ import confirmation.confirmationController;
 import sold_stocks.soldStock;
 import add_edit_product.addeditproductController;
 import javafx.scene.layout.Region;
-
-// --- FIX: Added missing import ---
 import javafx.event.ActionEvent;
 
 import java.io.IOException;
@@ -115,7 +113,6 @@ public class dashboardController {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
-        // Trigger data loading ONLY after token is received
         if (idToken != null) {
             loadDashboardData();
         }
@@ -132,8 +129,6 @@ public class dashboardController {
     @FXML
     public void initialize() {
         try {
-            // --- UI SETUP ONLY (No Data Fetching Here) ---
-            
             if (tabpane != null) {
                 tabpane.lookupAll(".tab-header-area").forEach(node -> {
                     node.setVisible(false);
@@ -149,7 +144,9 @@ public class dashboardController {
 
             inventory_management_table = FXCollections.observableArrayList();
             
-            if (borderpane != null) borderpane.setUserData(this);
+            if (borderpane != null) {
+                borderpane.setUserData(this);
+            }
 
             String currentMonth = java.time.LocalDate.now().getMonth().toString();
             currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
@@ -157,24 +154,36 @@ public class dashboardController {
             setupTableView();
             setupWindowControls();
             setupFormContainers();
-            startClock();
-            setupNavigation();
-            
-            if (searchField != null) setupSearch();
             
             if (monthComboBox != null) {
                 monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
                 monthComboBox.setPromptText("Select a Month");
                 monthComboBox.setValue(currentMonth);
                 monthComboBox.setOnAction(event -> {
-                    // Only query if token exists
                     if (idToken != null) {
                         inventory_management_query();
-                        updateStockNotifications();
                     }
                 });
             }
+            
+            if (borderpane != null && borderpane.lookup("#month") != null) {
+                ComboBox<String> dashboardMonthCombo = (ComboBox<String>) borderpane.lookup("#month");
+                dashboardMonthCombo.setValue(currentMonth);
+                dashboardMonthCombo.setOnAction(event -> updateStockNotifications());
+            }
 
+            if (borderpane != null && borderpane.lookup("#stocks") != null) {
+                ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
+                stocksCombo.setOnAction(event -> updateStockNotifications());
+            }
+            
+            startClock();
+            setupNavigation();
+            
+            if (searchField != null) {
+                setupSearch();
+            }
+            
             if (forecastRefreshButton != null) {
                 forecastRefreshButton.setOnAction(e -> {
                     if (forecastingController != null) {
@@ -185,28 +194,43 @@ public class dashboardController {
             
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Initialization Error", "Failed to initialize the dashboard UI: " + e.getMessage());
+            showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
         }
     }
 
     private void loadDashboardData() {
-        // Initialize Sub-Controllers with the Token
         initializeForecastingSection();
         initializeSalesSection();
 
-        // Load Main Data in Background
         new Thread(() -> {
             try {
-                // Slight delay to allow UI to render first frame
-                Thread.sleep(200); 
-                inventory_management_query();
-                updateStockNotifications();
+                Thread.sleep(500); 
+                inventory_management_query(); // This calls updateStockNotifications internally
                 loadNotificationsFromDatabase();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
     }
+
+    // --- ADDED MISSING METHOD HERE ---
+    private void initializeSalesSection() {
+        try {
+            if (salesChart == null) return;
+            
+            salesController = new SalesController();
+            salesController.setMainController(this);
+            salesController.setIdToken(idToken);
+            salesController.injectComponents(
+                salesChart, totalSalesLabel, topProductLabel, salesDateLabel,
+                exportButton, growthRateLabel, averageSalesLabel,
+                totalSalesButton, compareButton
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // ---------------------------------
 
     private void initializeForecastingSection() {
         try {
@@ -217,31 +241,7 @@ public class dashboardController {
                 forecastChart.setAnimated(false);
                 forecastChart.getXAxis().setLabel("Month");
                 forecastChart.getYAxis().setLabel("Sales Volume");
-                forecastChart.setCreateSymbols(true);
                 forecastChart.setLegendVisible(true);
-                
-                Node legend = forecastChart.lookup(".chart-legend");
-                if (legend != null) {
-                    legend.setStyle("-fx-background-color: transparent;");
-                    legend.lookupAll(".chart-legend-item")
-                          .forEach(item -> item.setStyle("-fx-text-fill: white !important;"));
-                }
-                
-                forecastChart.getStyleClass().add("chart");
-                
-                NumberAxis yAxis = (NumberAxis) forecastChart.getYAxis();
-                yAxis.setAutoRanging(true);
-                yAxis.setForceZeroInRange(false);
-                yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis) {
-                    @Override
-                    public String toString(Number object) {
-                        String label = String.format("%,.0f", object.doubleValue());
-                        if (object.doubleValue() >= 1000) {
-                            label = String.format("%,.0fk", object.doubleValue() / 1000);
-                        }
-                        return label;
-                    }
-                });
             }
             
             forecastingController.initialize(
@@ -272,7 +272,8 @@ public class dashboardController {
         if (inventory_table == null) return;
 
         inventory_table.setItems(inventory_management_table);
-
+        
+        // --- RESTORED STYLING AND TEXT ---
         col_number.getStyleClass().add("col-number");
         col_select.getStyleClass().add("col-select");
         col_item_code.getStyleClass().add("col-item-code");
@@ -311,8 +312,11 @@ public class dashboardController {
 
         inventory_table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
-        inventory_table.prefWidthProperty().bind(inventorypane.widthProperty().multiply(0.98));
-        inventory_table.prefHeightProperty().bind(inventorypane.heightProperty().multiply(0.85));
+        if (inventorypane != null) {
+            inventory_table.prefWidthProperty().bind(inventorypane.widthProperty().multiply(0.98));
+            inventory_table.prefHeightProperty().bind(inventorypane.heightProperty().multiply(0.85));
+        }
+        // --- END RESTORED STYLING ---
 
         col_number.setCellValueFactory(cellData -> 
             javafx.beans.binding.Bindings.createObjectBinding(
@@ -331,6 +335,7 @@ public class dashboardController {
             private final CheckBox checkBox = new CheckBox();
             {
                 checkBox.setOnAction((ActionEvent _event) -> {
+                    // Check if item exists before setting selected property
                     Inventory_management_bin bin = getTableRow() != null ? getTableRow().getItem() : null;
                     if (bin != null) {
                         bin.setSelected(checkBox.isSelected());
@@ -351,7 +356,13 @@ public class dashboardController {
                 }
             }
         });
-        inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+        
+        // This line is CRITICAL for applying CSS styles from /styles/style.css
+        try {
+             inventory_table.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+        } catch (NullPointerException e) {
+             System.err.println("Warning: Could not find /styles/style.css");
+        }
     }
     
     private void setupWindowControls() {
@@ -371,30 +382,33 @@ public class dashboardController {
                 stage.setY(event.getScreenY() - yOffset);
             }
         });
-
-        setupNavigation(); // Call setupNavigation() here inside setupWindowControls if you prefer, or just in initialize
     }
     
-    // --- FIX: Ensure setupNavigation exists ---
     private void setupNavigation() {
         dashboardbutton.setOnAction(e -> TabSwitch(dashboardbutton, dashboardpane));
         inventorybutton.setOnAction(e -> TabSwitch(inventorybutton, inventorypane));
         salesbutton.setOnAction(e -> TabSwitch(salesbutton, salespane));
-        forecastingbutton.setOnAction(e -> TabSwitch(forecastingbutton, forecastingpane));
+        
+        forecastingbutton.setOnAction(e -> {
+            TabSwitch(forecastingbutton, forecastingpane);
+            if (forecastingController != null) {
+                forecastingController.refreshProductList();
+            }
+        });
+        
         helpbutton.setOnAction(e -> TabSwitch(helpbutton, helppane));
         
         TabSwitch(dashboardbutton, dashboardpane);
     }
-    // ------------------------------------------
     
     private void setupFormContainers() {
-        searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
-        inventory_table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-
-        inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
-        inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
-        inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
-        inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
+        if(searchField != null) searchField.prefWidthProperty().bind(inventorypane.widthProperty().divide(2).subtract(20));
+        if(inventorypane != null) {
+            inventorypane.widthProperty().addListener(o -> centerAddFormContainer());
+            inventorypane.heightProperty().addListener(o -> centerAddFormContainer());
+            inventorypane.widthProperty().addListener(o -> centerConfirmationContainer());
+            inventorypane.heightProperty().addListener(o -> centerConfirmationContainer());
+        }
 
         Platform.runLater(() -> centerAddFormContainer());
 
@@ -407,23 +421,13 @@ public class dashboardController {
             e.printStackTrace();
         }
 
-        monthComboBox.getItems().addAll(
+        if(monthComboBox != null) {
+            monthComboBox.getItems().addAll(
                 "January", "February", "March", "April",
                 "May", "June", "July", "August",
                 "September", "October", "November", "December"
-        );
-        monthComboBox.setValue("January");
-
-        searchField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            String baseStyle = "-fx-background-color: #081739; -fx-background-radius: 30; " +
-                    "-fx-background-insets: 0; -fx-border-radius: 30; -fx-border-color: transparent; " +
-                    "-fx-prompt-text-fill: rgba(170,170,170,0.5);";
-            if (newVal) {
-                searchField.setStyle(baseStyle + " -fx-text-fill: white;");
-            } else {
-                searchField.setStyle(baseStyle + " -fx-text-fill: black;");
-            }
-        });
+            );
+        }
     }
 
     private void centerAddFormContainer() {
@@ -766,14 +770,6 @@ public class dashboardController {
     @FXML private TableColumn<Inventory_management_bin, Boolean> col_select;
     private ObservableList<Inventory_management_bin> inventory_management_table;
 
-    public String getSelectedMonthColumn() {
-        if (monthComboBox != null && monthComboBox.getValue() != null) {
-            String month = monthComboBox.getValue().toLowerCase().substring(0, 3);
-            return month;
-        }
-        return "dec";
-    }
-
     public void inventory_management_query() {
         if (inventory_management_table != null) inventory_management_table.clear();
         System.out.println("Fetching inventory data from Firestore...");
@@ -787,7 +783,6 @@ public class dashboardController {
                 JSONObject json = new JSONObject(response);
                 org.json.JSONArray docs = json.optJSONArray("documents");
                 
-                // 1. Create a temporary list to hold data
                 java.util.List<Inventory_management_bin> tempList = new java.util.ArrayList<>();
                 
                 if (docs != null) {
@@ -806,10 +801,9 @@ public class dashboardController {
                     }
                 }
                 
-                // 2. Update the UI safely on the JavaFX Application Thread
                 Platform.runLater(() -> {
-                    inventory_management_table.setAll(tempList); // Populate Table
-                    updateStockNotifications(); // <--- FIX: Run Check AFTER data is loaded
+                    inventory_management_table.setAll(tempList);
+                    updateStockNotifications();
                 });
                 
             } catch (Exception e) {
@@ -826,7 +820,23 @@ public class dashboardController {
                 String projectId = FirebaseConfig.getProjectId();
                 String documentId = String.valueOf(itemToDelete.getItem_code());
                 FirestoreClient.deleteDocument(projectId, "inventory", documentId, idToken);
-                Platform.runLater(this::inventory_management_query);
+                
+                Platform.runLater(() -> {
+                    inventory_management_query();
+                    if (forecastingController != null) {
+                        // 1. Check if the deleted item was currently selected in the forecast combo box
+                        if (forecastProductComboBox != null && 
+                            forecastProductComboBox.getValue() != null &&
+                            forecastProductComboBox.getValue().equals(itemToDelete.getItem_des())) {
+                            
+                            forecastProductComboBox.setValue(null); // Clear selection
+                        }
+                        
+                        // 2. Refresh the list to remove the deleted product option
+                        forecastingController.refreshProductList();
+                    }
+                });
+                
                 addInventoryActionNotification("delete", itemToDelete.getItem_des());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -861,35 +871,13 @@ public class dashboardController {
     }
 
     @FXML
-    public void handleTotalSales() { // <--- CHANGED TO PUBLIC
+    public void handleTotalSales() {
         if (salesController != null) salesController.updateTotalSales();
     }
 
     @FXML
     private void handleCompare() {
         if (salesController != null) salesController.showProductSelectionDialog();
-    }
-
-    private void initializeSalesSection() {
-        try {
-            if (salesChart == null) return;
-            salesChart.setAnimated(false);
-            ((CategoryAxis) salesChart.getXAxis()).setLabel("Month");
-            ((NumberAxis) salesChart.getYAxis()).setLabel("Sales Volume");
-            
-            salesController = new SalesController();
-            salesController.setMainController(this);
-            salesController.setIdToken(idToken);
-            salesController.initialize();
-            
-            salesController.injectComponents(
-                salesChart, totalSalesLabel, topProductLabel, salesDateLabel,
-                exportButton, growthRateLabel, averageSalesLabel,
-                totalSalesButton, compareButton
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void addRecentStockNotification(int stockCount, String description) {
@@ -912,11 +900,6 @@ public class dashboardController {
             notificationBox.getChildren().add(hBox);
             
             recent.getChildren().add(0, notificationBox);
-            
-            // Save to DB (mock for now if table doesn't exist, logic kept for compatibility)
-            try {
-                database_utility.update("INSERT INTO notifications_activities (activities) VALUES (?)", text);
-            } catch (Exception ignored) {}
         });
     }
 
@@ -997,18 +980,17 @@ public class dashboardController {
         if (hostServices != null) hostServices.showDocument(url);
     }
 
-   private void updateStockNotifications() {
+    private void updateStockNotifications() {
         if (recent1 == null) return;
         
-        // Ensure this runs on UI thread
         Platform.runLater(() -> {
             recent1.getChildren().clear();
             
-            // 1. Get the threshold from the dropdown (default to 1000 if null)
             int threshold = 1000;
-            // Try to find the ComboBox by ID if strictly needed, or just use the FXML variable if bound
-            // Using logic to find it in case it wasn't injected directly via @FXML
-            ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.getScene().lookup("#stocks");
+            ComboBox<String> stocksCombo = null;
+            if (borderpane != null && borderpane.getScene() != null) {
+                stocksCombo = (ComboBox<String>) borderpane.getScene().lookup("#stocks");
+            }
             
             if (stocksCombo != null && stocksCombo.getValue() != null) {
                 try {
@@ -1018,29 +1000,19 @@ public class dashboardController {
                 }
             }
 
-            // 2. Loop through inventory and check SOH
             boolean hasCritical = false;
             
-            // Check if table is empty
-            if (inventory_management_table.isEmpty()) {
-                System.out.println("Inventory list is empty, skipping critical check.");
-                return;
-            }
+            if (inventory_management_table.isEmpty()) return;
 
             for (Inventory_management_bin item : inventory_management_table) {
-                // Logic: If SOH is less than or EQUAL to threshold (covers 0)
                 if (item.getSoh() <= threshold) {
                     hasCritical = true;
-                    
                     VBox alertBox = new VBox();
                     alertBox.setStyle("-fx-background-color: #3C0808; -fx-background-radius: 5; -fx-padding: 5; -fx-margin: 0 0 5 0;");
-                    
                     Label nameLabel = new Label(item.getItem_des());
                     nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;");
-                    
                     Label stockLabel = new Label("Stocks: " + item.getSoh() + " / " + threshold);
                     stockLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 11px;");
-                    
                     alertBox.getChildren().addAll(nameLabel, stockLabel);
                     recent1.getChildren().add(alertBox);
                 }
@@ -1065,11 +1037,11 @@ public class dashboardController {
 
     private void performSearch(String searchTerm) {
         if (inventory_management_table != null) inventory_management_table.clear();
-        // TODO: Implement Firestore search logic
+        // Placeholder for future implementation
     }
 
     public void addInventoryActionNotification(String action, String description) {
-        // Logic similar to addRecentStockNotification
+        // Placeholder
     }
 
     @FXML

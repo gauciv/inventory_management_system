@@ -154,7 +154,14 @@ public class ForecastingController {
         if (forecastPlaceholderLabel != null) {
             forecastPlaceholderLabel.setVisible(!ready);
         }
-        if (!ready) return;
+        if (!ready) {
+            clearForecastView();
+            return;
+        }
+
+        if (forecastPlaceholderLabel != null) {
+            forecastPlaceholderLabel.setVisible(false);
+        }
         
         try {
             if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
@@ -266,6 +273,26 @@ public class ForecastingController {
         });
     }
 
+    private void clearForecastView() {
+        Platform.runLater(() -> {
+            if (forecastChart != null) {
+                forecastChart.getData().clear();
+            }
+            if (forecastAccuracyLabel != null) {
+                forecastAccuracyLabel.setText("Select a product and formula.");
+            }
+            if (forecastTrendLabel != null) {
+                forecastTrendLabel.setText("Trend: N/A");
+            }
+            if (forecastRecommendationsLabel != null) {
+                forecastRecommendationsLabel.setText("Recommendations: N/A");
+            }
+            if (forecastPlaceholderLabel != null) {
+                forecastPlaceholderLabel.setVisible(true);
+            }
+        });
+    }
+
     private void showFormulaHelp() {
         try {
             Stage helpStage = new Stage();
@@ -358,4 +385,6 @@ public class ForecastingController {
     public void refreshProductList() {
         loadProducts();
     }
+
+    
 }
