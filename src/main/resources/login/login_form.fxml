@@ -68,33 +68,30 @@
          </font>
       </Button>
 
-      <ImageView fx:id="login_bg" blendMode="SRC_ATOP" fitHeight="451.0" fitWidth="502.0" layoutX="403.0" pickOnBounds="true">
+            <ImageView fx:id="login_bg" blendMode="SRC_ATOP" fitHeight="451.0" fitWidth="502.0" layoutX="403.0" pickOnBounds="true">
          <image>
-            <Image url="@../images/login_bg.jpg" />
+            <Image url="@../images/treebgcropped.png" />
          </image>
       </ImageView>
 
       <!-- Minimize Button with PNG icon -->
-      <Button layoutX="830.0" layoutY="8.0" onMouseClicked="#handleMinimize" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
-         <graphic>
-            <ImageView fitHeight="18" fitWidth="14">
-               <image>
-                  <Image url="@../images/minimize.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
+      <Button layoutX="830.0" layoutY="8.0" onMouseClicked="#handleMinimize" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: transparent; -fx-cursor: hand;" />
 
       <!-- Exit Button with PNG icon -->
       <Button layoutX="850.0" layoutY="15.0" onMouseClicked="#handleExit" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
          <graphic>
             <ImageView fitHeight="18" fitWidth="14">
                <image>
-                  <Image url="@../images/x_mark.png" />
+                  <Image url="@../images/x_white.png" />
                </image>
             </ImageView>
          </graphic>
       </Button>
+      <ImageView fitHeight="18" fitWidth="14" layoutX="832.0" layoutY="19.0">
+         <image>
+            <Image url="@../images/minimize_white.png" />
+         </image>
+      </ImageView>
 
    </children>
 
