@@ -24,33 +24,47 @@ jobs:
           java-version: '24'
           cache: 'maven'
 
+      # --- NEW STEP: Inject the Firebase Key ---
+      - name: Create Firebase Key File
+        shell: powershell
+        run: |
+          $content = "${{ secrets.FIREBASE_KEY_BASE64 }}"
+          $bytes = [Convert]::FromBase64String($content)
+          [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
+          Write-Host "serviceAccountKey.json has been restored from secrets."
+
       - name: Build and Install
         run: mvn clean install
 
-      # --- NEW STEP: Create the Runtime Image ---
       - name: Create Runtime Image (JLink)
         run: mvn javafx:jlink
 
-      # --- Package the EXE using the Image ---
       - name: Package EXE (JPackage)
         run: mvn jpackage:jpackage
 
+      # --- MODIFIED: Include Key in the Release ---
       - name: Prepare Release Folder
         run: |
           mkdir release
-          copy target/dist/*.exe release/
+          # Copy the entire JPackage output folder (contains exe + jre)
+          xcopy /E /I target/dist/InventorySystem release/InventorySystem
+          # CRITICAL: Put the key inside the folder next to the .exe
+          copy serviceAccountKey.json release/InventorySystem/
 
+      # 2. Upload Artifact (ZIP it so the key stays with the exe)
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: InventorySystem-Build
-          path: release/*.exe
+          name: InventorySystem-Full
+          path: release/
 
+      # 3. Create GitHub Release
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.exe
+          files: release/
+          # Ideally, zip the folder here or let GitHub do it on download
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

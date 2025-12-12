@@ -1,71 +1,100 @@
 package firebase;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.AccessToken;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class FirestoreClient {
     private static final String BASE_URL = "https://firestore.googleapis.com/v1/projects/";
+    private static String cachedToken = null;
+    private static long tokenExpiryTime = 0;
 
-    // Example: Get a document
-    public static String getDocument(String projectId, String documentPath, String idToken) throws Exception {
+    // Helper: Automatically load credentials from the JSON file
+    private static String getAccessToken() throws IOException {
+        // If we have a valid cached token, use it
+        if (cachedToken != null && System.currentTimeMillis() < tokenExpiryTime) {
+            return cachedToken;
+        }
+
+        // Otherwise, generate a new one from the file
+        try (InputStream serviceAccount = new FileInputStream("serviceAccountKey.json")) {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount)
+                .createScoped(Collections.singleton("https://www.googleapis.com/auth/datastore"));
+            
+            credentials.refreshIfExpired();
+            AccessToken token = credentials.getAccessToken();
+            
+            cachedToken = token.getTokenValue();
+            // Cache for slightly less than actual expiry to be safe
+            tokenExpiryTime = token.getExpirationTime().getTime() - 60000; 
+            
+            return cachedToken;
+        }
+    }
+
+    public static String getDocument(String projectId, String documentPath, String unusedIdToken) throws Exception {
+        // IGNORE unusedIdToken, use the file instead
+        String token = getAccessToken();
+        
         String urlStr = BASE_URL + projectId + "/databases/(default)/documents/" + documentPath;
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "Bearer " + idToken);
-        int responseCode = conn.getResponseCode();
-        Scanner scanner = new Scanner(
-            responseCode == 200 ? conn.getInputStream() : conn.getErrorStream(), "UTF-8"
-        ).useDelimiter("\\A");
-        String response = scanner.hasNext() ? scanner.next() : "";
-        scanner.close();
-        if (responseCode != 200) {
-            throw new Exception("Firestore getDocument failed: " + response);
-        }
-        return response;
+        conn.setRequestProperty("Authorization", "Bearer " + token);
+        
+        return handleResponse(conn, "getDocument");
     }
 
-    // Example: Create or update a document
-    public static String setDocument(String projectId, String documentPath, String idToken, String jsonBody) throws Exception {
+    public static String setDocument(String projectId, String documentPath, String unusedIdToken, String jsonBody) throws Exception {
+        String token = getAccessToken();
+        
         String urlStr = BASE_URL + projectId + "/databases/(default)/documents/" + documentPath;
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("PATCH");
-        conn.setRequestProperty("Authorization", "Bearer " + idToken);
+        conn.setRequestProperty("Authorization", "Bearer " + token);
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
+        
         try (OutputStream os = conn.getOutputStream()) {
             os.write(jsonBody.getBytes(StandardCharsets.UTF_8));
         }
-        int responseCode = conn.getResponseCode();
-        Scanner scanner = new Scanner(
-            responseCode == 200 ? conn.getInputStream() : conn.getErrorStream(), "UTF-8"
-        ).useDelimiter("\\A");
-        String response = scanner.hasNext() ? scanner.next() : "";
-        scanner.close();
-        if (responseCode != 200) {
-            throw new Exception("Firestore setDocument failed: " + response);
-        }
-        return response;
+        
+        return handleResponse(conn, "setDocument");
     }
 
-    // NEW METHOD: Delete a document
-    public static void deleteDocument(String projectId, String collectionPath, String documentId, String idToken) throws Exception {
+    public static void deleteDocument(String projectId, String collectionPath, String documentId, String unusedIdToken) throws Exception {
+        String token = getAccessToken();
+        
         String urlStr = BASE_URL + projectId + "/databases/(default)/documents/" + collectionPath + "/" + documentId;
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("DELETE");
-        conn.setRequestProperty("Authorization", "Bearer " + idToken);
+        conn.setRequestProperty("Authorization", "Bearer " + token);
         
+        handleResponse(conn, "deleteDocument");
+    }
+
+    private static String handleResponse(HttpURLConnection conn, String operation) throws Exception {
         int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
-            String response = scanner.hasNext() ? scanner.next() : "";
-            scanner.close();
-            throw new Exception("Firestore deleteDocument failed: " + response);
+        Scanner scanner = new Scanner(
+            responseCode >= 200 && responseCode < 300 ? conn.getInputStream() : conn.getErrorStream(), 
+            "UTF-8"
+        ).useDelimiter("\\A");
+        String response = scanner.hasNext() ? scanner.next() : "";
+        scanner.close();
+        
+        if (responseCode < 200 || responseCode >= 300) {
+            throw new Exception("Firestore " + operation + " failed: " + response);
         }
+        return response;
     }
 }
