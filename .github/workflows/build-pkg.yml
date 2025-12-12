@@ -32,14 +32,13 @@ jobs:
           $bytes = [Convert]::FromBase64String($content)
           [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
 
-      # 2. Build the JAR (Copy dependencies into target/lib)
+      # 2. Build the JAR & Dependencies
       - name: Build JAR and Dependencies
         run: |
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
       # 3. Package as Portable Folder (App Image)
-      # We force 'type=app-image' so we get a folder we can modify, not a locked .exe installer
       - name: Package Application Image
         run: |
           mvn jpackage:jpackage `
@@ -48,17 +47,29 @@ jobs:
             "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" `
             "-Djpackage.main-class=login.Launcher"
 
-      # 4. Prepare Release (Inject Key into the folder)
+      # 4. Prepare Release (Smart Folder Detection)
       - name: Prepare Release Folder
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path release
-          # Copy the generated App Image folder
-          Copy-Item -Path "target/dist/InventorySystem" -Destination "release/InventorySystem" -Recurse
-          # Copy the key INSIDE that folder, next to the exe
+          
+          # Find whatever folder jpackage created in target/dist
+          $AppPath = Get-ChildItem -Path "target/dist" -Directory | Select-Object -First 1
+          
+          if ($null -eq $AppPath) {
+              Write-Error "No application folder found in target/dist! JPackage might have failed silently."
+              exit 1
+          }
+          
+          Write-Host "Found Generated App at: $($AppPath.FullName)"
+          
+          # Copy it to our release folder, renaming it to 'InventorySystem' for consistency
+          Copy-Item -Path $AppPath.FullName -Destination "release/InventorySystem" -Recurse
+          
+          # Inject the key inside
           Copy-Item -Path "serviceAccountKey.json" -Destination "release/InventorySystem/serviceAccountKey.json"
 
-      # 5. Zip the Folder (So the client gets one file containing everything)
+      # 5. Zip
       - name: Zip Release
         shell: powershell
         run: |
