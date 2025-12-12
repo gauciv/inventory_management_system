@@ -1,37 +1,54 @@
 package firebase;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import org.json.JSONObject;
+import java.io.File;
+import java.nio.file.Files;
 
 public class FirebaseConfig {
-    private static final String ENV_PATH = ".env";
-    private static Properties props;
+    
+    private static String projectId = null;
 
-    static {
-        props = new Properties();
-        try (FileInputStream fis = new FileInputStream(ENV_PATH)) {
-            props.load(fis);
-        } catch (IOException e) {
-            System.err.println("Could not load .env file: " + e.getMessage());
-        }
-    }
-
-    public static String get(String key) {
-        return props.getProperty(key);
-    }
-
-    public static String getApiKey() {
-        return get("FIREBASE_API_KEY");
-    }
+    /**
+     * Reads the Project ID from the serviceAccountKey.json file.
+     * This ensures it works without an .env file.
+     */
     public static String getProjectId() {
-        return get("FIREBASE_PROJECT_ID");
+        // Return cached value if we already found it
+        if (projectId != null) {
+            return projectId;
+        }
+
+        try {
+            File keyFile = new File("serviceAccountKey.json");
+            
+            if (!keyFile.exists()) {
+                System.err.println("CRITICAL ERROR: serviceAccountKey.json not found in current directory.");
+                return null;
+            }
+
+            // Read the file content
+            String content = new String(Files.readAllBytes(keyFile.toPath()));
+            JSONObject json = new JSONObject(content);
+            
+            // Extract the project_id field
+            if (json.has("project_id")) {
+                projectId = json.getString("project_id");
+                System.out.println("Loaded Project ID from file: " + projectId);
+            } else {
+                System.err.println("Error: serviceAccountKey.json does not contain 'project_id'");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to read Project ID from key file: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return projectId;
     }
-    public static String getAuthDomain() {
-        return get("FIREBASE_AUTH_DOMAIN");
+
+    // This is no longer used by FirebaseAuth (we hardcoded it there), 
+    // but kept here to prevent compilation errors if other files reference it.
+    public static String getApiKey() {
+        return ""; 
     }
-    public static String getAppId() {
-        return get("FIREBASE_APP_ID");
-    }
-    // Add more getters as needed
 }
