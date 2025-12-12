@@ -24,7 +24,7 @@ jobs:
           java-version: '24'
           cache: 'maven'
 
-      # 1. Inject Key
+      # 1. Inject Firebase Key
       - name: Create Firebase Key File
         shell: powershell
         run: |
@@ -32,50 +32,76 @@ jobs:
           $bytes = [Convert]::FromBase64String($content)
           [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
 
-      # 2. Build the JAR & Dependencies
-      - name: Build JAR and Dependencies
+      # 2. Build & Organize Dependencies
+      - name: Build JAR and Libs
         run: |
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      # 3. Package as Portable Folder (App Image)
+      # 3. Create a CLEAN Staging Directory (Fixes jpackage confusion)
+      - name: Prepare Staging Area
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path target/staging
+          # Copy Main JAR
+          Copy-Item -Path "target/inventory_MS-1.0-SNAPSHOT.jar" -Destination "target/staging/"
+          # Copy Libraries
+          Copy-Item -Path "target/lib" -Destination "target/staging/" -Recurse
+          
+          echo "--- CONTENTS OF STAGING ---"
+          Get-ChildItem -Path target/staging -Recurse
+
+      # 4. Package as Portable Folder (App Image)
+      # Note: We added -X for debug logging and point input to 'target/staging'
       - name: Package Application Image
         run: |
-          mvn jpackage:jpackage `
+          mvn -X jpackage:jpackage `
             "-Djpackage.type=app-image" `
-            "-Djpackage.input=target" `
+            "-Djpackage.input=target/staging" `
             "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" `
-            "-Djpackage.main-class=login.Launcher"
+            "-Djpackage.main-class=login.Launcher" `
+            "-Djpackage.dest=target/dist"
 
-      # 4. Prepare Release (Smart Folder Detection)
+      # 5. Debugging: Show what JPackage actually produced
+      - name: List Output Directory
+        shell: powershell
+        run: |
+          echo "--- CONTENTS OF TARGET/DIST ---"
+          if (Test-Path target/dist) {
+              Get-ChildItem -Path target/dist -Recurse
+          } else {
+              echo "ERROR: target/dist DOES NOT EXIST"
+          }
+
+      # 6. Prepare Release (Smart Detection)
       - name: Prepare Release Folder
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path release
           
-          # Find whatever folder jpackage created in target/dist
+          # Find the app folder inside target/dist
           $AppPath = Get-ChildItem -Path "target/dist" -Directory | Select-Object -First 1
           
           if ($null -eq $AppPath) {
-              Write-Error "No application folder found in target/dist! JPackage might have failed silently."
+              Write-Error "CRITICAL FAILURE: No app folder found in target/dist."
               exit 1
           }
           
-          Write-Host "Found Generated App at: $($AppPath.FullName)"
+          Write-Host "Found App at: $($AppPath.FullName)"
           
-          # Copy it to our release folder, renaming it to 'InventorySystem' for consistency
+          # Copy to release folder
           Copy-Item -Path $AppPath.FullName -Destination "release/InventorySystem" -Recurse
           
-          # Inject the key inside
+          # Inject Key
           Copy-Item -Path "serviceAccountKey.json" -Destination "release/InventorySystem/serviceAccountKey.json"
 
-      # 5. Zip
+      # 7. Zip
       - name: Zip Release
         shell: powershell
         run: |
           Compress-Archive -Path "release/InventorySystem" -DestinationPath "release/InventorySystem-Portable.zip"
 
-      # 6. Release
+      # 8. Release
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
