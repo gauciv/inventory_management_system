@@ -14,6 +14,9 @@ import dashboard.Inventory_management_bin;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import javafx.scene.control.ButtonType;
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
+import org.json.JSONObject;
 
 public class addeditproductController {
     @FXML private Pane addedit_pane;
@@ -29,6 +32,7 @@ public class addeditproductController {
     private dashboard.dashboardController dashboardControllerRef;
     private Inventory_management_bin itemToEdit;
     private String currentMonth;
+    private String idToken;
 
     @FXML
     private void initialize() {
@@ -80,6 +84,10 @@ public class addeditproductController {
         }
     }
 
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+    }
+
     private void handleContinue() {
         try {
             // Validate input
@@ -99,17 +107,62 @@ public class addeditproductController {
                 return;
             }
 
-            // TODO: updateDatabaseRecords - Replace with Firebase update logic
-            // Placeholder for Firebase implementation
-            System.out.println("TODO: Update product and stock data in Firebase");
-            showAlert("Success", "Product updated successfully (Firebase TODO)");
-            if (dashboardControllerRef != null) {
-                dashboardControllerRef.addInventoryActionNotification("edit", description);
-                dashboardControllerRef.inventory_management_query();
+            if (idToken == null && dashboardControllerRef != null) {
+                try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
             }
-            Stage stage = (Stage) continueButton.getScene().getWindow();
-            stage.close();
-
+            if (idToken == null) {
+                showAlert("Error", "User not authenticated. Please log in again.");
+                return;
+            }
+            System.out.println("Updating product and stock data in Firestore...");
+            new Thread(() -> {
+                try {
+                    String projectId = FirebaseConfig.getProjectId();
+                    String collectionPath = "inventory";
+                    String documentId = String.valueOf(itemToEdit.getItem_code());
+                    String documentPath = collectionPath + "/" + documentId;
+                    JSONObject fields = new JSONObject();
+                    fields.put("item_code", new JSONObject().put("integerValue", itemToEdit.getItem_code()));
+                    fields.put("item_des", new JSONObject().put("stringValue", description));
+                    fields.put("volume", new JSONObject().put("integerValue", volume));
+                    fields.put("category", new JSONObject().put("stringValue", category));
+                    fields.put("sot", new JSONObject().put("integerValue", salesOfftake));
+                    fields.put("soh", new JSONObject().put("integerValue", stocksOnHand));
+                    JSONObject doc = new JSONObject();
+                    doc.put("fields", fields);
+                    String jsonBody = doc.toString();
+                    String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=item_code&updateMask.fieldPaths=item_des&updateMask.fieldPaths=volume&updateMask.fieldPaths=category&updateMask.fieldPaths=sot&updateMask.fieldPaths=soh";
+                    java.net.URL u = new java.net.URL(url);
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
+                    conn.setRequestMethod("PATCH");
+                    conn.setRequestProperty("Authorization", "Bearer " + idToken);
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setDoOutput(true);
+                    try (java.io.OutputStream os = conn.getOutputStream()) {
+                        os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    }
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == 200) {
+                        javafx.application.Platform.runLater(() -> {
+                            showAlert("Success", "Product updated successfully");
+                            if (dashboardControllerRef != null) {
+                                dashboardControllerRef.addInventoryActionNotification("edit", description);
+                                dashboardControllerRef.inventory_management_query();
+                            }
+                            Stage stage = (Stage) continueButton.getScene().getWindow();
+                            stage.close();
+                        });
+                    } else {
+                        java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
+                        String response = scanner.hasNext() ? scanner.next() : "";
+                        scanner.close();
+                        throw new Exception("Firestore update failed: " + response);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to update product: " + e.getMessage()));
+                }
+            }).start();
         } catch (NumberFormatException e) {
             showAlert("Error", "Please enter valid numbers for Volume, Sales Offtake, and Stocks on Hand");
         } catch (Exception e) {

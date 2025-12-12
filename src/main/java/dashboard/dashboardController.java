@@ -3,6 +3,10 @@ package dashboard;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import database.database_utility;
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -124,6 +128,11 @@ public class dashboardController {
 
     public void setHostServices(javafx.application.HostServices hostServices) {
         this.hostServices = hostServices;
+    }
+
+    private String idToken;
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 
     @FXML
@@ -1138,14 +1147,46 @@ public class dashboardController {
 
     // Make this method public so it can be called from addstocksController
     public void inventory_management_query() {
-    // TODO: inventory_management_query() - Replace with Firebase query to fetch inventory data
-    public void inventory_management_query() {
-        // Placeholder for Firebase implementation
-        System.out.println("TODO: Fetch inventory data from Firebase");
         if (inventory_management_table != null) {
             inventory_management_table.clear();
         }
-        // TODO: Populate inventory_management_table from Firebase
+        System.out.println("Fetching inventory data from Firestore...");
+        new Thread(() -> {
+            try {
+                if (idToken == null) {
+                    throw new Exception("No idToken set. User not authenticated.");
+                }
+                String projectId = FirebaseConfig.getProjectId();
+                String collectionPath = "inventory";
+                String urlPath = collectionPath + "?pageSize=1000";
+                String response = FirestoreClient.getDocument(projectId, urlPath, idToken);
+                org.json.JSONObject json = new org.json.JSONObject(response);
+                org.json.JSONArray docs = json.optJSONArray("documents");
+                if (docs != null) {
+                    for (int i = 0; i < docs.length(); i++) {
+                        org.json.JSONObject doc = docs.getJSONObject(i);
+                        org.json.JSONObject fields = doc.getJSONObject("fields");
+                        int item_code = fields.getJSONObject("item_code").getInt("integerValue");
+                        String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                        int volume = fields.getJSONObject("volume").getInt("integerValue");
+                        String category = fields.getJSONObject("category").getString("stringValue");
+                        int sot = fields.getJSONObject("sot").getInt("integerValue");
+                        int soh = fields.getJSONObject("soh").getInt("integerValue");
+                        Inventory_management_bin bin = new Inventory_management_bin(item_code, item_des, volume, category, sot, soh);
+                        javafx.application.Platform.runLater(() -> inventory_management_table.add(bin));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> {
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                    alert.setTitle("Firestore Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Failed to fetch inventory data: " + e.getMessage());
+                    alert.showAndWait();
+                });
+            }
+        }).start();
     }
     }
 

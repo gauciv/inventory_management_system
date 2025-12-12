@@ -9,8 +9,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
-// TODO: Replace all database/database_utility and SQL logic with Firebase SDK
 import javafx.scene.control.ButtonType;
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
+import org.json.JSONObject;
 
 public class soldstocksController {
 
@@ -26,6 +28,8 @@ public class soldstocksController {
     private int currentSoh = 0;
     private dashboard.dashboardController dashboardControllerRef;
 
+    private String idToken;
+    
     @FXML
     private void Exit() {
         // Get the stage (window) that contains the button
@@ -38,6 +42,10 @@ public class soldstocksController {
         if (continueButton != null) {
             continueButton.setOnAction(e -> handleContinue());
         }
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 
     private void handleContinue() {
@@ -61,15 +69,57 @@ public class soldstocksController {
         }
 
         int updatedSoh = currentSoh - soldStocks;
-        // TODO: Replace with Firebase update logic
-        System.out.println("TODO: Update sold stocks and sales data in Firebase");
-        if (dashboardControllerRef != null) {
-            dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
-            dashboardControllerRef.inventory_management_query();
+        if (idToken == null && dashboardControllerRef != null) {
+            try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
         }
-        showAlert("Success", "Stock sold successfully and sales data updated (Firebase TODO)");
-        Stage stage = (Stage) sold_pane.getScene().getWindow();
-        stage.close();
+        if (idToken == null) {
+            showAlert("Error", "User not authenticated. Please log in again.");
+            return;
+        }
+        System.out.println("Updating sold stocks and sales data in Firestore...");
+        new Thread(() -> {
+            try {
+                String projectId = FirebaseConfig.getProjectId();
+                String collectionPath = "inventory";
+                String documentId = String.valueOf(itemCode);
+                String documentPath = collectionPath + "/" + documentId;
+                JSONObject fields = new JSONObject();
+                fields.put("soh", new JSONObject().put("integerValue", updatedSoh));
+                JSONObject doc = new JSONObject();
+                doc.put("fields", fields);
+                String jsonBody = doc.toString();
+                String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=soh";
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
+                conn.setRequestMethod("PATCH");
+                conn.setRequestProperty("Authorization", "Bearer " + idToken);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                try (java.io.OutputStream os = conn.getOutputStream()) {
+                    os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 200) {
+                    javafx.application.Platform.runLater(() -> {
+                        showAlert("Success", "Stock sold successfully and sales data updated.");
+                        if (dashboardControllerRef != null) {
+                            dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
+                            dashboardControllerRef.inventory_management_query();
+                        }
+                        Stage stage = (Stage) sold_pane.getScene().getWindow();
+                        stage.close();
+                    });
+                } else {
+                    java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
+                    String response = scanner.hasNext() ? scanner.next() : "";
+                    scanner.close();
+                    throw new Exception("Firestore update failed: " + response);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to update stocks: " + e.getMessage()));
+            }
+        }).start();
     }
 
     public void setSelectedItemDescription(String description) {

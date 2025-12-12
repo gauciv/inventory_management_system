@@ -9,6 +9,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import database.database_utility;
+import firebase.FirestoreClient;
+import firebase.FirebaseConfig;
+import org.json.JSONObject;
 import java.sql.Connection;
 
 public class addstocksController {
@@ -35,6 +38,12 @@ public class addstocksController {
     private int currentSoh = 0;
     private dashboard.dashboardController dashboardControllerRef;
 
+    private String idToken;
+    
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+    }
+
     @FXML
     private void handleExit() {
         // Get the window/stage the button is in and close it
@@ -43,16 +52,8 @@ public class addstocksController {
     }
 
 
-        int updatedSoh = currentSoh + addStock;
-        // TODO: Replace with Firebase update logic
-        System.out.println("TODO: Update stocks in Firebase");
-        showAlert("Success", "Stocks updated successfully (Firebase TODO)");
-        if (dashboardControllerRef != null) {
-            dashboardControllerRef.addRecentStockNotification(addStock, textfield2.getText());
-            dashboardControllerRef.inventory_management_query();
-        }
-        Stage stage = (Stage) continueButton.getScene().getWindow();
-        stage.close();
+    @FXML
+    private void handleContinue() {
         String newStockStr = newstock.getText();
         int addStock;
         try {
@@ -62,38 +63,58 @@ public class addstocksController {
             return;
         }
         int updatedSoh = currentSoh + addStock;
-        Connection connect = null;
-        try {
-            // Get the selected month from dashboardController
-            String selectedMonth = dashboardControllerRef.getSelectedMonthColumn();
-            
-            // Update stock_onhand table with the correct month column
-            Object[] result = database_utility.update(
-                String.format("UPDATE stock_onhand SET %s1 = ? WHERE item_code = ?", selectedMonth),
-                updatedSoh, itemCode
-            );
-            if (result != null) {
-                connect = (Connection) result[0];
-            }
-            showAlert("Success", "Stocks updated successfully.");
-            // Auto-refresh the table in dashboard
-            if (dashboardControllerRef != null) {
-                dashboardControllerRef.inventory_management_query();
-
-                // Add recent notification
-                String description = selectedItem != null ? selectedItem.getText() : "";
-                dashboardControllerRef.addRecentStockNotification(addStock, description);
-            }
-            // Optionally close the window
-            Stage stage = (Stage) continueButton.getScene().getWindow();
-            stage.close();
-        } catch (Exception ex) {
-            showAlert("Database Error", "Failed to update stocks: " + ex.getMessage());
-        } finally {
-            if (connect != null) {
-                database_utility.close(connect);
-            }
+        if (idToken == null && dashboardControllerRef != null) {
+            try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
         }
+        if (idToken == null) {
+            showAlert("Error", "User not authenticated. Please log in again.");
+            return;
+        }
+        System.out.println("Updating stocks in Firestore...");
+        new Thread(() -> {
+            try {
+                String projectId = FirebaseConfig.getProjectId();
+                String collectionPath = "inventory";
+                String documentId = String.valueOf(itemCode);
+                String documentPath = collectionPath + "/" + documentId;
+                JSONObject fields = new JSONObject();
+                fields.put("soh", new JSONObject().put("integerValue", updatedSoh));
+                JSONObject doc = new JSONObject();
+                doc.put("fields", fields);
+                String jsonBody = doc.toString();
+                String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=soh";
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
+                conn.setRequestMethod("PATCH");
+                conn.setRequestProperty("Authorization", "Bearer " + idToken);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                try (java.io.OutputStream os = conn.getOutputStream()) {
+                    os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 200) {
+                    javafx.application.Platform.runLater(() -> {
+                        showAlert("Success", "Stocks updated successfully.");
+                        if (dashboardControllerRef != null) {
+                            dashboardControllerRef.inventory_management_query();
+                            String description = selectedItem != null ? selectedItem.getText() : "";
+                            dashboardControllerRef.addRecentStockNotification(addStock, description);
+                        }
+                        Stage stage = (Stage) continueButton.getScene().getWindow();
+                        stage.close();
+                    });
+                } else {
+                    java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
+                    String response = scanner.hasNext() ? scanner.next() : "";
+                    scanner.close();
+                    throw new Exception("Firestore update failed: " + response);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to update stocks: " + e.getMessage()));
+            }
+        }).start();
     }
 
     private void showAlert(String title, String content) {

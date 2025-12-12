@@ -1,6 +1,7 @@
 package login;
 
-import database.database_utility;
+import firebase.FirebaseAuth;
+import org.json.JSONObject;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -37,6 +38,9 @@ public class login_controller {
     private boolean isPasswordVisible = false;
     private double xOffset = 0;
     private double yOffset = 0;
+
+    // Store idToken for session
+    public static String idToken = null;
 
     @FXML
     public void initialize() {
@@ -133,24 +137,24 @@ public class login_controller {
         // Show loading overlay immediately
         showLoadingOverlay();
 
-        // Perform login in background thread
-            // TODO: Replace with Firebase authentication logic
-            new Thread(() -> {
-                try {
-                    System.out.println("TODO: Authenticate user with Firebase");
-                    // Simulate successful login for now
-                    Platform.runLater(() -> {
-                        hideLoadingOverlay();
-                        loadDashboard(username);
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Platform.runLater(() -> {
-                        hideLoadingOverlay();
-                        showError("An error occurred during login. Please try again.");
-                    });
-                }
-            }).start();
+        // Perform login in background thread using Firebase Auth REST API
+        new Thread(() -> {
+            try {
+                String response = FirebaseAuth.signInWithEmailPassword(username, password_string);
+                JSONObject json = new JSONObject(response);
+                idToken = json.getString("idToken");
+                Platform.runLater(() -> {
+                    hideLoadingOverlay();
+                    loadDashboard(username);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    hideLoadingOverlay();
+                    showError("Login failed: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 
     private void showError(String message) {
@@ -162,29 +166,19 @@ public class login_controller {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard/dashboard.fxml"));
             Parent dashboardRoot = loader.load();
-            
-            // Get the controller and pass any necessary data
-            // dashboardController controller = loader.getController();
-            // controller.setUserData(username);
-            
+            // Pass idToken to dashboardController
+            dashboard.dashboardController controller = loader.getController();
+            controller.setIdToken(idToken);
             // Create new scene and stage for dashboard
             Stage dashboardStage = new Stage();
             dashboardStage.initStyle(StageStyle.UNDECORATED);
-            
             Scene dashboardScene = new Scene(dashboardRoot);
             dashboardStage.setScene(dashboardScene);
-            
-            // Set the icon for the dashboard window
             dashboardStage.getIcons().add(
                 new Image(getClass().getResource("/images/intervein_logo_no_text.png").toExternalForm())
             );
-            
-            // Close the login window
             ((Stage) login_pane.getScene().getWindow()).close();
-            
-            // Show the dashboard
             dashboardStage.show();
-            
         } catch (IOException e) {
             e.printStackTrace();
             showError("Could not load dashboard. Please try again.");
