@@ -135,6 +135,18 @@ public class dashboardController {
         this.idToken = idToken;
     }
 
+    private String idToken;
+    
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+    }
+
+    // --- ADD THIS METHOD ---
+    public String getIdToken() {
+        return this.idToken;
+    }
+    // -----------------------
+
     @FXML
     public void initialize() {
         try {

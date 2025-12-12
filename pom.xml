@@ -11,19 +11,17 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.10.2</junit.version>
         <javafx.version>24.0.1</javafx.version>
+        <main.class>inventory.example.inventory_ms/login.login_app</main.class>
     </properties>
 
     <dependencies>
-        <!-- MySQL Connector/J -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>9.2.0</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240205</version>
         </dependency>
 
-        <!-- JavaFX dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -44,6 +42,7 @@
             <artifactId>javafx-graphics</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
@@ -60,24 +59,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>24.1.0</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -91,13 +72,16 @@
                     <target>24</target>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>inventory.example.inventory_ms/login.login_app</mainClass>
+                    <mainClass>${main.class}</mainClass>
                     <options>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/javafx.scene=org.controlsfx.controls</option>
                         <option>--add-opens</option>
                         <option>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
                         <option>--add-opens</option>
@@ -110,14 +94,24 @@
                         <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
                         <option>--add-opens</option>
                         <option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
-                        <option>--enable-native-access=ALL-UNNAMED</option>
                     </options>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <name>InventorySystem</name>
+                    <appVersion>1.0.0</appVersion>
+                    <vendor>Intervein</vendor>
+                    <destination>target/dist</destination>
+                    <module>${main.class}</module>
+                    <runtimeImage>target/image</runtimeImage>
+                    <winDirChooser>true</winDirChooser>
+                    <winMenu>true</winMenu>
+                    <winShortcut>true</winShortcut>
                 </configuration>
             </plugin>
         </plugins>
