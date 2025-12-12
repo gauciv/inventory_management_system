@@ -19,6 +19,8 @@ import javafx.stage.StageStyle;
 import javafx.scene.Scene;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ForecastingController {
     
@@ -60,9 +62,9 @@ public class ForecastingController {
             this.forecastPlaceholderLabel = placeholderLabel;
             this.formulaHelpButton = helpButton;
             
-            System.out.println("Initializing ForecastingController...");
+            System.out.println("Initializing ForecastingController UI...");
             
-            // Configure chart appearance
+            // --- UI STYLING (Same as before) ---
             if (forecastChart != null) {
                 forecastChart.setStyle("-fx-background-color: transparent;");
                 forecastChart.getXAxis().setTickLabelFill(javafx.scene.paint.Color.WHITE);
@@ -70,7 +72,6 @@ public class ForecastingController {
                 forecastChart.setTitle("Sales Forecast");
             }
             
-            // Configure labels
             if (forecastAccuracyLabel != null) {
                 forecastAccuracyLabel.setStyle("-fx-text-fill: white;");
                 forecastAccuracyLabel.setText("Select a product to view forecast accuracy");
@@ -86,7 +87,6 @@ public class ForecastingController {
                 forecastRecommendationsLabel.setText("Select a product to view recommendations");
             }
             
-            // Configure product combo box
             if (forecastProductComboBox != null) {
                 forecastProductComboBox.setTooltip(new Tooltip("Select the product to forecast sales for."));
                 forecastProductComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
@@ -98,46 +98,27 @@ public class ForecastingController {
                     }
                     updateForecast();
                 });
-                loadProducts();
-            }
-            
-            // Configure formula combo box
-            if (forecastFormulaComboBox != null) {
-                forecastFormulaComboBox.setTooltip(new Tooltip("Select the forecasting formula to use."));
-                forecastFormulaComboBox.getItems().clear();
-                forecastFormulaComboBox.getItems().addAll("Holt-Winters", "Moving Average", "Simple Average", "Linear Programming");
-                forecastFormulaComboBox.setValue(null);
-                forecastFormulaComboBox.setPromptText("Choose a formula");
-                forecastFormulaComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
-                forecastFormulaComboBox.setDisable(true);
-                forecastFormulaComboBox.setOnAction(e -> {
-                    String selectedProduct = forecastProductComboBox != null ? forecastProductComboBox.getValue() : null;
-                    if (selectedProduct == null) {
-                        showWarning("Selection Required", "Please select a product first before choosing a formula.");
-                        forecastFormulaComboBox.setValue(null);
-                        forecastFormulaComboBox.setDisable(true);
-                        return;
-                    }
-                    updateForecast();
-                });
+                
+                // REMOVED: loadProducts(); <--- THIS WAS THE CAUSE OF THE ERROR
+                // Instead, call loadProducts() manually after setting ID Token.
             }
 
-            // Configure help button
-            if (formulaHelpButton != null) {
-                formulaHelpButton.setOnAction(e -> showFormulaHelp());
+            // ... (Rest of UI setup for formulaComboBox and HelpButton) ...
+            if (forecastFormulaComboBox != null) {
+                forecastFormulaComboBox.getItems().addAll("Holt-Winters", "Moving Average", "Simple Average", "Linear Programming");
+                forecastFormulaComboBox.setStyle("-fx-background-color: white; -fx-text-fill: #181739; -fx-font-size: 14px; -fx-background-radius: 5;");
+                forecastFormulaComboBox.setOnAction(e -> updateForecast());
             }
-            
-            // Show placeholder initially
-            if (forecastPlaceholderLabel != null) {
-                forecastPlaceholderLabel.setVisible(true);
+            if (formulaHelpButton != null) formulaHelpButton.setOnAction(e -> showFormulaHelp());
+            if (forecastPlaceholderLabel != null) forecastPlaceholderLabel.setVisible(true);
+
+            // CALL THIS NOW since we are in the flow where token is set
+            if (this.idToken != null) {
+                loadProducts();
             }
-            
-            System.out.println("ForecastingController initialization complete.");
-            
+
         } catch (Exception e) {
-            System.err.println("Error initializing ForecastingController: " + e.getMessage());
             e.printStackTrace();
-            showError("Initialization Error", "Failed to initialize forecasting view: " + e.getMessage());
         }
     }
     
@@ -181,24 +162,81 @@ public class ForecastingController {
             String response = FirestoreClient.getDocument(projectId, collectionPath, idToken);
             org.json.JSONObject json = new org.json.JSONObject(response);
             org.json.JSONArray docs = json.optJSONArray("documents");
+            
             if (docs != null) {
                 for (int i = 0; i < docs.length(); i++) {
                     org.json.JSONObject doc = docs.getJSONObject(i);
                     org.json.JSONObject fields = doc.getJSONObject("fields");
                     String item_des = fields.getJSONObject("item_des").getString("stringValue");
+                    
                     if (item_des.equals(selectedProduct)) {
+                        // 1. Prepare Data
                         String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-                        double[] sales = new double[months.length];
+                        double[] historicalData = new double[months.length];
+                        
                         for (int m = 0; m < months.length; m++) {
-                            String month = months[m].toLowerCase();
-                            if (fields.has(month)) {
-                                sales[m] = fields.getJSONObject(month).getInt("integerValue");
+                            String monthKey = months[m].toLowerCase();
+                            if (fields.has(monthKey)) {
+                                historicalData[m] = fields.getJSONObject(monthKey).getInt("integerValue");
                             } else {
-                                sales[m] = 0;
+                                historicalData[m] = 0;
                             }
                         }
-                        // TODO: Implement forecasting logic here
-                        break;
+
+                        // 2. Clear previous chart data
+                        Platform.runLater(() -> {
+                            forecastChart.getData().clear();
+                            XYChart.Series<String, Number> historySeries = new XYChart.Series<>();
+                            historySeries.setName("Historical Sales");
+                            for (int m = 0; m < months.length; m++) {
+                                historySeries.getData().add(new XYChart.Data<>(months[m], historicalData[m]));
+                            }
+                            forecastChart.getData().add(historySeries);
+                        });
+
+                        // 3. Calculate Forecast
+                        List<Double> forecastResults = new ArrayList<>();
+                        int monthsToForecast = 3;
+
+                        if ("Holt-Winters".equals(selectedFormula)) {
+                            forecastResults = forecastingModel.calculateHoltWinters(historicalData, monthsToForecast);
+                        } else if ("Moving Average".equals(selectedFormula)) {
+                            forecastResults = forecastingModel.calculateMovingAverage(historicalData, monthsToForecast);
+                        } else if ("Simple Average".equals(selectedFormula)) {
+                            forecastResults = forecastingModel.calculateSimpleAverage(historicalData, monthsToForecast);
+                        } else if ("Linear Programming".equals(selectedFormula)) {
+                            forecastResults = forecastingModel.calculateLinearRegression(historicalData, monthsToForecast);
+                        }
+
+                        // 4. Update Chart
+                        final List<Double> finalForecast = forecastResults;
+                        Platform.runLater(() -> {
+                            XYChart.Series<String, Number> forecastSeries = new XYChart.Series<>();
+                            forecastSeries.setName("Forecast (" + selectedFormula + ")");
+                            
+                            String[] futureMonths = {"Next Jan", "Next Feb", "Next Mar"};
+                            
+                            for (int k = 0; k < finalForecast.size() && k < futureMonths.length; k++) {
+                                forecastSeries.getData().add(new XYChart.Data<>(futureMonths[k], finalForecast.get(k)));
+                            }
+                            forecastChart.getData().add(forecastSeries);
+                            
+                            if (!finalForecast.isEmpty()) {
+                                double lastForecast = finalForecast.get(finalForecast.size() - 1);
+                                double lastHistory = historicalData[historicalData.length-1];
+                                
+                                if (forecastTrendLabel != null) {
+                                    forecastTrendLabel.setText(lastForecast > lastHistory ? "Trend: Increasing 📈" : "Trend: Decreasing 📉");
+                                }
+                                if (forecastRecommendationsLabel != null) {
+                                    forecastRecommendationsLabel.setText(lastForecast > 100 ? "Recommendation: Increase Stock" : "Recommendation: Monitor Levels");
+                                }
+                                if (forecastAccuracyLabel != null) {
+                                    forecastAccuracyLabel.setText("Formula: " + selectedFormula);
+                                }
+                            }
+                        });
+                        break; 
                     }
                 }
             }

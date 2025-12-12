@@ -68,7 +68,6 @@ public class soldstocksController {
             return;
         }
 
-        int updatedSoh = currentSoh - soldStocks;
         if (idToken == null && dashboardControllerRef != null) {
             try { this.idToken = dashboardControllerRef.getIdToken(); } catch (Exception ignored) {}
         }
@@ -76,35 +75,75 @@ public class soldstocksController {
             showAlert("Error", "User not authenticated. Please log in again.");
             return;
         }
-        System.out.println("Updating sold stocks and sales data in Firestore...");
+
+        final int amountSold = soldStocks;
+        final int newSoh = currentSoh - amountSold;
+        
+        // Determine current month (e.g., "dec")
+        String currentMonth = java.time.LocalDate.now().getMonth().toString().substring(0, 3).toLowerCase();
+
+        System.out.println("Processing Sale: " + amountSold + " items. Month: " + currentMonth);
+
         new Thread(() -> {
             try {
                 String projectId = FirebaseConfig.getProjectId();
-                String collectionPath = "inventory";
-                String documentId = String.valueOf(itemCode);
-                String documentPath = collectionPath + "/" + documentId;
-                JSONObject fields = new JSONObject();
-                fields.put("soh", new JSONObject().put("integerValue", updatedSoh));
-                JSONObject doc = new JSONObject();
-                doc.put("fields", fields);
-                String jsonBody = doc.toString();
-                String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath + "?updateMask.fieldPaths=soh";
-                java.net.URL u = new java.net.URL(url);
+                String documentPath = "inventory/" + itemCode;
+                
+                // STEP 1: Fetch current document to get the existing sales count for this month
+                String getUrl = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath;
+                String jsonResponse = FirestoreClient.getDocument(projectId, "inventory/" + itemCode, idToken);
+                
+                int currentMonthSales = 0;
+                JSONObject docJson = new JSONObject(jsonResponse);
+                JSONObject fields = docJson.getJSONObject("fields");
+                
+                // Check if the month field exists, if so, get its value
+                if (fields.has(currentMonth)) {
+                    currentMonthSales = fields.getJSONObject(currentMonth).getInt("integerValue");
+                }
+                
+                int newMonthSales = currentMonthSales + amountSold;
+
+                // STEP 2: Prepare the Update (SOH + Monthly Sales)
+                JSONObject updateFields = new JSONObject();
+                
+                // Update SOH
+                updateFields.put("soh", new JSONObject().put("integerValue", newSoh));
+                
+                // Update Monthly Sales (e.g., "dec")
+                updateFields.put(currentMonth, new JSONObject().put("integerValue", newMonthSales));
+
+                JSONObject updateDoc = new JSONObject();
+                updateDoc.put("fields", updateFields);
+                String jsonBody = updateDoc.toString();
+
+                // STEP 3: Send POST (Patch) Request
+                String patchUrl = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + documentPath 
+                                + "?updateMask.fieldPaths=soh&updateMask.fieldPaths=" + currentMonth;
+                                
+                java.net.URL u = new java.net.URL(patchUrl);
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
-                conn.setRequestMethod("PATCH");
+                
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
                 conn.setRequestProperty("Authorization", "Bearer " + idToken);
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
+
                 try (java.io.OutputStream os = conn.getOutputStream()) {
                     os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 }
+
                 int responseCode = conn.getResponseCode();
                 if (responseCode == 200) {
                     javafx.application.Platform.runLater(() -> {
-                        showAlert("Success", "Stock sold successfully and sales data updated.");
+                        showAlert("Success", "Sold " + amountSold + " items. \nUpdated SOH: " + newSoh + "\nUpdated " + currentMonth.toUpperCase() + " Sales: " + newMonthSales);
+                        
                         if (dashboardControllerRef != null) {
-                            dashboardControllerRef.addSoldStockNotification(soldStocks, volumeField.getText() + "mL");
+                            dashboardControllerRef.addSoldStockNotification(amountSold, volumeField.getText() + "mL");
+                            // Refresh data to reflect changes in graphs immediately
                             dashboardControllerRef.inventory_management_query();
+                            dashboardControllerRef.handleTotalSales(); // Refresh Sales Graph
                         }
                         Stage stage = (Stage) sold_pane.getScene().getWindow();
                         stage.close();
@@ -112,12 +151,12 @@ public class soldstocksController {
                 } else {
                     java.util.Scanner scanner = new java.util.Scanner(conn.getErrorStream(), "UTF-8").useDelimiter("\\A");
                     String response = scanner.hasNext() ? scanner.next() : "";
-                    scanner.close();
-                    throw new Exception("Firestore update failed: " + response);
+                    throw new Exception("Update failed: " + response);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                javafx.application.Platform.runLater(() -> showAlert("Error", "Failed to update stocks: " + e.getMessage()));
+                javafx.application.Platform.runLater(() -> showAlert("Error", "Transaction failed: " + e.getMessage()));
             }
         }).start();
     }
@@ -163,4 +202,3 @@ public class soldstocksController {
         alert.showAndWait();
     }
 }
-

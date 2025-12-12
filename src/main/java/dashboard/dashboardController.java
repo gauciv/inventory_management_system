@@ -115,6 +115,10 @@ public class dashboardController {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
+        // Trigger data loading ONLY after token is received
+        if (idToken != null) {
+            loadDashboardData();
+        }
     }
 
     public String getIdToken() {
@@ -128,6 +132,8 @@ public class dashboardController {
     @FXML
     public void initialize() {
         try {
+            // --- UI SETUP ONLY (No Data Fetching Here) ---
+            
             if (tabpane != null) {
                 tabpane.lookupAll(".tab-header-area").forEach(node -> {
                     node.setVisible(false);
@@ -143,9 +149,7 @@ public class dashboardController {
 
             inventory_management_table = FXCollections.observableArrayList();
             
-            if (borderpane != null) {
-                borderpane.setUserData(this);
-            }
+            if (borderpane != null) borderpane.setUserData(this);
 
             String currentMonth = java.time.LocalDate.now().getMonth().toString();
             currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
@@ -153,36 +157,24 @@ public class dashboardController {
             setupTableView();
             setupWindowControls();
             setupFormContainers();
+            startClock();
+            setupNavigation();
+            
+            if (searchField != null) setupSearch();
             
             if (monthComboBox != null) {
                 monthComboBox.setStyle("-fx-prompt-text-fill: white; -fx-text-fill: white;");
                 monthComboBox.setPromptText("Select a Month");
                 monthComboBox.setValue(currentMonth);
                 monthComboBox.setOnAction(event -> {
-                    inventory_management_query();
-                    updateStockNotifications();
+                    // Only query if token exists
+                    if (idToken != null) {
+                        inventory_management_query();
+                        updateStockNotifications();
+                    }
                 });
             }
-            
-            ComboBox<String> dashboardMonthCombo = (ComboBox<String>) borderpane.lookup("#month");
-            if (dashboardMonthCombo != null) {
-                dashboardMonthCombo.setValue(currentMonth);
-                dashboardMonthCombo.setOnAction(event -> updateStockNotifications());
-            }
-            
-            ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.lookup("#stocks");
-            if (stocksCombo != null) {
-                stocksCombo.setValue("1000");
-                stocksCombo.setOnAction(event -> updateStockNotifications());
-            }
 
-            startClock();
-            setupNavigation();
-            
-            if (searchField != null) {
-                setupSearch();
-            }
-            
             if (forecastRefreshButton != null) {
                 forecastRefreshButton.setOnAction(e -> {
                     if (forecastingController != null) {
@@ -190,33 +182,30 @@ public class dashboardController {
                     }
                 });
             }
-
-            new Thread(() -> {
-                try {
-                    Platform.runLater(() -> {
-                        try {
-                            inventory_management_query();
-                            updateStockNotifications();
-                            initializeForecastingSection();
-                            initializeSalesSection();
-                            loadNotificationsFromDatabase();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            showErrorAlert("Data Loading Error", "Failed to load initial data: " + e.getMessage());
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Platform.runLater(() -> 
-                        showErrorAlert("Initialization Error", "Failed to initialize dashboard: " + e.getMessage())
-                    );
-                }
-            }).start();
             
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Initialization Error", "Failed to initialize the dashboard: " + e.getMessage());
+            showErrorAlert("Initialization Error", "Failed to initialize the dashboard UI: " + e.getMessage());
         }
+    }
+
+    private void loadDashboardData() {
+        // Initialize Sub-Controllers with the Token
+        initializeForecastingSection();
+        initializeSalesSection();
+
+        // Load Main Data in Background
+        new Thread(() -> {
+            try {
+                // Slight delay to allow UI to render first frame
+                Thread.sleep(200); 
+                inventory_management_query();
+                updateStockNotifications();
+                loadNotificationsFromDatabase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void initializeForecastingSection() {
@@ -788,6 +777,7 @@ public class dashboardController {
     public void inventory_management_query() {
         if (inventory_management_table != null) inventory_management_table.clear();
         System.out.println("Fetching inventory data from Firestore...");
+        
         new Thread(() -> {
             try {
                 if (idToken == null) throw new Exception("No idToken set. User not authenticated.");
@@ -796,20 +786,32 @@ public class dashboardController {
                 String response = FirestoreClient.getDocument(projectId, urlPath, idToken);
                 JSONObject json = new JSONObject(response);
                 org.json.JSONArray docs = json.optJSONArray("documents");
+                
+                // 1. Create a temporary list to hold data
+                java.util.List<Inventory_management_bin> tempList = new java.util.ArrayList<>();
+                
                 if (docs != null) {
                     for (int i = 0; i < docs.length(); i++) {
                         JSONObject doc = docs.getJSONObject(i);
                         JSONObject fields = doc.getJSONObject("fields");
+                        
                         int item_code = fields.getJSONObject("item_code").getInt("integerValue");
                         String item_des = fields.getJSONObject("item_des").getString("stringValue");
                         int volume = fields.getJSONObject("volume").getInt("integerValue");
                         String category = fields.getJSONObject("category").getString("stringValue");
                         int sot = fields.getJSONObject("sot").getInt("integerValue");
                         int soh = fields.getJSONObject("soh").getInt("integerValue");
-                        Inventory_management_bin bin = new Inventory_management_bin(item_code, item_des, volume, category, sot, soh);
-                        Platform.runLater(() -> inventory_management_table.add(bin));
+                        
+                        tempList.add(new Inventory_management_bin(item_code, item_des, volume, category, sot, soh));
                     }
                 }
+                
+                // 2. Update the UI safely on the JavaFX Application Thread
+                Platform.runLater(() -> {
+                    inventory_management_table.setAll(tempList); // Populate Table
+                    updateStockNotifications(); // <--- FIX: Run Check AFTER data is loaded
+                });
+                
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> showErrorAlert("Firestore Error", "Failed to fetch inventory data: " + e.getMessage()));
@@ -859,7 +861,7 @@ public class dashboardController {
     }
 
     @FXML
-    private void handleTotalSales() {
+    public void handleTotalSales() { // <--- CHANGED TO PUBLIC
         if (salesController != null) salesController.updateTotalSales();
     }
 
@@ -995,9 +997,61 @@ public class dashboardController {
         if (hostServices != null) hostServices.showDocument(url);
     }
 
-    private void updateStockNotifications() {
-        // Placeholder for legacy logic
-        if (recent1 != null) recent1.getChildren().clear();
+   private void updateStockNotifications() {
+        if (recent1 == null) return;
+        
+        // Ensure this runs on UI thread
+        Platform.runLater(() -> {
+            recent1.getChildren().clear();
+            
+            // 1. Get the threshold from the dropdown (default to 1000 if null)
+            int threshold = 1000;
+            // Try to find the ComboBox by ID if strictly needed, or just use the FXML variable if bound
+            // Using logic to find it in case it wasn't injected directly via @FXML
+            ComboBox<String> stocksCombo = (ComboBox<String>) borderpane.getScene().lookup("#stocks");
+            
+            if (stocksCombo != null && stocksCombo.getValue() != null) {
+                try {
+                    threshold = Integer.parseInt(stocksCombo.getValue());
+                } catch (NumberFormatException e) {
+                    threshold = 1000;
+                }
+            }
+
+            // 2. Loop through inventory and check SOH
+            boolean hasCritical = false;
+            
+            // Check if table is empty
+            if (inventory_management_table.isEmpty()) {
+                System.out.println("Inventory list is empty, skipping critical check.");
+                return;
+            }
+
+            for (Inventory_management_bin item : inventory_management_table) {
+                // Logic: If SOH is less than or EQUAL to threshold (covers 0)
+                if (item.getSoh() <= threshold) {
+                    hasCritical = true;
+                    
+                    VBox alertBox = new VBox();
+                    alertBox.setStyle("-fx-background-color: #3C0808; -fx-background-radius: 5; -fx-padding: 5; -fx-margin: 0 0 5 0;");
+                    
+                    Label nameLabel = new Label(item.getItem_des());
+                    nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;");
+                    
+                    Label stockLabel = new Label("Stocks: " + item.getSoh() + " / " + threshold);
+                    stockLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 11px;");
+                    
+                    alertBox.getChildren().addAll(nameLabel, stockLabel);
+                    recent1.getChildren().add(alertBox);
+                }
+            }
+            
+            if (!hasCritical) {
+                Label emptyLabel = new Label("No critical stocks.");
+                emptyLabel.setStyle("-fx-text-fill: gray; -fx-padding: 10;");
+                recent1.getChildren().add(emptyLabel);
+            }
+        });
     }
     
     private void setupSearch() {
