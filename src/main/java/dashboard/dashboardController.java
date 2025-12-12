@@ -1030,34 +1030,6 @@ public class dashboardController {
                     inventory_table.getItems().remove(itemToDelete);
                     // Delete from Firestore
                     deleteInventoryItem(itemToDelete);
-                    // Firestore delete logic for inventory items
-                    public void deleteInventoryItem(Inventory_management_bin itemToDelete) {
-                        new Thread(() -> {
-                            try {
-                                if (idToken == null) {
-                                    throw new Exception("No idToken set. User not authenticated.");
-                                }
-                                String projectId = FirebaseConfig.getProjectId();
-                                String collectionPath = "inventory";
-                                String documentId = String.valueOf(itemToDelete.getItem_code());
-                                FirestoreClient.deleteDocument(projectId, collectionPath, documentId, idToken);
-                                // Refresh table data
-                                Platform.runLater(this::inventory_management_query);
-                                // Add notification for the delete action
-                                addInventoryActionNotification("delete", itemToDelete.getItem_des());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Platform.runLater(() -> {
-                                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                                    alert.setTitle("Error");
-                                    alert.setHeaderText(null);
-                                    alert.setContentText("Failed to delete item from Firestore: " + e.getMessage());
-                                    alert.initStyle(StageStyle.UNDECORATED);
-                                    alert.showAndWait();
-                                });
-                            }
-                        }).start();
-                    }
                 }
 
                 @Override
@@ -1180,6 +1152,35 @@ public class dashboardController {
                     alert.setTitle("Firestore Error");
                     alert.setHeaderText(null);
                     alert.setContentText("Failed to fetch inventory data: " + e.getMessage());
+                    alert.showAndWait();
+                });
+            }
+        }).start();
+    }
+
+    // Firestore delete logic for inventory items
+    private void deleteInventoryItem(Inventory_management_bin itemToDelete) {
+        new Thread(() -> {
+            try {
+                if (idToken == null) {
+                    throw new Exception("No idToken set. User not authenticated.");
+                }
+                String projectId = FirebaseConfig.getProjectId();
+                String collectionPath = "inventory";
+                String documentId = String.valueOf(itemToDelete.getItem_code());
+                FirestoreClient.deleteDocument(projectId, collectionPath, documentId, idToken);
+                // Refresh table data on the JavaFX thread
+                Platform.runLater(this::inventory_management_query);
+                // Add notification for the delete action
+                addInventoryActionNotification("delete", itemToDelete.getItem_des());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Failed to delete item from Firestore: " + e.getMessage());
+                    alert.initStyle(StageStyle.UNDECORATED);
                     alert.showAndWait();
                 });
             }
