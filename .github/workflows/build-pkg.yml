@@ -32,54 +32,67 @@ jobs:
           $bytes = [Convert]::FromBase64String($content)
           [IO.File]::WriteAllBytes("serviceAccountKey.json", $bytes)
 
-      # 2. Build & Organize Dependencies
-      - name: Build JAR and Libs
+      # 2. Build JAR and Libs
+      - name: Build Project
         run: |
           mvn clean install
           mvn dependency:copy-dependencies -DoutputDirectory=target/lib
 
-      # 3. Create a CLEAN Staging Directory (Fixes jpackage confusion)
+      # 3. Setup Staging (DEBUG MODE)
+      # We print the directory structure to confirm files are really there
       - name: Prepare Staging Area
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path target/staging
+          
           # Copy Main JAR
           Copy-Item -Path "target/inventory_MS-1.0-SNAPSHOT.jar" -Destination "target/staging/"
-          # Copy Libraries
+          
+          # Copy Libs
           Copy-Item -Path "target/lib" -Destination "target/staging/" -Recurse
           
-          echo "--- CONTENTS OF STAGING ---"
+          echo "--- STAGING DIRECTORY CONTENTS ---"
           Get-ChildItem -Path target/staging -Recurse
 
-      # 4. Package as Portable Folder (App Image)
-      # Note: We added -X for debug logging and point input to 'target/staging'
+      # 4. Package (Using Absolute Paths)
       - name: Package Application Image
-        run: |
-          mvn -X jpackage:jpackage `
-            "-Djpackage.type=app-image" `
-            "-Djpackage.input=target/staging" `
-            "-Djpackage.main-jar=inventory_MS-1.0-SNAPSHOT.jar" `
-            "-Djpackage.main-class=login.Launcher" `
-            "-Djpackage.dest=target/dist"
-
-      # 5. Debugging: Show what JPackage actually produced
-      - name: List Output Directory
         shell: powershell
         run: |
-          echo "--- CONTENTS OF TARGET/DIST ---"
+          # Get Absolute Path to workspace
+          $Root = Get-Location
+          $InputPath = "$Root\target\staging"
+          $DestPath = "$Root\target\dist"
+          
+          echo "Input Path: $InputPath"
+          echo "Dest Path: $DestPath"
+          
+          # Run Maven with explicit paths
+          # We use -X for debug output to see why jpackage might skip
+          mvn -X jpackage:jpackage `
+            -Djpackage.type=app-image `
+            -Djpackage.input="$InputPath" `
+            -Djpackage.dest="$DestPath" `
+            -Djpackage.main-jar="inventory_MS-1.0-SNAPSHOT.jar" `
+            -Djpackage.main-class="login.Launcher"
+
+      # 5. Verify Output (DEBUG)
+      - name: Verify Output
+        shell: powershell
+        run: |
+          echo "--- TARGET/DIST CONTENTS ---"
           if (Test-Path target/dist) {
               Get-ChildItem -Path target/dist -Recurse
           } else {
-              echo "ERROR: target/dist DOES NOT EXIST"
+              echo "WARNING: target/dist was NOT created."
           }
 
-      # 6. Prepare Release (Smart Detection)
+      # 6. Prepare Release
       - name: Prepare Release Folder
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path release
           
-          # Find the app folder inside target/dist
+          # Smart Search: Find any directory inside target/dist
           $AppPath = Get-ChildItem -Path "target/dist" -Directory | Select-Object -First 1
           
           if ($null -eq $AppPath) {
@@ -101,7 +114,7 @@ jobs:
         run: |
           Compress-Archive -Path "release/InventorySystem" -DestinationPath "release/InventorySystem-Portable.zip"
 
-      # 8. Release
+      # 8. Publish
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
