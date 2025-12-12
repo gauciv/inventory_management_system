@@ -1,4 +1,4 @@
-name: Build Windows Executable
+name: Build Multi-Platform Release
 
 on:
   push:
@@ -8,36 +8,95 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: 'maven'
 
+      # --- LINUX SPECIFIC SETUP ---
+      - name: Install Linux Build Tools (fakeroot)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot binutils
+
+      # --- BUILD STEP ---
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean install
 
-      - name: Package as EXE (Launch4j)
-        uses: docker://ghcr.io/lukaszlenart/launch4j-action:main
-        with:
-          jar: target/*.jar
-          outfile: target/inventory_management_system.exe
-          mainclass: your.main.ClassName
+      # --- WINDOWS PACKAGING ---
+      - name: Package Windows (.exe)
+        if: runner.os == 'Windows'
+        run: mvn jpackage:jpackage
 
-      - name: Upload EXE artifact
+      # --- LINUX PACKAGING ---
+      # 1. Create the App Image (Folder structure)
+      # 2. Create a .deb for Debian users
+      - name: Package Linux (AppImage & Deb)
+        if: runner.os == 'Linux'
+        run: |
+          mvn jpackage:jpackage -Djpackage.type=app-image
+          mvn jpackage:jpackage -Djpackage.type=deb
+
+      # --- ARCH LINUX PREP (Portable Tarball) ---
+      - name: Create Portable Tarball (For Arch Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cd target/dist
+          # Rename the folder to something generic
+          mv InventorySystem InventorySystem-Linux
+          # Create a compressed tarball
+          tar -czvf InventorySystem-Linux-Portable.tar.gz InventorySystem-Linux
+
+      # --- UPLOAD ARTIFACTS ---
+      - name: Upload Windows Artifact
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: inventory_management_system-exe
-          path: target/inventory_management_system.exe
+          name: windows-installer
+          path: target/dist/*.exe
 
-      - name: Create Release
+      - name: Upload Linux Artifacts
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: |
+            target/dist/*.deb
+            target/dist/*.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: target/inventory_management_system.exe
+          files: |
+            *.exe
+            *.deb
+            *.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
